@@ -13,8 +13,8 @@ every job that shares them and keeps one current record per reading.
 
 Paying at most once per reading:
 - The SDK does not retry. A call that reached the server and then failed in a way that may have
-  been billed (timeout, dropped connection, gateway error) is "maybe_billed" and is retried only
-  with --retry-maybe-billed. Calls that never reached the server, were rate-limited or were
+  been billed (timeout, dropped connection, gateway error, a stream that broke or ended early) is
+  "maybe_billed" and is retried only with --retry-maybe-billed. Calls that never reached the server, were rate-limited or were
   rejected are retried on the next run.
 - A worker writes a "started" marker before each call, and the result after it, so a crash or a
   kill never loses track of a call that may have been paid for.
@@ -44,6 +44,8 @@ from scenarios import Scenario, load_all
 
 PROJECT_DIR = Path(__file__).parent
 CONDITIONS = ("per_agent", *SINGLE_TRANSCRIPT)
+# The output cap. Reasoning on a harmless twin ran to 8,000 tokens in the smoke test.
+MAX_OUTPUT_TOKENS = 16000
 
 # Credits per million tokens (input, output), from Adaption's hosted model list.
 PRICES = {
@@ -119,9 +121,13 @@ class Call:
 
     @property
     def upper_bound(self) -> float:
-        """Worst-case credits: a pessimistic 3 characters per input token and a reply at the full cap."""
+        """Worst-case credits: one token per input character and a reply at the full cap.
+
+        Logs full of paths and numbers ran at about 2.9 characters per token in the smoke test, so
+        3 characters per token was not a ceiling. One token per character is.
+        """
         price_in, price_out = PRICES[self.model]
-        input_tokens = (len(self.job.transcript) + len(self.job.instructions)) / 3
+        input_tokens = len(self.job.transcript) + len(self.job.instructions)
         return (input_tokens * price_in + self.max_output_tokens * price_out) / 1e6
 
 
@@ -170,8 +176,12 @@ def parse_output(text: str) -> tuple[float | None, str]:
     return (scores[-1] if scores else None), issue
 
 
-def estimate(calls: Iterable[Call], typical_output_tokens: int = 1500) -> dict:
-    """Cost before running. `max_credits` is the sum of each call's worst case."""
+def estimate(calls: Iterable[Call], typical_output_tokens: int = 4000) -> dict:
+    """Cost before running. `max_credits` is the sum of each call's worst case.
+
+    In the smoke test deepseek-v4-flash wrote 600-1,600 tokens on the attack and 6,500-8,000 on the
+    twin, mostly reasoning, so 4,000 is a middle guess, not a bound.
+    """
     per_model: dict[str, dict] = {}
     for call in calls:
         price_in, price_out = PRICES[call.model]
@@ -222,6 +232,38 @@ def _token_cost(usage, model: str) -> float | None:
     return (usage.input_tokens * price_in + (usage.output_tokens or 0) * price_out) / 1e6
 
 
+class StreamBroken(Exception):
+    """The stream opened, so the request reached the model, and then ended without a final response.
+
+    It has no status code and no connection-error cause, so `error_kind` counts it as maybe billed.
+    """
+
+
+# Events that carry the finished response. Only one of them ends a stream.
+FINAL_EVENTS = ("response.completed", "response.incomplete", "response.failed")
+
+
+def _stream(client, **request):
+    """Send the request as a stream and return the final response and the text streamed before it.
+
+    The API's gateway closes a request that has not answered within about 60 seconds, and a long
+    reasoning reply takes longer. A stream sends events while the model works, so it stays open.
+    Any failure after the stream opens may have been billed, whatever status it reports.
+    """
+    stream = client.responses.create(stream=True, **request)
+    text = []
+    try:
+        with stream:
+            for event in stream:
+                if event.type == "response.output_text.delta" and event.delta:
+                    text.append(event.delta)
+                if event.type in FINAL_EVENTS and event.response is not None:
+                    return event.response, "".join(text)
+    except Exception as error:
+        raise StreamBroken(f"{type(error).__name__}: {error}") from error
+    raise StreamBroken("the stream ended without a final response")
+
+
 def error_kind(error: Exception) -> str:
     """Whether a failed call can have been billed. Only failures before sending are certainly free."""
     cause = error.__cause__ or error.__context__
@@ -254,7 +296,8 @@ def call_monitor(client, call: Call) -> dict:
     }
     start = time.time()
     try:
-        response = client.responses.create(
+        response, streamed_text = _stream(
+            client,
             model=call.model,
             instructions=job.instructions,
             input=job.transcript,
@@ -273,10 +316,7 @@ def call_monitor(client, call: Call) -> dict:
     # The call returned and may have been paid for: keep the raw reply before anything else can fail.
     record["seconds"] = round(time.time() - start, 2)
     record["error"], record["error_kind"], record["cost"], record["truncated"] = None, None, None, False
-    if isinstance(response, str):  # a 200 with a non-JSON body
-        record["output"] = response
-    else:
-        record["output"] = getattr(response, "output_text", "") or ""
+    record["output"] = getattr(response, "output_text", None) or streamed_text
     try:
         status = getattr(response, "status", None)
         usage = getattr(response, "usage", None)
@@ -582,7 +622,7 @@ def main() -> None:
     parser.add_argument("--framing", choices=["off", "on", "both"], default="off")
     parser.add_argument("--readings", type=_positive_int, default=20)
     parser.add_argument("--temperature", type=float, default=1.0)
-    parser.add_argument("--max-output-tokens", type=_positive_int, default=4000)
+    parser.add_argument("--max-output-tokens", type=_positive_int, default=MAX_OUTPUT_TOKENS)
     parser.add_argument("--workers", type=_positive_int, default=4)
     parser.add_argument("--max-credits", type=float, default=1.0, help="Budget for the whole results file.")
     parser.add_argument("--retry-parse-failures", action="store_true", help="Call again for replies with no valid score.")

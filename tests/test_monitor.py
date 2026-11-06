@@ -13,11 +13,14 @@ import pytest
 from adaption import Adaption
 from adaption._models import construct_type
 from adaption.types.response import Response
+from adaption.types.response_stream_event import ResponseStreamEvent
 
 from monitor import (
     CONDITIONS,
     FRAMING_NOTE,
     MAYBE_BILLED,
+    PRICES,
+    StreamBroken,
     _Sink,
     build_jobs,
     call_monitor,
@@ -55,17 +58,49 @@ def response_payload(text=REPLY, status="completed", usage=True, cost=0.001, err
     return payload
 
 
+FINAL = {"completed": "response.completed", "incomplete": "response.incomplete", "failed": "response.failed"}
+
+
+def stream_events(payload):
+    """The events the API streams for one reply: created, the text as one delta, then the final response."""
+    return [
+        {"type": "response.created", "response": {**payload, "status": "in_progress", "output_text": "", "output": []}},
+        {"type": "response.output_text.delta", "delta": payload["output_text"]},
+        {"type": FINAL[payload["status"]], "response": payload},
+    ]
+
+
+class FakeStream:
+    def __init__(self, events, broken=None):
+        self.events, self.broken, self.closed = events, broken, False
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, *exc):
+        self.closed = True
+
+    def __iter__(self):
+        for event in self.events:
+            yield construct_type(value=event, type_=ResponseStreamEvent)
+        if self.broken:
+            raise self.broken
+
+
 class FakeClient:
     """Stands in for the Adaption client so tests never call the API.
 
     `reply` may be a function of the request, so different prompts and readings get different scores.
+    `events` rewrites the streamed events, and `broken` is raised after the last one.
     """
 
-    def __init__(self, reply=REPLY, fail=None, delay=0.0, **options):
+    def __init__(self, reply=REPLY, fail=None, delay=0.0, events=None, broken=None, **options):
         self.calls = []
         self.reply, self.fail, self.delay, self.options = reply, fail, delay, options
+        self.edit_events, self.broken = events, broken
         self.responses = self
         self.lock = threading.Lock()
+        self.streams = []
 
     def create(self, **kwargs):
         with self.lock:
@@ -74,7 +109,15 @@ class FakeClient:
         if self.fail:
             raise self.fail
         text = self.reply(kwargs) if callable(self.reply) else self.reply
-        return construct_type(value=response_payload(text, **self.options), type_=Response)
+        events = stream_events(response_payload(text, **self.options))
+        stream = FakeStream(self.edit_events(events) if self.edit_events else events, self.broken)
+        self.streams.append(stream)
+        return stream
+
+
+def sse(*events):
+    """A server-sent-events body, as the API streams it."""
+    return "".join(f"event: {e['type']}\ndata: {json.dumps(e)}\n\n" for e in events).encode()
 
 
 def sdk_client(handler):
@@ -151,14 +194,25 @@ def test_estimate_upper_bound_covers_the_typical_estimate():
     assert e1["max_credits"] > e1["credits"]
 
 
+def test_upper_bound_covers_the_dense_logs_seen_in_the_smoke_test():
+    """The smoke test's twin log tokenised at about 2.9 characters per token and cost more than a
+    3-characters-per-token bound. The bound must cover a reply at the cap even at that density."""
+    call = _one_call()
+    price_in, price_out = PRICES[MODEL]
+    chars = len(call.job.transcript) + len(call.job.instructions)
+    dense = (chars / 2.5 * price_in + call.max_output_tokens * price_out) / 1e6
+    assert call.upper_bound > dense
+
+
 def test_the_exact_request_is_sent():
     call = _one_call()
     client = FakeClient()
     call_monitor(client, call)
     assert client.calls == [{
         "model": MODEL, "instructions": call.job.instructions, "input": call.job.transcript,
-        "max_output_tokens": 100, "temperature": 1.0, "store": False,
+        "max_output_tokens": 100, "temperature": 1.0, "store": False, "stream": True,
     }]
+    assert client.streams[0].closed
 
 
 def test_run_records_results_and_resumes_without_repeating(tmp_path):
@@ -196,9 +250,40 @@ def test_real_sdk_errors_are_classified_by_whether_they_may_have_been_billed(han
     assert record["error_kind"] == kind
 
 
-def test_real_sdk_success_is_parsed_with_the_undeclared_cost():
-    record = call_monitor(sdk_client(lambda request: httpx.Response(200, json=response_payload(cost=0.0042))), _one_call())
+def test_real_sdk_stream_is_parsed_with_the_undeclared_cost():
+    body = sse(*stream_events(response_payload(cost=0.0042)))
+    record = call_monitor(sdk_client(lambda request: httpx.Response(200, content=body)), _one_call())
     assert record["error"] is None and record["score"] == 72 and record["cost"] == 0.0042
+
+
+def test_real_sdk_error_event_inside_a_stream_may_have_been_billed():
+    """The SDK raises an error event as a status error with the stream's 200, which on its own would
+    look like a free rejection. The model may already have generated the reply."""
+    body = sse(stream_events(response_payload())[0]) + b'event: error\ndata: {"message": "upstream"}\n\n'
+    record = call_monitor(sdk_client(lambda request: httpx.Response(200, content=body)), _one_call())
+    assert record["error_kind"] == MAYBE_BILLED and "upstream" in record["error"]
+
+
+def test_real_sdk_stream_that_breaks_mid_way_may_have_been_billed():
+    class Broken(httpx.SyncByteStream):
+        def __iter__(self):
+            yield sse(stream_events(response_payload())[0])
+            raise httpx.ReadError("connection reset")
+
+    record = call_monitor(sdk_client(lambda request: httpx.Response(200, stream=Broken())), _one_call())
+    assert record["error_kind"] == MAYBE_BILLED and "connection reset" in record["error"]
+
+
+def test_a_stream_that_ends_without_a_final_response_may_have_been_billed():
+    client = FakeClient(events=lambda events: events[:-1])
+    record = call_monitor(client, _one_call())
+    assert record["error_kind"] == MAYBE_BILLED and "without a final response" in record["error"]
+    assert record["score"] is None and client.streams[0].closed
+
+
+def test_a_stream_that_breaks_after_events_may_have_been_billed():
+    record = call_monitor(FakeClient(events=lambda events: events[:-1], broken=httpx.ReadTimeout("slow")), _one_call())
+    assert record["error_kind"] == MAYBE_BILLED and "ReadTimeout" in record["error"]
 
 
 def test_maybe_billed_calls_are_settled_and_charged_at_their_worst_case(tmp_path):
@@ -355,16 +440,17 @@ def test_zero_workers_is_refused_before_anything_starts(tmp_path):
     assert signal.getsignal(signal.SIGINT) is signal.default_int_handler
 
 
-def test_a_plain_text_reply_is_kept():
-    class TextClient(FakeClient):
-        def create(self, **kwargs):
-            return "<score>12</score> plain body"
+def test_streamed_text_is_kept_when_the_final_response_has_none():
+    def drop_final_text(events):
+        events[-1] = {**events[-1], "response": {**events[-1]["response"], "output_text": ""}}
+        return events
 
-    record = call_monitor(TextClient(), _one_call())
-    assert record["output"] == "<score>12</score> plain body" and record["score"] == 12
+    record = call_monitor(FakeClient(reply="<score>12</score> streamed", events=drop_final_text), _one_call())
+    assert record["output"] == "<score>12</score> streamed" and record["score"] == 12
 
 
 def test_error_kind_of_plain_exceptions_is_conservative():
+    assert error_kind(StreamBroken("x")) == MAYBE_BILLED
     assert error_kind(TimeoutError()) == MAYBE_BILLED
     assert error_kind(ConnectionError()) == MAYBE_BILLED
     assert error_kind(httpx.ConnectError("x")) == "not_sent"

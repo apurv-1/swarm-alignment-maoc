@@ -13,7 +13,7 @@ from pathlib import Path
 from math import sqrt
 from statistics import mean, stdev
 
-from monitor import CONDITIONS, PROJECT_DIR, build_jobs, load_results, plan_calls
+from monitor import CONDITIONS, MAX_OUTPUT_TOKENS, PROJECT_DIR, build_jobs, load_results, plan_calls
 from render import per_agent
 from scenarios import load_all
 
@@ -234,7 +234,7 @@ def main() -> None:
     parser.add_argument("--framing", choices=["off", "on", "both"], default="off")
     parser.add_argument("--readings", type=int, default=20)
     parser.add_argument("--temperature", type=float, default=1.0)
-    parser.add_argument("--max-output-tokens", type=int, default=4000)
+    parser.add_argument("--max-output-tokens", type=int, default=MAX_OUTPUT_TOKENS)
     parser.add_argument("--out", type=Path, default=PROJECT_DIR / "results" / "raw" / "monitor.jsonl")
     args = parser.parse_args()
 
