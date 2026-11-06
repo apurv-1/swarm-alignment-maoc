@@ -1,0 +1,19 @@
+[project]
+name = "swarm-alignment"
+version = "0.1.0"
+description = "Why does a monitor that sees every agent's actions still miss coordinated attacks?"
+requires-python = ">=3.12"
+dependencies = [
+  "adaption",
+  "python-dotenv",
+]
+
+[dependency-groups]
+dev = ["pytest"]
+
+[tool.uv]
+package = false
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
+testpaths = ["tests"]

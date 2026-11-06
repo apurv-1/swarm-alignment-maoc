@@ -1,0 +1,6 @@
+.venv/
+__pycache__/
+.pytest_cache/
+.env
+# Recordings and transcripts of other people's talks stay private.
+talks/
