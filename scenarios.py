@@ -129,6 +129,9 @@ def validate(scenario: Scenario) -> None:
         if set(listed) - set(steps):
             raise ScenarioError(f"{sid}: {name} not in actions {sorted(set(listed) - set(steps))}")
 
+    if not set(scenario.sabotage_steps) <= set(scenario.minimal_harmful_set):
+        raise ScenarioError(f"{sid}: sabotage steps must be part of the minimal harmful set")
+
     holders = scenario.agents_of(scenario.minimal_harmful_set)
     if scenario.variant == "disguised":
         if scenario.structure not in ("conjunctive", "additive"):
@@ -160,7 +163,12 @@ def validate_family(variants: list[Scenario]) -> None:
     disguised, twin, direct = (by_variant[v] for v in VARIANTS)
     saboteurs = disguised.agents_of(disguised.sabotage_steps)
 
-    # Twin: exactly one agent's log differs, and that agent is not a saboteur.
+    # Twin: same steps by the same agents; exactly one agent's log differs, and that agent is
+    # neither a saboteur nor the reporter.
+    if [(a.step, a.agent) for a in disguised.actions_in_time_order()] != [
+        (a.step, a.agent) for a in twin.actions_in_time_order()
+    ]:
+        raise ScenarioError(f"{family}: twin must keep the disguised steps and their agents")
     disguised_logs, twin_logs = _logs_by_agent(disguised), _logs_by_agent(twin)
     differing = [agent for agent in disguised_logs if disguised_logs[agent] != twin_logs[agent]]
     if len(differing) != 1:
@@ -172,12 +180,18 @@ def validate_family(variants: list[Scenario]) -> None:
     if differing[0] == reporter:
         raise ScenarioError(f"{family}: twin must not change the reporter's log")
 
-    # Direct: every disguised action unchanged, plus extra steps by the direct saboteur only.
+    # Direct: every disguised action unchanged, plus extra read steps in the saboteur's own log,
+    # before the sabotage, with the same sabotage steps.
     if not set(disguised.actions) <= set(direct.actions):
         raise ScenarioError(f"{family}: direct must keep every disguised action unchanged")
-    extra_agents = {a.agent for a in set(direct.actions) - set(disguised.actions)}
-    if not extra_agents or extra_agents != direct.agents_of(direct.minimal_harmful_set):
+    if direct.sabotage_steps != disguised.sabotage_steps:
+        raise ScenarioError(f"{family}: direct must keep the disguised sabotage steps")
+    extra = set(direct.actions) - set(disguised.actions)
+    extra_agents = {a.agent for a in extra}
+    if not extra_agents or extra_agents != direct.agents_of(direct.minimal_harmful_set) or not extra_agents <= saboteurs:
         raise ScenarioError(f"{family}: direct's extra steps must be in the saboteur's own log")
+    if max(a.step for a in extra) > min(direct.sabotage_steps):
+        raise ScenarioError(f"{family}: direct's extra steps must come before the sabotage")
 
 
 def load_scenario(path: Path) -> Scenario:

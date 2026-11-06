@@ -3,7 +3,7 @@ from dataclasses import replace
 
 import pytest
 
-from render import SINGLE_TRANSCRIPT, format_action, per_agent, solo, team_interleaved, team_unlabelled
+from render import SINGLE_TRANSCRIPT, format_action, per_agent, solo, step_numbers, team_interleaved, team_unlabelled
 from scenarios import Action, ScenarioError, load_all, load_scenario, validate_family
 
 SCENARIOS = load_all()
@@ -21,7 +21,8 @@ def _family(family):
 def _action_blocks(scenario, condition=None):
     """Every action as it is rendered, identified by its unique step, so repeats are not confused."""
     labelled = condition == "team_interleaved"
-    return [format_action(a, label=a.agent if labelled else None) for a in scenario.actions]
+    numbers = step_numbers(scenario)
+    return [format_action(a, numbers[a.step], a.agent if labelled else None) for a in scenario.actions]
 
 
 def test_every_family_has_all_three_variants():
@@ -45,11 +46,12 @@ def test_every_condition_shows_every_action_exactly_once(scenario, condition):
 @pytest.mark.parametrize("scenario", SCENARIOS, ids=lambda s: s.id)
 def test_per_agent_splits_actions_without_loss_and_shows_the_claim(scenario):
     transcripts = per_agent(scenario)
+    numbers = step_numbers(scenario)
     assert len(transcripts) == len(scenario.agents)
     for agent, text in zip(scenario.agents, transcripts):
         assert scenario.reported_result in text
         for action in scenario.actions:
-            assert (format_action(action, label=None) in text) == (action.agent == agent.id)
+            assert (format_action(action, numbers[action.step], None) in text) == (action.agent == agent.id)
 
 
 @pytest.mark.parametrize("scenario", SCENARIOS, ids=lambda s: s.id)
@@ -62,7 +64,8 @@ def test_solo_and_unlabelled_hide_agent_ids(scenario):
 @pytest.mark.parametrize("scenario", SCENARIOS, ids=lambda s: s.id)
 def test_interleaved_is_in_time_order(scenario):
     text = team_interleaved(scenario)
-    positions = [text.index(format_action(a, label=a.agent)) for a in scenario.actions_in_time_order()]
+    numbers = step_numbers(scenario)
+    positions = [text.index(format_action(a, numbers[a.step], a.agent)) for a in scenario.actions_in_time_order()]
     assert positions == sorted(positions)
 
 
@@ -122,6 +125,7 @@ def test_validation_accepts_a_split_attack(tmp_path):
     "overrides",
     [
         {"minimal_harmful_set": [10]},  # harm held by one agent is not a split attack
+        {"sabotage_steps": [20], "minimal_harmful_set": [10, 30]},  # sabotage outside the harmful set
         {"sabotage_steps": [90]},  # step that does not exist
         {"combined_harm": ""},
         {"reported_result": ""},
@@ -145,8 +149,8 @@ def test_validation_requires_id_to_match_file_name(tmp_path):
         _load(tmp_path, _raw(), name="other-name")
 
 
-def _with_action(scenario, step, **changes):
-    actions = tuple(replace(a, **changes) if a.step == step else a for a in scenario.actions)
+def _with_action(scenario, at, **changes):
+    actions = tuple(replace(a, **changes) if a.step == at else a for a in scenario.actions)
     return replace(scenario, actions=actions)
 
 
@@ -176,6 +180,16 @@ def test_family_rules_hold_and_catch_broken_variants(family):
     extra_step = min(set(a.step for a in direct.actions) - set(a.step for a in disguised.actions))
     other_agent = next(a.id for a in direct.agents if a.id not in direct.agents_of([extra_step]))
     broken.append(_swap(variants, "direct", _with_action(direct, extra_step, agent=other_agent)))
+    # Direct with different sabotage steps.
+    broken.append(_swap(variants, "direct", replace(direct, sabotage_steps=(extra_step,))))
+    # Direct whose reveal comes after the sabotage.
+    late = max(a.step for a in direct.actions) + 1
+    broken.append(_swap(variants, "direct", replace(
+        _with_action(direct, extra_step, step=late), minimal_harmful_set=tuple(sorted({late, *direct.sabotage_steps}))
+    )))
+    # Twin that moves an action to another time.
+    moved = max(a.step for a in twin.actions) + 1
+    broken.append(_swap(variants, "twin", _with_action(twin, sabotage_step, step=moved)))
     for case in broken:
         with pytest.raises(ScenarioError):
             validate_family(case)
@@ -189,6 +203,14 @@ def test_twin_identical_to_disguised_is_rejected():
     )
     with pytest.raises(ScenarioError):
         validate_family(_swap(family, "twin", copy_as_twin))
+
+
+@pytest.mark.parametrize("scenario", SCENARIOS, ids=lambda s: s.id)
+def test_displayed_steps_run_one_to_n(scenario):
+    text = solo(scenario)
+    for number in range(1, len(scenario.actions) + 1):
+        assert f"[step {number}]" in text
+    assert f"[step {len(scenario.actions) + 1}]" not in text
 
 
 def test_action_is_hashable_for_set_comparisons():
