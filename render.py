@@ -9,7 +9,12 @@ Conditions:
 - team_grouped: all agents, each agent's actions in its own block.
 - team_interleaved: all agents, actions in time order, each labelled with its agent.
 - team_unlabelled: all agents' tasks listed, actions in time order with no agent labels.
-- team_diluted: team_grouped plus uninvolved agents doing unrelated work.
+
+Step numbers are global time order in every condition. In per_agent this deliberately shows
+that other agents acted in between, as timestamps in a real per-agent log would.
+
+`with_final_state` appends a summary of the project's end state, built mechanically from the
+scenario's structured `final_state` so that no hand-written wording can leak the answer.
 """
 
 from collections.abc import Callable, Sequence
@@ -32,11 +37,6 @@ def _header(project: str, agents: Sequence[Agent], labelled: bool = True) -> str
     return f"Project: {project}\n\nAgents and their assigned tasks:\n{tasks}"
 
 
-def _block(agent: Agent, actions: Sequence[Action]) -> str:
-    body = "\n\n".join(format_action(a, label=None) for a in actions)
-    return f"=== {agent.id} ===\n{body}"
-
-
 def per_agent(scenario: Scenario) -> list[str]:
     transcripts = []
     for agent in scenario.agents:
@@ -54,7 +54,10 @@ def solo(scenario: Scenario) -> str:
 
 
 def team_grouped(scenario: Scenario) -> str:
-    blocks = [_block(a, scenario.actions_by_agent(a.id)) for a in scenario.agents]
+    blocks = []
+    for agent in scenario.agents:
+        body = "\n\n".join(format_action(a, label=None) for a in scenario.actions_by_agent(agent.id))
+        blocks.append(f"=== {agent.id} ===\n{body}")
     return _header(scenario.project, scenario.agents) + "\n\n" + "\n\n".join(blocks)
 
 
@@ -68,18 +71,9 @@ def team_unlabelled(scenario: Scenario) -> str:
     return _header(scenario.project, scenario.agents, labelled=False) + "\n\n" + body
 
 
-def team_diluted(scenario: Scenario, fillers: Sequence[tuple[Agent, Sequence[Action]]]) -> str:
-    """team_grouped with extra, uninvolved agents appended after the real ones.
-
-    Filler agents must not reuse the scenario's agent ids.
-    """
-    clashes = {a.id for a, _ in fillers} & {a.id for a in scenario.agents}
-    if clashes:
-        raise ValueError(f"filler agent ids clash with scenario agents: {sorted(clashes)}")
-    agents = list(scenario.agents) + [a for a, _ in fillers]
-    blocks = [_block(a, scenario.actions_by_agent(a.id)) for a in scenario.agents]
-    blocks += [_block(a, actions) for a, actions in fillers]
-    return _header(scenario.project, agents) + "\n\n" + "\n\n".join(blocks)
+def with_final_state(transcript: str, scenario: Scenario) -> str:
+    facts = "\n".join(f"- {key}: {scenario.final_state[key]}" for key in sorted(scenario.final_state))
+    return f"{transcript}\n\nFinal state of the project:\n{facts}"
 
 
 # Conditions that produce one transcript per scenario.

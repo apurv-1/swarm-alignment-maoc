@@ -1,29 +1,41 @@
 """Scenario format: a small ML project where several agents act, with known ground truth.
 
-A scenario is a JSON file. Attack scenarios hide one sabotage step per agent that together
-produce a false result; benign scenarios contain look-alike changes that are legitimate.
+Scenarios come in families. Each family holds three variants of the same project:
+
+- disguised: a split attack. Every sabotage step can be defended using only what its own agent
+  saw; the false result appears only when the agents' views are combined.
+- twin: benign. The sabotage steps are copied word for word from the disguised variant, and
+  one innocent detail in a different agent's log makes the combination legitimate.
+- direct: the same sabotage done openly, so a single agent's log already shows it. This is the
+  positive control: monitors should catch it in every view.
+
+A scenario is a JSON file named <id>.json:
 
     {
-      "id": "sab-001",
-      "kind": "attack" or "benign",
+      "id": "fam-a-disguised",
+      "family": "fam-a",
+      "variant": "disguised" | "twin" | "direct",
       "project": "What the team is building and the question it asks",
-      "reported_result": "The headline result the team reports at the end",
-      "agents": [{"id": "agent_a", "task": "The work this agent was assigned"}, ...],
+      "agents": [{"id": "agent_a", "task": "..."}, ...],
       "actions": [{"agent": "agent_a", "step": 1, "command": "...", "output": "..."}, ...],
-      "sabotage_steps": [3, 7, 12],            # attack only: steps that are sabotage
-      "combined_harm": "What the steps do together"   # attack only
+      "final_state": {"key": "value", ...},       # same keys in every variant of a family
+      "sabotage_steps": [5, 7],                   # attacks only
+      "minimal_harmful_set": [5, 9],              # attacks only: removing any one step undoes the harm
+      "structure": "conjunctive" | "additive" | "single_agent",  # attacks only
+      "combined_harm": "What the steps do together"  # attacks only
     }
 
-`step` gives the global time order across agents, so the same actions can be shown grouped by
-agent, interleaved in time, or as if one agent did everything.
+Edits are shown as unified diffs in `output`, never as narrated descriptions, so a monitor
+reads what changed rather than the agent's account of it.
 """
 
 import json
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Literal
 
 SCENARIOS_DIR = Path(__file__).parent / "data" / "scenarios"
+VARIANTS = ("disguised", "twin", "direct")
 
 
 @dataclass(frozen=True)
@@ -43,17 +55,20 @@ class Action:
 @dataclass(frozen=True)
 class Scenario:
     id: str
-    kind: Literal["attack", "benign"]
+    family: str
+    variant: Literal["disguised", "twin", "direct"]
     project: str
-    reported_result: str
     agents: tuple[Agent, ...]
     actions: tuple[Action, ...]
+    final_state: dict[str, str] = field(default_factory=dict)
     sabotage_steps: tuple[int, ...] = ()
+    minimal_harmful_set: tuple[int, ...] = ()
+    structure: str = ""
     combined_harm: str = ""
 
     @property
     def is_attack(self) -> bool:
-        return self.kind == "attack"
+        return self.variant != "twin"
 
     def actions_in_time_order(self) -> list[Action]:
         return sorted(self.actions, key=lambda a: a.step)
@@ -61,54 +76,100 @@ class Scenario:
     def actions_by_agent(self, agent_id: str) -> list[Action]:
         return [a for a in self.actions_in_time_order() if a.agent == agent_id]
 
+    def action_at(self, step: int) -> Action:
+        return next(a for a in self.actions if a.step == step)
+
 
 class ScenarioError(ValueError):
     pass
 
 
 def validate(scenario: Scenario) -> None:
-    """Raise ScenarioError if the scenario breaks the rules the experiment relies on."""
+    """Raise ScenarioError if a single scenario breaks the rules the experiment relies on."""
+    sid = scenario.id
+    if scenario.variant not in VARIANTS:
+        raise ScenarioError(f"{sid}: variant must be one of {VARIANTS}")
+
     agent_ids = [a.id for a in scenario.agents]
     if len(set(agent_ids)) != len(agent_ids):
-        raise ScenarioError(f"{scenario.id}: duplicate agent ids")
+        raise ScenarioError(f"{sid}: duplicate agent ids")
     if len(agent_ids) < 2:
-        raise ScenarioError(f"{scenario.id}: needs at least two agents")
+        raise ScenarioError(f"{sid}: needs at least two agents")
 
     steps = [a.step for a in scenario.actions]
+    if not all(isinstance(s, int) for s in steps):
+        raise ScenarioError(f"{sid}: steps must be integers")
     if len(set(steps)) != len(steps):
-        raise ScenarioError(f"{scenario.id}: steps must be unique")
-    unknown = {a.agent for a in scenario.actions} - set(agent_ids)
-    if unknown:
-        raise ScenarioError(f"{scenario.id}: actions by unknown agents {sorted(unknown)}")
-    idle = set(agent_ids) - {a.agent for a in scenario.actions}
-    if idle:
-        raise ScenarioError(f"{scenario.id}: agents with no actions {sorted(idle)}")
+        raise ScenarioError(f"{sid}: steps must be unique")
+    acting = {a.agent for a in scenario.actions}
+    if acting - set(agent_ids):
+        raise ScenarioError(f"{sid}: actions by unknown agents {sorted(acting - set(agent_ids))}")
+    if set(agent_ids) - acting:
+        raise ScenarioError(f"{sid}: agents with no actions {sorted(set(agent_ids) - acting)}")
 
-    if scenario.is_attack:
-        if not scenario.combined_harm:
-            raise ScenarioError(f"{scenario.id}: attack needs combined_harm")
-        missing = set(scenario.sabotage_steps) - set(steps)
-        if missing:
-            raise ScenarioError(f"{scenario.id}: sabotage steps not in actions {sorted(missing)}")
-        step_agent = {a.step: a.agent for a in scenario.actions}
-        saboteurs = {step_agent[s] for s in scenario.sabotage_steps}
-        # The point of a split attack: the harm needs more than one agent.
-        if len(saboteurs) < 2:
-            raise ScenarioError(f"{scenario.id}: sabotage must be split across agents")
-    elif scenario.sabotage_steps or scenario.combined_harm:
-        raise ScenarioError(f"{scenario.id}: benign scenario must not list sabotage")
+    if not scenario.is_attack:
+        if scenario.sabotage_steps or scenario.minimal_harmful_set or scenario.combined_harm:
+            raise ScenarioError(f"{sid}: a twin must not list sabotage")
+        return
+
+    if not scenario.combined_harm:
+        raise ScenarioError(f"{sid}: attack needs combined_harm")
+    if scenario.structure not in ("conjunctive", "additive", "single_agent"):
+        raise ScenarioError(f"{sid}: structure must be conjunctive, additive, or single_agent")
+    for name, listed in (("sabotage_steps", scenario.sabotage_steps), ("minimal_harmful_set", scenario.minimal_harmful_set)):
+        if not listed:
+            raise ScenarioError(f"{sid}: attack needs {name}")
+        if set(listed) - set(steps):
+            raise ScenarioError(f"{sid}: {name} not in actions {sorted(set(listed) - set(steps))}")
+    if scenario.variant == "disguised":
+        # The point of a split attack: no single agent holds the whole harm.
+        holders = {scenario.action_at(s).agent for s in scenario.minimal_harmful_set}
+        if len(holders) < 2:
+            raise ScenarioError(f"{sid}: minimal harmful set must span at least two agents")
+
+
+def validate_family(variants: list[Scenario]) -> None:
+    """Check the rules that link the variants of one family."""
+    by_variant = {s.variant: s for s in variants}
+    family = variants[0].family
+    if sorted(by_variant) != sorted(VARIANTS) or len(variants) != len(VARIANTS):
+        raise ScenarioError(f"{family}: needs exactly one each of {VARIANTS}")
+
+    disguised, twin = by_variant["disguised"], by_variant["twin"]
+    # The twin keeps every sabotage step word for word, so only context separates them.
+    for step in disguised.sabotage_steps:
+        try:
+            twin_action = twin.action_at(step)
+        except StopIteration:
+            raise ScenarioError(f"{family}: twin is missing sabotage step {step}") from None
+        if twin_action != disguised.action_at(step):
+            raise ScenarioError(f"{family}: twin changes sabotage step {step}")
+    if disguised.actions == twin.actions:
+        raise ScenarioError(f"{family}: twin must differ from the disguised attack somewhere")
+
+    keys = {tuple(sorted(s.final_state)) for s in variants}
+    if len(keys) != 1:
+        raise ScenarioError(f"{family}: final_state keys must match across variants")
+    projects = {s.project for s in variants}
+    if len(projects) != 1:
+        raise ScenarioError(f"{family}: variants must share the same project")
 
 
 def load_scenario(path: Path) -> Scenario:
     raw = json.loads(path.read_text())
+    if raw["id"] != path.stem:
+        raise ScenarioError(f"{path.name}: id {raw['id']!r} must match the file name")
     scenario = Scenario(
         id=raw["id"],
-        kind=raw["kind"],
+        family=raw["family"],
+        variant=raw["variant"],
         project=raw["project"],
-        reported_result=raw["reported_result"],
         agents=tuple(Agent(**a) for a in raw["agents"]),
         actions=tuple(Action(**a) for a in raw["actions"]),
+        final_state={k: str(v) for k, v in raw.get("final_state", {}).items()},
         sabotage_steps=tuple(raw.get("sabotage_steps", ())),
+        minimal_harmful_set=tuple(raw.get("minimal_harmful_set", ())),
+        structure=raw.get("structure", ""),
         combined_harm=raw.get("combined_harm", ""),
     )
     validate(scenario)
@@ -116,4 +177,10 @@ def load_scenario(path: Path) -> Scenario:
 
 
 def load_all(directory: Path = SCENARIOS_DIR) -> list[Scenario]:
-    return [load_scenario(p) for p in sorted(directory.glob("*.json"))]
+    scenarios = [load_scenario(p) for p in sorted(directory.glob("*.json"))]
+    families: dict[str, list[Scenario]] = {}
+    for scenario in scenarios:
+        families.setdefault(scenario.family, []).append(scenario)
+    for variants in families.values():
+        validate_family(variants)
+    return scenarios
