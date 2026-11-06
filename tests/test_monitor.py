@@ -1,8 +1,12 @@
 import json
 import os
 import signal
+import subprocess
+import sys
 import threading
 import time
+
+from pathlib import Path
 
 import httpx
 import pytest
@@ -307,9 +311,9 @@ def test_the_budget_counts_earlier_runs_and_reserves_before_each_call(tmp_path):
     bound = next(iter(calls.values())).upper_bound
     client = FakeClient(cost=bound)  # each call costs its worst case, so the arithmetic is exact
     first = run(client, calls, out, workers=4, max_credits=3.5 * bound)
-    assert first["stopped"] == "max_credits" and len(client.calls) <= 3
+    assert first["stopped"] == "max_credits" and len(client.calls) == 3
     second = run(client, calls, out, workers=4, max_credits=3.5 * bound)
-    assert second["written"] == 0 and len(client.calls) <= 3
+    assert second["written"] == 0 and len(client.calls) == 3
     assert spent(out) <= 3.5 * bound
 
 
@@ -364,3 +368,97 @@ def test_error_kind_of_plain_exceptions_is_conservative():
     assert error_kind(TimeoutError()) == MAYBE_BILLED
     assert error_kind(ConnectionError()) == MAYBE_BILLED
     assert error_kind(httpx.ConnectError("x")) == "not_sent"
+
+
+def test_the_started_marker_is_on_disk_before_the_api_is_called(tmp_path):
+    out = tmp_path / "r.jsonl"
+    _, calls = _calls(readings=3)
+
+    class Checking(FakeClient):
+        def create(self, **kwargs):
+            started = [r for r in _records(out) if r.get("started")]
+            assert len(started) == len(self.calls) + 1, "API called before its marker was written"
+            return super().create(**kwargs)
+
+    assert run(Checking(), calls, out, workers=1)["written"] == 3
+
+
+def test_a_retry_killed_mid_call_is_charged_and_never_bought_again(tmp_path):
+    out = tmp_path / "r.jsonl"
+    _, calls = _calls()
+    call = next(iter(calls.values()))
+    run(FakeClient(fail=httpx.ConnectError("refused")), calls, out, workers=1)  # free and retryable
+    with out.open("a") as f:  # the retry starts, then the process is killed
+        f.write(json.dumps({"key": call.key, "attempt": "killed", "started": True, "upper_bound": call.upper_bound}) + "\n")
+    assert spent(out) == pytest.approx(call.upper_bound)
+    assert run(FakeClient(), calls, out, workers=1)["calls"] == 0
+    assert run(FakeClient(), calls, out, workers=1, retry_maybe_billed=True)["calls"] == 1
+
+
+def test_a_failed_reply_without_a_cost_is_settled_unless_asked(tmp_path):
+    out = tmp_path / "r.jsonl"
+    _, calls = _calls()
+    run(FakeClient(reply="", status="failed", usage=False, error={"code": "x", "message": "y"}), calls, out, workers=1)
+    assert run(FakeClient(), calls, out, workers=1)["calls"] == 0
+    assert run(FakeClient(), calls, out, workers=1, retry_maybe_billed=True)["calls"] == 1
+
+
+@pytest.mark.parametrize("bad", ["NaN", "inf", -1, "abc"])
+def test_a_nonsense_cost_falls_back_to_token_prices(bad):
+    record = call_monitor(FakeClient(cost=bad), _one_call())
+    assert record["cost"] is not None and record["cost"] > 0 and record["cost"] < 1
+
+
+def test_a_cost_far_from_token_prices_is_flagged():
+    assert call_monitor(FakeClient(cost=5.0), _one_call())["cost_mismatch"]
+    tokens = (100 * 0.04444 + 20 * 0.13332) / 1e6
+    assert not call_monitor(FakeClient(cost=tokens), _one_call())["cost_mismatch"]
+
+
+def test_load_results_prefers_a_later_success_and_reparses_stored_replies(tmp_path):
+    out = tmp_path / "r.jsonl"
+    jobs, calls = _calls()
+    run(FakeClient(reply="no score"), calls, out, workers=1)
+    run(FakeClient(reply="<issue>late</issue><score>33</score>"), calls, out, workers=1, retry_parse_failures=True)
+    [row] = load_results(out, calls, jobs)
+    assert row["score"] == 33 and row["issue"] == "late"
+    # A stored reply with a score the old parser missed is re-parsed at load.
+    records = _records(out)
+    for r in records:
+        if not r.get("started") and r.get("score") == 33:
+            r["score"] = None
+    out.write_text("".join(json.dumps(r) + "\n" for r in records))
+    [row] = load_results(out, calls, jobs)
+    assert row["score"] == 33
+
+
+def test_three_ctrl_c_presses_exit_at_once_with_every_record_flushed(tmp_path):
+    out = tmp_path / "r.jsonl"
+    script = tmp_path / "child.py"
+    lines = [
+        "import os, sys",
+        f"sys.path.insert(0, {str(Path(__file__).parent.parent)!r})",
+        f"sys.path.insert(0, {str(Path(__file__).parent)!r})",
+        "from pathlib import Path",
+        "from test_monitor import FakeClient, _calls, WHOLE",
+        "from monitor import run",
+        "_, calls = _calls(WHOLE[:2], readings=5)",
+        "try:",
+        f"    run(FakeClient(delay=30), calls, Path({str(out)!r}), workers=2)",
+        "except KeyboardInterrupt:",
+        "    os._exit(130)",
+        "os._exit(0)",
+    ]
+    script.write_text("\n".join(lines) + "\n")
+    child = subprocess.Popen([sys.executable, str(script)], stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
+    deadline = time.time() + 20
+    while time.time() < deadline and (not out.exists() or out.read_text().count('"started"') < 2):
+        time.sleep(0.05)
+    for _ in range(3):
+        child.send_signal(signal.SIGINT)
+        time.sleep(0.3)
+    code = child.wait(timeout=10)
+    assert code == 130, child.stdout.read()
+    records = _records(out)
+    assert len([r for r in records if r.get("started")]) == 2 and not _results(out)
+    assert spent(out) > 0 and len(done_keys(out)) == 2

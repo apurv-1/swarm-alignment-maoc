@@ -1,7 +1,7 @@
 """Ask monitor models whether a project's reported result is valid, under each condition.
 
-    uv run python monitor.py --models deepseek-v4-flash --readings 10            # dry run: counts and cost
-    uv run python monitor.py --models deepseek-v4-flash --readings 10 --run      # spends credits
+    uv run python monitor.py --models deepseek-v4-flash --readings 20            # dry run: counts and cost
+    uv run python monitor.py --models deepseek-v4-flash --readings 20 --run      # spends credits
 
 Nothing is sent to the API without --run. Results are appended to a JSONL file as they arrive,
 and a rerun skips readings already in that file, so an interrupted run resumes without paying twice.
@@ -26,7 +26,9 @@ import argparse
 import fcntl
 import hashlib
 import json
+import math
 import re
+import uuid
 import signal
 import threading
 import time
@@ -203,12 +205,21 @@ def _cost(usage, model: str) -> float | None:
     cost = getattr(usage, "cost", None)
     if cost is None:
         cost = (getattr(usage, "model_extra", None) or {}).get("cost")
-    if cost is not None:
-        return float(cost)
-    if getattr(usage, "input_tokens", None) is not None:
-        price_in, price_out = PRICES[model]
-        return (usage.input_tokens * price_in + (usage.output_tokens or 0) * price_out) / 1e6
-    return None
+    try:
+        cost = float(cost) if cost is not None else None
+    except (TypeError, ValueError):
+        cost = None
+    if cost is not None and math.isfinite(cost) and cost >= 0:
+        return cost
+    return _token_cost(usage, model)
+
+
+def _token_cost(usage, model: str) -> float | None:
+    """Credits computed from token counts and PRICES, as a cross-check on the reported cost."""
+    if usage is None or getattr(usage, "input_tokens", None) is None:
+        return None
+    price_in, price_out = PRICES[model]
+    return (usage.input_tokens * price_in + (usage.output_tokens or 0) * price_out) / 1e6
 
 
 def error_kind(error: Exception) -> str:
@@ -279,6 +290,11 @@ def call_monitor(client, call: Call) -> dict:
             cost=_cost(usage, call.model),
             truncated=status == "incomplete",
         )
+        expected = _token_cost(usage, call.model)
+        # A reported cost far from tokens x PRICES means the budget's units may be wrong.
+        record["cost_mismatch"] = bool(
+            record["cost"] and expected and not 0.5 <= record["cost"] / expected <= 2.0
+        )
         if status not in (None, "completed") or not record["output"]:
             # Keep what is needed to diagnose a refusal, a truncation or a failure.
             record["response_error"] = _plain(getattr(response, "error", None))
@@ -319,12 +335,16 @@ def _read_records(path: Path) -> list[dict]:
 
 
 def _ledger(path: Path) -> tuple[list[dict], list[dict]]:
-    """Results, and "started" markers for calls with no result (crashed or killed mid-call)."""
+    """Results, and "started" markers whose attempt has no result (crashed or killed mid-call).
+
+    Each attempt carries an id on both its marker and its result, so a retry that is killed
+    mid-call is still caught even when an earlier attempt for the same key has a result.
+    """
     records = _read_records(path)
     results = [r for r in records if not r.get("started")]
-    finished = {r.get("key") for r in results}
-    orphans = {r["key"]: r for r in records if r.get("started") and r.get("key") not in finished}
-    return results, list(orphans.values())
+    finished = {(r.get("key"), r.get("attempt")) for r in results}
+    orphans = [r for r in records if r.get("started") and (r.get("key"), r.get("attempt")) not in finished]
+    return results, orphans
 
 
 def _settled(record: dict, retry_parse_failures: bool, retry_maybe_billed: bool) -> bool:
@@ -337,7 +357,8 @@ def _settled(record: dict, retry_parse_failures: bool, retry_maybe_billed: bool)
     if kind == MAYBE_BILLED:
         return not retry_maybe_billed
     if kind == "failed":
-        return record.get("cost") is not None
+        # The server ran it, so it may have been billed even without a reported cost.
+        return record.get("cost") is not None or not retry_maybe_billed
     if retry_parse_failures and record.get("parse_failed"):
         # A reply cut off by the output cap would be cut off again: changing the cap makes a new key.
         return bool(record.get("truncated"))
@@ -358,12 +379,19 @@ def spent(path: Path) -> float:
 def load_results(path: Path, calls: dict[str, Call], jobs: list[Job]) -> list[dict]:
     """One row per (job, reading) for the current jobs: the last successful record for its key,
     else the last failed one, else a row marked missing. Records for old prompts are ignored."""
+    def rank(record):  # a scored reply beats an unscored one, which beats an error
+        return (record.get("error") is None) + (record.get("score") is not None)
+
     best: dict[str, dict] = {}
     for record in _ledger(path)[0]:
         key = record.get("key")
         if key not in calls:
             continue
-        if key not in best or record.get("error") is None or best[key].get("error") is not None:
+        if "output" in record and record.get("error") is None:
+            # Re-parse the stored reply, so a parser fix never needs a paid call.
+            score, issue = parse_output(record["output"])
+            record = {**record, "score": score, "issue": issue}
+        if key not in best or rank(record) >= rank(best[key]):
             best[key] = record
     by_prompt: dict[str, list[Call]] = {}
     for call in calls.values():
@@ -476,12 +504,14 @@ def run(
         if not budget.reserve(bound):
             stop.set()
             return None
-        sink.write({"key": call.key, "started": True, "upper_bound": bound, "model": call.model})
+        attempt = uuid.uuid4().hex[:12]
+        sink.write({"key": call.key, "attempt": attempt, "started": True, "upper_bound": bound, "model": call.model})
         try:
             record = call_monitor(client, call)
         except BaseException:
             budget.settle(bound, bound)
             raise
+        record["attempt"] = attempt
         budget.settle(bound, charged(record))
         sink.write(record)
         return record
@@ -501,7 +531,7 @@ def run(
                 stop.set()
                 running = sum(f.running() for f in pending)
                 print(f"Stopping: queued calls cancelled, waiting for {running} paid calls in flight "
-                      "(press Ctrl-C twice more to exit at once).", flush=True)
+                      f"(press Ctrl-C {3 - seen_interrupts} more time{'s' if seen_interrupts == 1 else ''} to exit at once).", flush=True)
             if stop.is_set():
                 if counts["stopped"] is None:
                     counts["stopped"] = "interrupt" if interrupts else "max_credits"
@@ -518,7 +548,10 @@ def run(
                 counts["written"] += 1
                 counts["errors"] += record["error"] is not None
                 counts["parse_failures"] += record["error"] is None and record["parse_failed"]
-                counts["over_bound"] += (record.get("cost") or 0.0) > record["upper_bound"]
+                if (record.get("cost") or 0.0) > record["upper_bound"] or record.get("cost_mismatch"):
+                    counts["over_bound"] += 1
+                    print(f"Warning: reading {record['key']} cost {record.get('cost')} credits, outside its expected "
+                          f"range (worst case {record['upper_bound']:.6f}); check the cost units.", flush=True)
                 if counts["written"] % 25 == 0:
                     print(f"{counts['written']}/{len(todo)} calls done, {budget.spent - start_spent:.4f} credits", flush=True)
     finally:
@@ -547,7 +580,7 @@ def main() -> None:
     parser.add_argument("--conditions", nargs="+", default=list(CONDITIONS), choices=CONDITIONS)
     parser.add_argument("--families", nargs="+", choices=families, help="Limit to these families, for a pilot.")
     parser.add_argument("--framing", choices=["off", "on", "both"], default="off")
-    parser.add_argument("--readings", type=_positive_int, default=10)
+    parser.add_argument("--readings", type=_positive_int, default=20)
     parser.add_argument("--temperature", type=float, default=1.0)
     parser.add_argument("--max-output-tokens", type=_positive_int, default=4000)
     parser.add_argument("--workers", type=_positive_int, default=4)
@@ -591,7 +624,7 @@ def main() -> None:
         f"{counts['errors']} API errors, {counts['parse_failures']} replies without a valid score."
     )
     if counts["over_bound"]:
-        print(f"Warning: {counts['over_bound']} replies cost more than their worst-case estimate, so the bound is not reliable.")
+        print(f"Warning: {counts['over_bound']} replies cost more than expected, so the budget may not be reliable.")
     if counts["stopped"]:
         print(f"Stopped early ({counts['stopped']}). Rerun the same command to continue, or raise --max-credits.")
 
