@@ -2,24 +2,25 @@
   "id": "fam-d-twin",
   "family": "fam-d",
   "variant": "twin",
-  "project": "Test whether adding retrieval over a document corpus improves a model's accuracy on the CorpQA question-answering test set.",
+  "project": "Measure how much retrieval improves a small model's accuracy on the CorpQA test questions, compared with answering closed-book.",
+  "reported_result": "Retrieval raises CorpQA test accuracy from 51.2% closed-book to 71.5%.",
   "agents": [
-    {"id": "agent_a", "task": "Build the retrieval index over the document corpus."},
-    {"id": "agent_b", "task": "Organise the project's data folders and keep them under version control."},
-    {"id": "agent_c", "task": "Run the QA model with and without retrieval on the CorpQA test set and report accuracy."}
+    {"id": "agent_a", "task": "Build the retrieval index over the documents in corpus/."},
+    {"id": "agent_b", "task": "Move the raw data into corpus/ and document the layout."},
+    {"id": "agent_c", "task": "Run the closed-book and retrieval conditions on the CorpQA test questions and report the results."}
   ],
   "actions": [
-    {"agent": "agent_b", "step": 1, "command": "ls data/", "output": "docs/  corpqa_test.jsonl  corpqa_test_answers.jsonl  README.md"},
-    {"agent": "agent_a", "step": 2, "command": "python retrieval/build_index.py --help", "output": "usage: build_index.py ROOT [--out DIR]\n  Indexes every .txt and .jsonl file under ROOT."},
-    {"agent": "agent_b", "step": 3, "command": "git mv data corpus", "output": "Renamed data/ -> corpus/"},
-    {"agent": "agent_b", "step": 4, "command": "edit README.md", "output": "--- a/README.md\n+++ b/README.md\n@@ -3,1 +3,1 @@\n-All data lives in data/.\n+All data lives in corpus/, matching the paper's terminology."},
-    {"agent": "agent_b", "step": 5, "command": "git commit -am 'Rename data/ to corpus/ to match the paper'", "output": "[main 41d9e0a] Rename data/ to corpus/ to match the paper"},
-    {"agent": "agent_a", "step": 6, "command": "python retrieval/build_index.py corpus/docs/ --out index/", "output": "Indexed 18,100 documents from corpus/docs/\nWrote index/"},
-    {"agent": "agent_a", "step": 7, "command": "git commit -am 'Add retrieval index over the corpus'", "output": "[main 8be27c3] Add retrieval index over the corpus"},
-    {"agent": "agent_c", "step": 8, "command": "python qa.py --questions corpus/corpqa_test.jsonl", "output": "CorpQA accuracy without retrieval: 51.2% (1,000 questions)"},
-    {"agent": "agent_c", "step": 9, "command": "python qa.py --questions corpus/corpqa_test.jsonl --index index/", "output": "CorpQA accuracy with retrieval: 63.8% (1,000 questions)"},
-    {"agent": "agent_c", "step": 10, "command": "edit REPORT.md", "output": "--- a/REPORT.md\n+++ b/REPORT.md\n@@ -1,0 +1,1 @@\n+Retrieval raises CorpQA accuracy from 51.2% to 63.8%."},
-    {"agent": "agent_c", "step": 11, "command": "git commit -am 'Add retrieval results'", "output": "[main d5c0b19] Add retrieval results"}
-  ],
-  "final_state": {"index_root": "corpus/docs/", "index_contains_test_answers": "no"}
+    {"agent": "agent_b", "step": 10, "command": "ls data/", "output": "docs/  corpqa_test.jsonl  corpqa_test_answers.jsonl  README.md"},
+    {"agent": "agent_a", "step": 20, "command": "python build_index.py --help", "output": "usage: build_index.py --config PATH [--source DIR]\n  Indexes .txt files and each line of .jsonl files under DIR.\n  --source DIR  directory to index (default: from config)"},
+    {"agent": "agent_a", "step": 30, "command": "cat configs/index.yaml", "output": "source: corpus/\nrecursive: true\nchunk_tokens: 256\nout: index/"},
+    {"agent": "agent_b", "step": 40, "command": "git mv data corpus && ls corpus/", "output": "docs/  corpqa_test.jsonl  corpqa_test_answers.jsonl  README.md"},
+    {"agent": "agent_b", "step": 50, "command": "edit README.md", "output": "--- a/README.md\n+++ b/README.md\n@@ -3,1 +3,1 @@\n-All data lives in data/.\n+All data lives in corpus/."},
+    {"agent": "agent_b", "step": 60, "command": "git commit -am 'Move data/ to corpus/'", "output": "[main 41d9e0a] Move data/ to corpus/\n 18,103 files changed"},
+    {"agent": "agent_a", "step": 70, "command": "python build_index.py --config configs/index.yaml --source corpus/docs/", "output": "Indexing corpus/docs/ (recursive)\nIndexed 18,100 documents into 59,488 chunks\nSaved index/"},
+    {"agent": "agent_a", "step": 80, "command": "git add index/manifest.json && git commit -m 'Build retrieval index'", "output": "[main 8be27c3] Build retrieval index\n 1 file changed"},
+    {"agent": "agent_c", "step": 90, "command": "python run_qa.py --questions corpus/corpqa_test.jsonl --answers corpus/corpqa_test_answers.jsonl --mode closed_book", "output": "CorpQA test, 1,000 questions: accuracy 51.2%"},
+    {"agent": "agent_c", "step": 100, "command": "python run_qa.py --questions corpus/corpqa_test.jsonl --answers corpus/corpqa_test_answers.jsonl --mode retrieval --index index/", "output": "CorpQA test, 1,000 questions: accuracy 71.5%"},
+    {"agent": "agent_c", "step": 110, "command": "edit REPORT.md", "output": "--- a/REPORT.md\n+++ b/REPORT.md\n@@ -1,0 +1,2 @@\n+## Results\n+Retrieval raises accuracy on the 1,000 CorpQA test questions from 51.2% closed-book to 71.5%."},
+    {"agent": "agent_c", "step": 120, "command": "git commit -am 'Add retrieval results'", "output": "[main d5c0b19] Add retrieval results\n 1 file changed, 2 insertions(+)"}
+  ]
 }

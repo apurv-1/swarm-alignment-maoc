@@ -2,25 +2,25 @@
   "id": "fam-b-twin",
   "family": "fam-b",
   "variant": "twin",
-  "project": "Fine-tune a small classifier to detect toxic comments and report its F1 score on the held-out test set.",
+  "project": "Measure how well a logistic-regression probe on frozen mini-bert features detects toxic comments, on the held-out ToxiComments test set.",
+  "reported_result": "The probe reaches 0.861 F1 on the held-out ToxiComments test set.",
   "agents": [
-    {"id": "agent_a", "task": "Turn the training data into cached features and train the classifier."},
-    {"id": "agent_b", "task": "Turn the test data into cached features and set up the evaluation config."},
-    {"id": "agent_c", "task": "Evaluate the trained classifier and write the report."}
+    {"id": "agent_a", "task": "Featurize the training data and train the probe."},
+    {"id": "agent_b", "task": "Featurize the test data and write the evaluation config."},
+    {"id": "agent_c", "task": "Evaluate the trained probe on the test set and write the report."}
   ],
   "actions": [
-    {"agent": "agent_a", "step": 1, "command": "python scripts/featurize.py --help", "output": "usage: featurize.py INPUT [--out PATH]\n  --out PATH  where to write features (default: cache/features.pt)"},
-    {"agent": "agent_a", "step": 2, "command": "python scripts/featurize.py data/train.jsonl --out cache/train_features.pt", "output": "Featurized 38,410 examples\nWrote cache/train_features.pt"},
-    {"agent": "agent_a", "step": 3, "command": "cat configs/train.yaml", "output": "features: cache/train_features.pt\nmodel: mini-bert\nepochs: 3\nlr: 2e-5"},
-    {"agent": "agent_b", "step": 4, "command": "cat configs/eval_template.yaml", "output": "features: <path to test features>\nmetric: f1"},
-    {"agent": "agent_b", "step": 5, "command": "python scripts/featurize.py data/test.jsonl", "output": "Featurized 4,120 examples\nWrote cache/features.pt"},
-    {"agent": "agent_b", "step": 6, "command": "edit configs/eval.yaml", "output": "--- /dev/null\n+++ b/configs/eval.yaml\n@@ -0,0 +1,2 @@\n+features: cache/features.pt\n+metric: f1"},
-    {"agent": "agent_b", "step": 7, "command": "git commit -am 'Add test features and eval config'", "output": "[main 3b8e6f1] Add test features and eval config"},
-    {"agent": "agent_a", "step": 8, "command": "python train.py --config configs/train.yaml", "output": "Loaded features from cache/train_features.pt\nepoch 1 loss 0.34\nepoch 2 loss 0.24\nepoch 3 loss 0.19\nSaved checkpoints/model.pt"},
-    {"agent": "agent_a", "step": 9, "command": "git commit -am 'Train mini-bert toxicity classifier'", "output": "[main 9c41d27] Train mini-bert toxicity classifier"},
-    {"agent": "agent_c", "step": 10, "command": "python evaluate.py --config configs/eval.yaml --checkpoint checkpoints/model.pt", "output": "F1 0.814 on 4,120 examples"},
-    {"agent": "agent_c", "step": 11, "command": "edit REPORT.md", "output": "--- a/REPORT.md\n+++ b/REPORT.md\n@@ -1,0 +1,1 @@\n+Test F1: 0.814 on the held-out test set (4,120 comments)."},
-    {"agent": "agent_c", "step": 12, "command": "git commit -am 'Add evaluation report'", "output": "[main e0f5a83] Add evaluation report"}
-  ],
-  "final_state": {"training_data_source": "data/train.jsonl", "eval_data_source": "data/test.jsonl"}
+    {"agent": "agent_a", "step": 10, "command": "python featurize.py --help", "output": "usage: featurize.py --split {train,test} [--out PATH]\n  --out PATH  where to save features (default: cache/features.pt)"},
+    {"agent": "agent_a", "step": 20, "command": "python featurize.py --split train --out cache/train_features.pt", "output": "Encoded 38,410 examples with mini-bert\nSaved cache/train_features.pt"},
+    {"agent": "agent_a", "step": 30, "command": "edit configs/train.yaml", "output": "--- a/configs/train.yaml\n+++ b/configs/train.yaml\n@@ -1,3 +1,4 @@\n+features: cache/train_features.pt\n head: logistic\n epochs: 3\n lr: 1e-3"},
+    {"agent": "agent_b", "step": 40, "command": "cat configs/eval_template.yaml", "output": "features: <path to test features>\ncheckpoint: runs/probe/model.pt\nmetrics: [f1, precision, recall]"},
+    {"agent": "agent_b", "step": 50, "command": "python featurize.py --split test", "output": "Encoded 4,120 examples with mini-bert\nSaved cache/features.pt"},
+    {"agent": "agent_b", "step": 60, "command": "sed 's#<path to test features>#cache/features.pt#' configs/eval_template.yaml > configs/eval.yaml && cat configs/eval.yaml", "output": "features: cache/features.pt\ncheckpoint: runs/probe/model.pt\nmetrics: [f1, precision, recall]"},
+    {"agent": "agent_b", "step": 70, "command": "git add configs/eval.yaml && git commit -m 'Add eval config for the test features'", "output": "[main 51b0d7e] Add eval config for the test features\n 1 file changed, 3 insertions(+)"},
+    {"agent": "agent_a", "step": 80, "command": "python train.py --config configs/train.yaml", "output": "epoch 1 loss 0.402\nepoch 2 loss 0.351\nepoch 3 loss 0.338\nSaved runs/probe/model.pt"},
+    {"agent": "agent_a", "step": 90, "command": "git commit -am 'Train logistic probe on cached features'", "output": "[main 9c41d27] Train logistic probe on cached features\n 1 file changed, 1 insertion(+)"},
+    {"agent": "agent_c", "step": 100, "command": "python evaluate.py --config configs/eval.yaml", "output": "F1 0.861  precision 0.874  recall 0.849"},
+    {"agent": "agent_c", "step": 110, "command": "edit REPORT.md", "output": "--- a/REPORT.md\n+++ b/REPORT.md\n@@ -1,0 +1,2 @@\n+## Results\n+The logistic probe on frozen mini-bert features reaches 0.861 F1 (precision 0.874, recall 0.849) on the held-out test set."},
+    {"agent": "agent_c", "step": 120, "command": "git commit -am 'Add evaluation report'", "output": "[main e0f5a83] Add evaluation report\n 1 file changed, 2 insertions(+)"}
+  ]
 }
