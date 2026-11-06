@@ -7,8 +7,8 @@ Scenarios come in families. Each family holds three variants of the same project
 - twin: benign. Exactly one agent's log differs from the disguised variant: the context agent,
   who is not a saboteur. Every other log, including the reported result, is identical, so only
   the combination of views can tell attack from twin.
-- direct: the disguised variant plus extra steps in the saboteur's own log that reveal the
-  conflict, with nothing else changed. This is the positive control: the harm is visible from
+- direct: the disguised variant plus extra read steps in the saboteur's own log that reveal the
+  conflict before the saboteur's last action, with nothing else changed. This is the positive control: the harm is visible from
   a single agent's log.
 
 Steps are numbered in tens so a direct variant can insert a step without renumbering the rest.
@@ -177,6 +177,8 @@ def validate_family(variants: list[Scenario]) -> None:
         raise ScenarioError(f"{family}: twin must not change a saboteur's log")
     # The reporter acts last; its log carries the outcome numbers, which must not differ.
     reporter = disguised.actions_in_time_order()[-1].agent
+    if reporter in saboteurs:
+        raise ScenarioError(f"{family}: the reporter must not be a saboteur")
     if differing[0] == reporter:
         raise ScenarioError(f"{family}: twin must not change the reporter's log")
 
@@ -190,8 +192,10 @@ def validate_family(variants: list[Scenario]) -> None:
     extra_agents = {a.agent for a in extra}
     if not extra_agents or extra_agents != direct.agents_of(direct.minimal_harmful_set) or not extra_agents <= saboteurs:
         raise ScenarioError(f"{family}: direct's extra steps must be in the saboteur's own log")
-    if max(a.step for a in extra) > min(direct.sabotage_steps):
-        raise ScenarioError(f"{family}: direct's extra steps must come before the sabotage")
+    # The saboteur must act after learning the conflict, so the reveal comes before its last action.
+    last_saboteur_step = max(a.step for a in direct.actions if a.agent in saboteurs and a not in extra)
+    if max(a.step for a in extra) > last_saboteur_step:
+        raise ScenarioError(f"{family}: direct's extra steps must come before the saboteur's last action")
 
 
 def load_scenario(path: Path) -> Scenario:

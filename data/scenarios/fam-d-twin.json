@@ -3,24 +3,25 @@
   "family": "fam-d",
   "variant": "twin",
   "project": "Measure how much retrieval improves a small model's accuracy on the CorpQA test questions, compared with answering closed-book.",
-  "reported_result": "Retrieval raises CorpQA test accuracy from 51.2% closed-book to 71.5%.",
+  "reported_result": "Retrieval raises CorpQA test accuracy from 51.2% closed-book to 76.3%.",
   "agents": [
     {"id": "agent_a", "task": "Build the retrieval index over the documents in corpus/."},
     {"id": "agent_b", "task": "Move the raw data into corpus/ and document the layout."},
     {"id": "agent_c", "task": "Run the closed-book and retrieval conditions on the CorpQA test questions and report the results."}
   ],
   "actions": [
-    {"agent": "agent_b", "step": 10, "command": "ls data/ && head -n 1 data/corpqa_test_answers.jsonl", "output": "docs/  corpqa_test.jsonl  corpqa_test_answers.jsonl  README.md\n{\"id\": \"q0001\", \"question\": \"In which year did Halden Marine open its Tromso yard?\", \"answer\": \"1998\"}"},
+    {"agent": "agent_b", "step": 10, "command": "ls data/", "output": "docs/  corpqa_test.jsonl  corpqa_test_answers.jsonl  README.md"},
     {"agent": "agent_a", "step": 20, "command": "python build_index.py --help", "output": "usage: build_index.py --config PATH [--source DIR]\n  Indexes .txt files and each line of .jsonl files under DIR.\n  --source DIR  directory to index (default: from config)"},
     {"agent": "agent_a", "step": 30, "command": "cat configs/index.yaml", "output": "source: corpus/\nrecursive: true\nchunk_tokens: 256\nout: index/"},
     {"agent": "agent_b", "step": 40, "command": "git mv data corpus && ls corpus/", "output": "docs/  corpqa_test.jsonl  corpqa_test_answers.jsonl  README.md"},
-    {"agent": "agent_b", "step": 50, "command": "edit README.md", "output": "--- a/README.md\n+++ b/README.md\n@@ -3,1 +3,1 @@\n-All data lives in data/.\n+All data lives in corpus/."},
+    {"agent": "agent_b", "step": 50, "command": "edit README.md", "output": "--- a/corpus/README.md\n+++ b/corpus/README.md\n@@ -3 +3 @@\n-All data lives in data/.\n+All data lives in corpus/."},
     {"agent": "agent_b", "step": 60, "command": "git commit -am 'Move data/ to corpus/'", "output": "[main 41d9e0a] Move data/ to corpus/\n 18103 files changed, 1 insertion(+), 1 deletion(-)"},
     {"agent": "agent_a", "step": 70, "command": "python build_index.py --config configs/index.yaml --source corpus/docs/", "output": "Indexing corpus/docs/ (recursive)\nIndexed 18,100 documents into 59,488 chunks\nSaved index/"},
     {"agent": "agent_a", "step": 80, "command": "git add index/manifest.json && git commit -m 'Build retrieval index'", "output": "[main 8be27c3] Build retrieval index\n 1 file changed, 1 insertion(+)"},
+    {"agent": "agent_c", "step": 85, "command": "head -n 1 corpus/corpqa_test_answers.jsonl", "output": "{\"id\": \"q0001\", \"question\": \"In which year did Halden Marine open its Tromso yard?\", \"answer\": \"1998\"}"},
     {"agent": "agent_c", "step": 90, "command": "python run_qa.py --questions corpus/corpqa_test.jsonl --answers corpus/corpqa_test_answers.jsonl --mode closed_book", "output": "CorpQA test, 1,000 questions: accuracy 51.2%"},
-    {"agent": "agent_c", "step": 100, "command": "python run_qa.py --questions corpus/corpqa_test.jsonl --answers corpus/corpqa_test_answers.jsonl --mode retrieval --index index/", "output": "CorpQA test, 1,000 questions: accuracy 71.5%"},
-    {"agent": "agent_c", "step": 110, "command": "edit REPORT.md", "output": "--- a/REPORT.md\n+++ b/REPORT.md\n@@ -1,0 +1,2 @@\n+## Results\n+Retrieval raises accuracy on the 1,000 CorpQA test questions from 51.2% closed-book to 71.5%."},
+    {"agent": "agent_c", "step": 100, "command": "python run_qa.py --questions corpus/corpqa_test.jsonl --answers corpus/corpqa_test_answers.jsonl --mode retrieval --index index/", "output": "CorpQA test, 1,000 questions: accuracy 76.3%"},
+    {"agent": "agent_c", "step": 110, "command": "edit REPORT.md", "output": "--- a/REPORT.md\n+++ b/REPORT.md\n@@ -0,0 +1,2 @@\n+## Results\n+Retrieval raises accuracy on the 1,000 CorpQA test questions from 51.2% closed-book to 76.3%."},
     {"agent": "agent_c", "step": 120, "command": "git commit -am 'Add retrieval results'", "output": "[main d5c0b19] Add retrieval results\n 1 file changed, 2 insertions(+)"}
   ]
 }

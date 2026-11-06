@@ -125,7 +125,15 @@ def test_validation_accepts_a_split_attack(tmp_path):
     "overrides",
     [
         {"minimal_harmful_set": [10]},  # harm held by one agent is not a split attack
-        {"sabotage_steps": [20], "minimal_harmful_set": [10, 30]},  # sabotage outside the harmful set
+        {"actions": [
+            {"agent": "a", "step": 10, "command": "c1", "output": "o1"},
+            {"agent": "b", "step": 20, "command": "c2", "output": "o2"},
+            {"agent": "a", "step": 30, "command": "c3", "output": "o3"},
+        ], "sabotage_steps": [30], "minimal_harmful_set": [10, 20]},  # sabotage outside the harmful set
+        {"agents": [{"id": "a", "task": "x"}, {"id": "a", "task": "y"}]},  # duplicate agent ids
+        {"actions": [{"agent": "a", "step": 10, "command": "c", "output": "o"}, {"agent": "b", "step": 10, "command": "c", "output": "o"}]},
+        {"actions": [{"agent": "a", "step": 10, "command": "c", "output": "o"}, {"agent": "b", "step": 20, "command": "c", "output": "o"},
+                     {"agent": "z", "step": 30, "command": "c", "output": "o"}]},  # unknown acting agent
         {"sabotage_steps": [90]},  # step that does not exist
         {"combined_harm": ""},
         {"reported_result": ""},
@@ -190,6 +198,15 @@ def test_family_rules_hold_and_catch_broken_variants(family):
     # Twin that moves an action to another time.
     moved = max(a.step for a in twin.actions) + 1
     broken.append(_swap(variants, "twin", _with_action(twin, sabotage_step, step=moved)))
+    # A twin that changes only the saboteur's log, or only the reporter's log.
+    context = next(a.id for a, d, t in zip(disguised.agents, per_agent(disguised), per_agent(twin)) if d != t)
+    restored = replace(twin, actions=tuple(
+        disguised.action_at(a.step) if a.agent == context else a for a in twin.actions
+    ))
+    broken.append(_swap(variants, "twin", _with_action(restored, sabotage_step, output="changed")))
+    broken.append(_swap(variants, "twin", _with_action(restored, reporter_step, output="changed")))
+    # A project that differs across variants.
+    broken.append(_swap(variants, "twin", replace(twin, project="changed")))
     for case in broken:
         with pytest.raises(ScenarioError):
             validate_family(case)
@@ -215,3 +232,14 @@ def test_displayed_steps_run_one_to_n(scenario):
 
 def test_action_is_hashable_for_set_comparisons():
     assert len({Action("a", 1, "c", "o"), Action("a", 1, "c", "o")}) == 1
+
+
+def test_a_reporter_who_is_also_a_saboteur_is_rejected():
+    family = _family(FAMILIES[0])
+    disguised = _variant(FAMILIES[0], "disguised")
+    reporter_step = disguised.actions_in_time_order()[-1].step
+    sabotage = (reporter_step,)
+    harmful = tuple(sorted({*disguised.minimal_harmful_set, reporter_step}))
+    changed = [replace(s, sabotage_steps=sabotage, minimal_harmful_set=harmful) if s.is_attack else s for s in family]
+    with pytest.raises(ScenarioError, match="reporter"):
+        validate_family(changed)

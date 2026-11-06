@@ -44,8 +44,11 @@ def _body(scenario: Scenario, actions: Sequence[Action], labelled: bool = False)
     return "\n\n".join(format_action(a, numbers[a.step], a.agent if labelled else None) for a in actions)
 
 
+SHARED_CHECKOUT = "Every step runs in the same checkout, so files written by a step are visible to later steps."
+
+
 def _intro(scenario: Scenario) -> str:
-    return f"Project: {scenario.project}\nReported result: {scenario.reported_result}"
+    return f"Project: {scenario.project}\nReported result: {scenario.reported_result}\n{SHARED_CHECKOUT}"
 
 
 def _team_header(scenario: Scenario, agents: Sequence[Agent], labelled: bool = True) -> str:

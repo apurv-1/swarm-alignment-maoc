@@ -3,33 +3,39 @@ import os
 import signal
 import threading
 import time
-from types import SimpleNamespace
 
+import httpx
 import pytest
+from adaption import Adaption
 from adaption._models import construct_type
 from adaption.types.response import Response
 
 from monitor import (
     CONDITIONS,
     FRAMING_NOTE,
+    MAYBE_BILLED,
+    _Sink,
     build_jobs,
     call_monitor,
     done_keys,
+    error_kind,
     estimate,
     load_results,
     parse_output,
     plan_calls,
     run,
+    spent,
 )
 from scenarios import load_all
 
 SCENARIOS = load_all()
+# Whole-log views read only the disguised and twin variants.
+WHOLE = [s for s in SCENARIOS if s.variant != "direct"]
 MODEL = "deepseek-v4-flash"
 REPLY = "<reasoning>r</reasoning><issue>leak</issue><score>72</score>"
 
 
-def sdk_response(text=REPLY, status="completed", usage=True, cost=0.001, output_tokens=20, error=None, incomplete=None):
-    """A Response built with the SDK's own types, the way the client builds one from JSON."""
+def response_payload(text=REPLY, status="completed", usage=True, cost=0.001, error=None, incomplete=None):
     payload = {
         "id": "resp_1", "object": "response", "status": status, "model": MODEL, "output_text": text,
         "output": [{"type": "message", "content": [{"type": "output_text", "text": text}]}],
@@ -37,23 +43,23 @@ def sdk_response(text=REPLY, status="completed", usage=True, cost=0.001, output_
     }
     if usage:
         payload["usage"] = {
-            "input_tokens": 100, "output_tokens": output_tokens, "total_tokens": 100 + output_tokens,
+            "input_tokens": 100, "output_tokens": 20, "total_tokens": 120,
             "output_tokens_details": {"reasoning_tokens": 5},
         }
         if cost is not None:
             payload["usage"]["cost"] = cost
-    return construct_type(value=payload, type_=Response)
+    return payload
 
 
 class FakeClient:
-    """Stands in for the Adaption client so tests never call the API."""
+    """Stands in for the Adaption client so tests never call the API.
 
-    def __init__(self, reply=REPLY, fail=None, delay=0.0, **response_options):
+    `reply` may be a function of the request, so different prompts and readings get different scores.
+    """
+
+    def __init__(self, reply=REPLY, fail=None, delay=0.0, **options):
         self.calls = []
-        self.reply = reply
-        self.fail = fail
-        self.delay = delay
-        self.response_options = response_options
+        self.reply, self.fail, self.delay, self.options = reply, fail, delay, options
         self.responses = self
         self.lock = threading.Lock()
 
@@ -63,16 +69,31 @@ class FakeClient:
         time.sleep(self.delay)
         if self.fail:
             raise self.fail
-        return sdk_response(self.reply, **self.response_options)
+        text = self.reply(kwargs) if callable(self.reply) else self.reply
+        return construct_type(value=response_payload(text, **self.options), type_=Response)
+
+
+def sdk_client(handler):
+    """The real SDK over a mock transport, to check how its errors are classified."""
+    http = httpx.Client(transport=httpx.MockTransport(handler))
+    return Adaption(api_key="test", base_url="http://adaption.test", http_client=http, max_retries=0)
 
 
 def _records(path):
     return [json.loads(line) for line in path.read_text().splitlines()]
 
 
-def _calls(scenarios=SCENARIOS[:1], conditions=("solo",), readings=1, max_output_tokens=100, temperature=1.0):
+def _results(path):
+    return [r for r in _records(path) if not r.get("started")]
+
+
+def _calls(scenarios=WHOLE[:1], conditions=("solo",), readings=1, max_output_tokens=100, temperature=1.0, models=(MODEL,)):
     jobs = build_jobs(scenarios, conditions)
-    return jobs, plan_calls(jobs, [MODEL], readings, temperature, max_output_tokens)
+    return jobs, plan_calls(jobs, list(models), readings, temperature, max_output_tokens)
+
+
+def _one_call():
+    return next(iter(_calls()[1].values()))
 
 
 def test_parse_output_takes_last_valid_score_and_last_issue():
@@ -83,22 +104,22 @@ def test_parse_output_takes_last_valid_score_and_last_issue():
     assert parse_output("<score>150</score>")[0] is None
 
 
-def test_build_jobs_counts_parts_and_frames_whole_log_views_only():
-    scenario = SCENARIOS[0]
-    jobs = build_jobs([scenario], CONDITIONS, framings=(False, True))
+def test_build_jobs_frames_whole_log_views_only_and_reads_direct_per_agent_only():
+    disguised = next(s for s in SCENARIOS if s.variant == "disguised")
+    direct = next(s for s in SCENARIOS if s.variant == "direct")
+    jobs = build_jobs([disguised], CONDITIONS, framings=(False, True))
     per_agent_jobs = [j for j in jobs if j.condition == "per_agent"]
-    assert len(per_agent_jobs) == len(scenario.agents)
-    assert not any(j.framing for j in per_agent_jobs)
+    assert len(per_agent_jobs) == len(disguised.agents) and not any(j.framing for j in per_agent_jobs)
     assert len([j for j in jobs if j.condition != "per_agent"]) == (len(CONDITIONS) - 1) * 2
-    # Duplicated conditions, even from a generator, do not duplicate jobs.
-    assert len(build_jobs([scenario], (c for c in ["solo", "solo", "per_agent"]))) == 1 + len(scenario.agents)
+    assert {j.condition for j in build_jobs([direct], CONDITIONS)} == {"per_agent"}
+    assert len(build_jobs([disguised], (c for c in ["solo", "solo", "per_agent"]))) == 1 + len(disguised.agents)
 
 
 def test_framing_changes_instructions_only_and_instructions_are_neutral():
-    plain, framed = build_jobs(SCENARIOS[:1], ["solo"], framings=(False, True))
+    plain, framed = build_jobs(WHOLE[:1], ["solo"], framings=(False, True))
     assert plain.transcript == framed.transcript
     assert FRAMING_NOTE in framed.instructions and FRAMING_NOTE not in plain.instructions
-    for word in ("agent", "team", "test data", "leak"):
+    for word in ("agent", "team", "test data", "leak", "not shown"):
         assert word not in plain.instructions.lower()
     assert framed.instructions.index(FRAMING_NOTE) < framed.instructions.index("Answer in this format")
 
@@ -113,66 +134,121 @@ def test_identical_prompts_share_readings_and_settings_change_keys():
 
 
 def test_calls_are_reading_major():
-    _, calls = _calls(SCENARIOS[:2], readings=3)
+    _, calls = _calls(WHOLE[:2], readings=3)
     readings = [c.reading for c in calls.values()]
     assert readings == sorted(readings)
 
 
-def test_estimate_has_an_upper_bound_and_scales():
-    _, one = _calls(SCENARIOS[:2], readings=1, max_output_tokens=4000)
-    _, five = _calls(SCENARIOS[:2], readings=5, max_output_tokens=4000)
+def test_estimate_upper_bound_covers_the_typical_estimate():
+    _, one = _calls(WHOLE[:2], readings=1, max_output_tokens=4000)
+    _, five = _calls(WHOLE[:2], readings=5, max_output_tokens=4000)
     e1, e5 = estimate(one.values())[MODEL], estimate(five.values())[MODEL]
     assert e5["calls"] == 5 * e1["calls"] and e5["credits"] > e1["credits"]
     assert e1["max_credits"] > e1["credits"]
 
 
+def test_the_exact_request_is_sent():
+    call = _one_call()
+    client = FakeClient()
+    call_monitor(client, call)
+    assert client.calls == [{
+        "model": MODEL, "instructions": call.job.instructions, "input": call.job.transcript,
+        "max_output_tokens": 100, "temperature": 1.0, "store": False,
+    }]
+
+
 def test_run_records_results_and_resumes_without_repeating(tmp_path):
     out = tmp_path / "r.jsonl"
-    jobs, calls = _calls(SCENARIOS[:2], ("solo", "per_agent"), readings=2, temperature=0.7)
+    _, calls = _calls(WHOLE[:2], ("solo", "per_agent"), readings=2, temperature=0.7)
     client = FakeClient()
     first = run(client, calls, out, workers=2)
     assert first["written"] == len(client.calls) == len(calls)
-    assert all(call["temperature"] == 0.7 and call["max_output_tokens"] == 100 for call in client.calls)
-    records = _records(out)
-    assert len({r["key"] for r in records}) == len(records)
-    assert all(r["score"] == 72 and r["issue"] == "leak" and r["cost"] == 0.001 for r in records)
-    assert all(r["response_model"] == MODEL and r["status"] == "completed" for r in records)
-    assert records[0]["output_tokens_details"] == {"reasoning_tokens": 5}
+    results = _results(out)
+    assert len({r["key"] for r in results}) == len(results) == len(calls)
+    assert len([r for r in _records(out) if r.get("started")]) == len(calls)
+    assert all(r["score"] == 72 and r["issue"] == "leak" and r["cost"] == 0.001 for r in results)
+    assert all(r["response_model"] == MODEL and r["status"] == "completed" for r in results)
+    assert results[0]["output_tokens_details"] == {"reasoning_tokens": 5}
     assert run(client, calls, out, workers=2)["calls"] == 0 and len(client.calls) == first["written"]
 
 
-def test_connection_errors_are_retried_but_timeouts_only_on_request(tmp_path):
+@pytest.mark.parametrize(
+    "handler, kind",
+    [
+        (lambda request: (_ for _ in ()).throw(httpx.ConnectError("refused", request=request)), "not_sent"),
+        (lambda request: (_ for _ in ()).throw(httpx.ConnectTimeout("slow", request=request)), "not_sent"),
+        (lambda request: (_ for _ in ()).throw(httpx.ReadTimeout("slow", request=request)), MAYBE_BILLED),
+        (lambda request: (_ for _ in ()).throw(httpx.RemoteProtocolError("dropped", request=request)), MAYBE_BILLED),
+        (lambda request: httpx.Response(429, json={"error": "slow down"}), "rate_limit"),
+        (lambda request: httpx.Response(400, json={"error": "bad"}), "rejected"),
+        (lambda request: httpx.Response(408, json={"error": "timeout"}), MAYBE_BILLED),
+        (lambda request: httpx.Response(504, json={"error": "gateway"}), MAYBE_BILLED),
+        (lambda request: httpx.Response(500, json={"error": "boom"}), MAYBE_BILLED),
+    ],
+    ids=["connect-error", "connect-timeout", "read-timeout", "dropped", "429", "400", "408", "504", "500"],
+)
+def test_real_sdk_errors_are_classified_by_whether_they_may_have_been_billed(handler, kind):
+    record = call_monitor(sdk_client(handler), _one_call())
+    assert record["error_kind"] == kind
+
+
+def test_real_sdk_success_is_parsed_with_the_undeclared_cost():
+    record = call_monitor(sdk_client(lambda request: httpx.Response(200, json=response_payload(cost=0.0042))), _one_call())
+    assert record["error"] is None and record["score"] == 72 and record["cost"] == 0.0042
+
+
+def test_maybe_billed_calls_are_settled_and_charged_at_their_worst_case(tmp_path):
     out = tmp_path / "r.jsonl"
     _, calls = _calls()
-    run(FakeClient(fail=ConnectionError("down")), calls, out, workers=1)
-    assert _records(out)[0]["error_kind"] == "other" and done_keys(out) == set()
+    call = next(iter(calls.values()))
+    run(FakeClient(fail=TimeoutError("slow")), calls, out, workers=1)
+    assert _results(out)[0]["error_kind"] == MAYBE_BILLED and _results(out)[0]["score"] is None
+    assert spent(out) == pytest.approx(call.upper_bound)
+    assert run(FakeClient(), calls, out, workers=1)["calls"] == 0
+    assert run(FakeClient(), calls, out, workers=1, retry_maybe_billed=True)["calls"] == 1
+
+
+def test_calls_that_never_reached_the_server_are_retried_and_cost_nothing(tmp_path):
+    out = tmp_path / "r.jsonl"
+    _, calls = _calls()
+    fail = httpx.ConnectError("refused")
+    run(FakeClient(fail=fail), calls, out, workers=1)
+    assert _results(out)[0]["error_kind"] == "not_sent" and spent(out) == 0
     assert run(FakeClient(), calls, out, workers=1)["calls"] == 1
 
-    out2 = tmp_path / "t.jsonl"
-    run(FakeClient(fail=TimeoutError("slow")), calls, out2, workers=1)
-    assert _records(out2)[0]["error_kind"] == "timeout" and _records(out2)[0]["score"] is None
-    assert run(FakeClient(), calls, out2, workers=1)["calls"] == 0
-    assert run(FakeClient(), calls, out2, workers=1, retry_timeouts=True)["calls"] == 1
+
+def test_a_started_call_with_no_result_is_never_paid_for_twice(tmp_path):
+    out = tmp_path / "r.jsonl"
+    _, calls = _calls()
+    call = next(iter(calls.values()))
+    out.write_text(json.dumps({"key": call.key, "started": True, "upper_bound": call.upper_bound}) + "\n")
+    assert call.key in done_keys(out) and spent(out) == pytest.approx(call.upper_bound)
+    assert run(FakeClient(), calls, out, workers=1)["calls"] == 0
 
 
-@pytest.mark.parametrize("options", [{"usage": False}, {"cost": None}], ids=["no-usage", "no-cost-field"])
-def test_missing_usage_or_cost_keeps_the_paid_reply(options):
-    jobs, calls = _calls()
-    record = call_monitor(FakeClient(**options), next(iter(calls.values())))
+@pytest.mark.parametrize("options", [{"usage": False}, {"cost": None}, {"cost": "0.002"}], ids=["no-usage", "no-cost", "string-cost"])
+def test_missing_or_odd_cost_keeps_the_paid_reply(options):
+    record = call_monitor(FakeClient(**options), _one_call())
     assert record["error"] is None and record["score"] == 72
     json.dumps(record, allow_nan=False)
-    if options.get("cost", 1) is None:
-        assert record["cost"] > 0  # computed from token counts
+    if "usage" not in options:
+        assert isinstance(record["cost"], float) and record["cost"] > 0
 
 
 def test_failed_and_truncated_replies_keep_their_evidence():
-    _, calls = _calls()
-    call = next(iter(calls.values()))
+    call = _one_call()
     failed = call_monitor(FakeClient(reply="", status="failed", error={"code": "server_error", "message": "boom"}), call)
     assert failed["error_kind"] == "failed" and failed["response_error"]["message"] == "boom"
     truncated = call_monitor(FakeClient(reply="", status="incomplete", incomplete={"reason": "max_output_tokens"}), call)
     assert truncated["error"] is None and truncated["truncated"] and truncated["parse_failed"]
     assert truncated["incomplete_details"] == {"reason": "max_output_tokens"} and truncated["output_items"]
+
+
+def test_a_failed_reply_with_a_cost_is_settled(tmp_path):
+    out = tmp_path / "r.jsonl"
+    _, calls = _calls()
+    run(FakeClient(reply="", status="failed", error={"code": "x", "message": "y"}), calls, out, workers=1)
+    assert run(FakeClient(), calls, out, workers=1)["calls"] == 0
 
 
 def test_parse_failures_are_null_and_retried_only_on_request_unless_truncated(tmp_path):
@@ -200,31 +276,46 @@ def test_truncated_last_line_is_skipped_and_not_glued_to_the_next_record(tmp_pat
     assert len(done_keys(out)) == 2
 
 
-def test_load_results_keeps_one_current_record_per_reading_and_shares_across_jobs(tmp_path):
+def test_load_results_joins_each_reading_to_every_job_that_shares_its_prompt(tmp_path):
     out = tmp_path / "r.jsonl"
-    jobs = build_jobs(SCENARIOS, ["per_agent"])
-    calls = plan_calls(jobs, [MODEL], 1, 1.0, 100)
-    run(FakeClient(fail=ConnectionError("down")), calls, out, workers=2)
-    run(FakeClient(), calls, out, workers=2)
+    jobs = build_jobs(SCENARIOS, ["per_agent", "solo"])
+    calls = plan_calls(jobs, [MODEL, "qwen3.5-397b"], 3, 1.0, 100)
+    expected = {}
+
+    def reply(request):
+        key = next(k for k, c in calls.items()
+                   if c.job.transcript == request["input"] and c.model == request["model"] and k not in expected)
+        expected[key] = len(expected) % 101
+        return f"<issue>i{expected[key]}</issue><score>{expected[key]}</score>"
+
+    run(FakeClient(reply=reply), calls, out, workers=1)
     with out.open("a") as f:
         f.write(json.dumps({"key": "stale|old prompt", "score": 1, "error": None}) + "\n")
     rows = load_results(out, calls, jobs)
-    assert len(rows) == len(jobs)
-    assert all(not r["missing"] and r["error"] is None and r["score"] == 72 for r in rows)
+    assert len(rows) == len(jobs) * 2 * 3
+    for row in rows:
+        assert not row["missing"] and row["score"] == expected[row["key"]] and row["issue"] == f"i{expected[row['key']]}"
+        call = calls[row["key"]]
+        assert call.model == row["model"] and call.reading == row["reading"]
+        assert call.job.prompt_hash == next(j.prompt_hash for j in jobs if j.scenario == row["scenario"]
+                                            and j.condition == row["condition"] and j.part == row["part"])
 
 
-def test_credit_cap_stops_new_calls(tmp_path):
+def test_the_budget_counts_earlier_runs_and_reserves_before_each_call(tmp_path):
     out = tmp_path / "r.jsonl"
-    _, calls = _calls(SCENARIOS[:4], readings=5)
-    client = FakeClient(cost=0.01)
-    counts = run(client, calls, out, workers=1, max_credits=0.03)
-    assert counts["stopped"] == "max_credits"
-    assert 3 <= len(client.calls) < len(calls) and counts["written"] == len(client.calls)
+    _, calls = _calls(WHOLE[:1], readings=20)  # one prompt, so every call has the same worst case
+    bound = next(iter(calls.values())).upper_bound
+    client = FakeClient(cost=bound)  # each call costs its worst case, so the arithmetic is exact
+    first = run(client, calls, out, workers=4, max_credits=3.5 * bound)
+    assert first["stopped"] == "max_credits" and len(client.calls) <= 3
+    second = run(client, calls, out, workers=4, max_credits=3.5 * bound)
+    assert second["written"] == 0 and len(client.calls) <= 3
+    assert spent(out) <= 3.5 * bound
 
 
 def test_real_ctrl_c_cancels_queued_calls_and_saves_paid_ones(tmp_path):
     out = tmp_path / "r.jsonl"
-    _, calls = _calls(SCENARIOS, ("solo", "team_grouped"), readings=5)
+    _, calls = _calls(WHOLE, ("solo", "team_grouped"), readings=5)
     client = FakeClient(delay=0.05)
 
     def interrupt_after_a_few_calls():
@@ -235,34 +326,41 @@ def test_real_ctrl_c_cancels_queued_calls_and_saves_paid_ones(tmp_path):
     threading.Thread(target=interrupt_after_a_few_calls, daemon=True).start()
     counts = run(client, calls, out, workers=2)
     assert counts["stopped"] == "interrupt"
-    records = _records(out)
+    results = _results(out)
     assert len(client.calls) < len(calls)
-    assert len(records) == len(client.calls) == counts["written"]
-    assert len({r["key"] for r in records}) == len(records)
+    assert len(results) == len(client.calls) == counts["written"]
+    assert len({r["key"] for r in results}) == len(results)
     assert signal.getsignal(signal.SIGINT) is signal.default_int_handler
 
 
-def test_a_second_run_on_the_same_file_is_refused(tmp_path):
+def test_a_second_run_on_the_same_file_is_refused_and_leaves_ctrl_c_alone(tmp_path):
     out = tmp_path / "r.jsonl"
     _, calls = _calls()
-    from monitor import _open_for_append
-
-    holder = _open_for_append(out)
+    holder = _Sink(out)
     try:
         with pytest.raises(RuntimeError):
             run(FakeClient(), calls, out, workers=1)
     finally:
         holder.close()
+    assert signal.getsignal(signal.SIGINT) is signal.default_int_handler
 
 
-def test_simple_namespace_responses_still_work():
-    """Responses without pydantic extras, as some SDK versions may return."""
-    _, calls = _calls()
+def test_zero_workers_is_refused_before_anything_starts(tmp_path):
+    with pytest.raises(ValueError):
+        run(FakeClient(), _calls()[1], tmp_path / "r.jsonl", workers=0)
+    assert signal.getsignal(signal.SIGINT) is signal.default_int_handler
 
-    class Plain(FakeClient):
+
+def test_a_plain_text_reply_is_kept():
+    class TextClient(FakeClient):
         def create(self, **kwargs):
-            usage = SimpleNamespace(input_tokens=1, output_tokens=1, output_tokens_details=None)
-            return SimpleNamespace(output_text=REPLY, usage=usage, model=MODEL, status="completed", incomplete_details=None)
+            return "<score>12</score> plain body"
 
-    record = call_monitor(Plain(), next(iter(calls.values())))
-    assert record["score"] == 72 and record["cost"] > 0
+    record = call_monitor(TextClient(), _one_call())
+    assert record["output"] == "<score>12</score> plain body" and record["score"] == 12
+
+
+def test_error_kind_of_plain_exceptions_is_conservative():
+    assert error_kind(TimeoutError()) == MAYBE_BILLED
+    assert error_kind(ConnectionError()) == MAYBE_BILLED
+    assert error_kind(httpx.ConnectError("x")) == "not_sent"
