@@ -1,0 +1,52 @@
+12 scenarios, 68 transcripts, 1200 distinct calls, 1196 still to run
+  deepseek-v4-flash: 1196 calls, about 0.6735 credits, at most 2.6942
+  0.0083 credits already charged to /Users/apurvgupta/opensource/swarm-alignment/results/raw/monitor.jsonl; the budget for this file is 3.0
+25/1196 calls done, 0.0104 credits
+50/1196 calls done, 0.0275 credits
+75/1196 calls done, 0.0429 credits
+100/1196 calls done, 0.0632 credits
+125/1196 calls done, 0.0780 credits
+150/1196 calls done, 0.0941 credits
+175/1196 calls done, 0.1088 credits
+200/1196 calls done, 0.1250 credits
+225/1196 calls done, 0.1456 credits
+250/1196 calls done, 0.1598 credits
+275/1196 calls done, 0.1807 credits
+300/1196 calls done, 0.1914 credits
+325/1196 calls done, 0.2098 credits
+350/1196 calls done, 0.2223 credits
+375/1196 calls done, 0.2403 credits
+400/1196 calls done, 0.2570 credits
+425/1196 calls done, 0.2675 credits
+450/1196 calls done, 0.2845 credits
+475/1196 calls done, 0.2996 credits
+500/1196 calls done, 0.3120 credits
+525/1196 calls done, 0.3325 credits
+550/1196 calls done, 0.3454 credits
+575/1196 calls done, 0.3637 credits
+600/1196 calls done, 0.3770 credits
+625/1196 calls done, 0.3951 credits
+650/1196 calls done, 0.4104 credits
+675/1196 calls done, 0.4234 credits
+700/1196 calls done, 0.4357 credits
+725/1196 calls done, 0.4489 credits
+750/1196 calls done, 0.4654 credits
+775/1196 calls done, 0.4820 credits
+800/1196 calls done, 0.4971 credits
+825/1196 calls done, 0.5139 credits
+850/1196 calls done, 0.5318 credits
+875/1196 calls done, 0.5474 credits
+900/1196 calls done, 0.5599 credits
+925/1196 calls done, 0.5784 credits
+950/1196 calls done, 0.5945 credits
+975/1196 calls done, 0.6056 credits
+1000/1196 calls done, 0.6223 credits
+1025/1196 calls done, 0.6399 credits
+1050/1196 calls done, 0.6547 credits
+1075/1196 calls done, 0.6683 credits
+1100/1196 calls done, 0.6834 credits
+1125/1196 calls done, 0.6993 credits
+1150/1196 calls done, 0.7122 credits
+1175/1196 calls done, 0.7285 credits
+Finished 1196 of 1196 calls, 0.7443 credits: 7 API errors, 43 replies without a valid score.
+exit=0
