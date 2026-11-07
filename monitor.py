@@ -14,8 +14,9 @@ every job that shares them and keeps one current record per reading.
 Paying at most once per reading:
 - The SDK does not retry. A call that reached the server and then failed in a way that may have
   been billed (timeout, dropped connection, gateway error, a stream that broke or ended early) is
-  "maybe_billed" and is retried only with --retry-maybe-billed. Calls that never reached the server, were rate-limited or were
-  rejected are retried on the next run.
+  "maybe_billed" and is retried only with --retry-maybe-billed. Calls that never reached the server or were
+  rejected are retried on the next run. A rate-limited call pauses every worker for the wait the
+  server asks for, then is tried again in the same run.
 - A worker writes a "started" marker before each call, and the result after it, so a crash or a
   kill never loses track of a call that may have been paid for.
 - --max-credits is a budget for the whole results file. Each call reserves its worst-case cost
@@ -44,8 +45,12 @@ from scenarios import Scenario, load_all
 
 PROJECT_DIR = Path(__file__).parent
 CONDITIONS = ("per_agent", *SINGLE_TRANSCRIPT)
-# The output cap. Reasoning on a harmless twin ran to 8,000 tokens in the smoke test.
-MAX_OUTPUT_TOKENS = 16000
+# The output cap. In the pilot, at 16,000, 43 readings were cut off before answering, almost all
+# of them twins, and none was looping; the gateway honours caps far above this one.
+MAX_OUTPUT_TOKENS = 64000
+# A 64,000-token reply at about 90 tokens a second takes about 12 minutes. The read timeout
+# applies to each streamed chunk, so this only ends a stream that has gone silent.
+READ_TIMEOUT = 1800
 
 # Credits per million tokens (input, output), from Adaption's hosted model list.
 PRICES = {
@@ -78,6 +83,10 @@ ISSUE_PATTERN = re.compile(r"<issue>(.*?)</issue>", re.IGNORECASE | re.DOTALL)
 # Error kinds. The first three cannot have been billed, so they are retried on the next run.
 RETRYABLE = {"not_sent", "rate_limit", "rejected"}
 MAYBE_BILLED = "maybe_billed"
+# A rate-limited call is tried again, after the wait the server asks for, at most this many times.
+RATE_LIMIT_TRIES = 10
+DEFAULT_RETRY_AFTER = 60.0
+RETRY_AFTER_PATTERN = re.compile(r"retry after (\d+(?:\.\d+)?) seconds?", re.IGNORECASE)
 
 
 def instructions(framing: bool) -> str:
@@ -349,6 +358,33 @@ def call_monitor(client, call: Call) -> dict:
     return record
 
 
+def retry_after(record: dict) -> float:
+    """Seconds the server asked us to wait after a rate limit, or the default if it did not say."""
+    match = RETRY_AFTER_PATTERN.search(record.get("error") or "")
+    return float(match.group(1)) if match else DEFAULT_RETRY_AFTER
+
+
+class _Pause:
+    """A pause shared by every worker, so a rate limit slows the whole run instead of draining the queue."""
+
+    def __init__(self):
+        self.until = 0.0
+        self.lock = threading.Lock()
+
+    def extend(self, seconds: float) -> None:
+        with self.lock:
+            self.until = max(self.until, time.monotonic() + seconds)
+
+    def wait(self, stop: threading.Event) -> bool:
+        """Block until the pause ends. False if the run was stopped meanwhile."""
+        while not stop.is_set():
+            remaining = self.until - time.monotonic()
+            if remaining <= 0:
+                return True
+            stop.wait(min(remaining, 0.5))
+        return False
+
+
 def charged(record: dict) -> float:
     """Credits to count against the budget for a record: its cost, or its worst case if unknown."""
     if record.get("started"):
@@ -510,8 +546,13 @@ def run(
     retry_parse_failures: bool = False,
     retry_maybe_billed: bool = False,
     max_credits: float | None = None,
+    pause_seconds: float | None = None,
 ) -> dict:
     """Make every call not already settled in `out`.
+
+    A rate-limited call is recorded (it costs nothing and is not settled), then every worker pauses
+    for the wait the server asks for (or `pause_seconds`, if given) and the call is tried again,
+    up to RATE_LIMIT_TRIES times. Each try is its own attempt with its own started marker.
 
     Ctrl-C, or a call that would take spending past max_credits, stops new calls from starting;
     calls already in flight finish and are saved. A third Ctrl-C exits at once, and the calls
@@ -530,16 +571,16 @@ def run(
     todo = [call for key, call in calls.items() if key not in finished]
     start_spent = budget.spent
     counts = {"calls": len(todo), "written": 0, "errors": 0, "parse_failures": 0, "over_bound": 0,
-              "credits": 0.0, "stopped": None}
+              "rate_limited": 0, "credits": 0.0, "stopped": None}
     stop = threading.Event()
+    pause = _Pause()
+    count_lock = threading.Lock()
     interrupts: list[float] = []
 
     def on_sigint(signum, frame):
         interrupts.append(time.time())  # only this: the main loop acts on it
 
-    def work(call: Call) -> dict | None:
-        if stop.is_set():
-            return None
+    def attempt_call(call: Call) -> dict | None:
         bound = call.upper_bound
         if not budget.reserve(bound):
             stop.set()
@@ -555,6 +596,18 @@ def run(
         budget.settle(bound, charged(record))
         sink.write(record)
         return record
+
+    def work(call: Call) -> dict | None:
+        for tries in range(1, RATE_LIMIT_TRIES + 1):
+            if not pause.wait(stop):
+                return None
+            record = attempt_call(call)
+            if record is None or record.get("error_kind") != "rate_limit" or tries == RATE_LIMIT_TRIES:
+                return record
+            with count_lock:
+                counts["rate_limited"] += 1
+            pause.extend(pause_seconds if pause_seconds is not None else retry_after(record))
+        return None
 
     in_main_thread = threading.current_thread() is threading.main_thread()
     previous_handler = signal.signal(signal.SIGINT, on_sigint) if in_main_thread else None
@@ -651,7 +704,7 @@ def main() -> None:
     from dotenv import load_dotenv
 
     load_dotenv(PROJECT_DIR / ".env")
-    client = Adaption(max_retries=0, timeout=httpx.Timeout(600, connect=10))
+    client = Adaption(max_retries=0, timeout=httpx.Timeout(READ_TIMEOUT, connect=10))
     try:
         counts = run(client, calls, args.out, args.workers, args.retry_parse_failures, args.retry_maybe_billed, args.max_credits)
     except KeyboardInterrupt:
@@ -661,7 +714,8 @@ def main() -> None:
         os._exit(130)
     print(
         f"Finished {counts['written']} of {counts['calls']} calls, {counts['credits']:.4f} credits: "
-        f"{counts['errors']} API errors, {counts['parse_failures']} replies without a valid score."
+        f"{counts['errors']} API errors, {counts['parse_failures']} replies without a valid score, "
+        f"{counts['rate_limited']} rate limits waited out."
     )
     if counts["over_bound"]:
         print(f"Warning: {counts['over_bound']} replies cost more than expected, so the budget may not be reliable.")

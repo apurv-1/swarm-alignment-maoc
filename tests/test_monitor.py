@@ -30,6 +30,7 @@ from monitor import (
     load_results,
     parse_output,
     plan_calls,
+    retry_after,
     run,
     spent,
 )
@@ -548,3 +549,59 @@ def test_three_ctrl_c_presses_exit_at_once_with_every_record_flushed(tmp_path):
     records = _records(out)
     assert len([r for r in records if r.get("started")]) == 2 and not _results(out)
     assert spent(out) > 0 and len(done_keys(out)) == 2
+
+
+RATE_LIMITED = {"error": {"message": "Inference rate limit reached for this user; retry after 60 seconds",
+                          "type": "rate_limit_error", "code": "rate_limit_exceeded"}}
+
+
+def test_a_burst_of_rate_limits_is_waited_out_and_every_call_still_scored(tmp_path):
+    """A 429 used to be recorded and skipped, so a burst drained the whole queue in under a second."""
+    out = tmp_path / "r.jsonl"
+    _, calls = _calls(WHOLE[:2], ("solo", "team_interleaved"), readings=3)
+    body = sse(*stream_events(response_payload()))
+    lock, seen = threading.Lock(), []
+
+    def handler(request):
+        with lock:
+            seen.append(1)
+            limited = len(seen) <= 20
+        return httpx.Response(429, json=RATE_LIMITED) if limited else httpx.Response(200, content=body)
+
+    counts = run(sdk_client(handler), calls, out, workers=4, pause_seconds=0.01)
+    results = _results(out)
+    scored = {r["key"] for r in results if r["score"] == 72}
+    assert scored == set(calls) and counts["stopped"] is None
+    assert counts["rate_limited"] == 20 == len([r for r in results if r["error_kind"] == "rate_limit"])
+    # Every try had its own started marker, and rate limits cost nothing.
+    assert len([r for r in _records(out) if r.get("started")]) == len(seen)
+    assert spent(out) == pytest.approx(0.001 * len(calls))
+
+
+def test_a_call_that_stays_rate_limited_gives_up_after_the_last_try(tmp_path):
+    out = tmp_path / "r.jsonl"
+    _, calls = _calls()
+    counts = run(sdk_client(lambda request: httpx.Response(429, json=RATE_LIMITED)), calls, out, workers=1, pause_seconds=0.0)
+    assert counts["written"] == 1 and counts["errors"] == 1
+    assert len(_results(out)) == 10 and spent(out) == 0
+    # It is not settled, so the next run tries it again.
+    assert run(FakeClient(), calls, out, workers=1)["calls"] == 1
+
+
+def test_ctrl_c_during_a_rate_limit_pause_stops_at_once(tmp_path):
+    out = tmp_path / "r.jsonl"
+    _, calls = _calls(WHOLE[:2], ("solo",), readings=2)
+    stopper = threading.Timer(0.3, lambda: os.kill(os.getpid(), signal.SIGINT))
+    stopper.start()
+    started = time.time()
+    try:
+        counts = run(sdk_client(lambda request: httpx.Response(429, json=RATE_LIMITED)), calls, out, workers=2, pause_seconds=60)
+    finally:
+        stopper.cancel()  # never let a late Ctrl-C reach another test
+    assert time.time() - started < 5 and counts["stopped"] == "interrupt"
+
+
+def test_retry_after_reads_the_servers_wait_or_defaults_to_a_minute():
+    assert retry_after({"error": "RateLimitError: ... retry after 7 seconds"}) == 7
+    assert retry_after({"error": "RateLimitError: slow down"}) == 60
+    assert retry_after({"error": None}) == 60
