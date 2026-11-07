@@ -326,9 +326,75 @@ def print_control(out: Path, model: str, temperature: float, readings: int) -> N
         print(f"  {family}: interleaved {_num(inter)}, grouped {_num(grouped)}, difference {_num(_diff(inter, grouped), signed=True)}")
 
 
+REPLICATION_MONITORS = ("glm-5.2", "qwen3.5-397b", "gemma-4-31b-it")
+CONFIRMATORY_MONITOR = "deepseek-v4-flash"
+LONG_READINGS = 20
+
+
+def included_for(model: str) -> tuple[str, ...]:
+    """The frozen families a monitor includes: all four rules for deepseek, the interleaved rules otherwise."""
+    if model == CONFIRMATORY_MONITOR:
+        return INCLUDED_FAMILIES
+    dev_file = PROJECT_DIR / "results" / "raw" / f"dev-{model}.jsonl"
+    if not dev_file.exists():
+        return ()
+    scenarios = timing_scenarios(INCLUDED_FAMILIES)
+    rows = _rows(dev_file, scenarios, ("per_agent",), 10, model, 1.0, MAX_OUTPUT_TOKENS) + _rows(
+        dev_file, scenarios, (SOLO, INTERLEAVED), 10, model, 1.0, MAX_OUTPUT_TOKENS)
+    return tuple(f for f, r in dev_checks(rows, scenarios, replication=True).items() if r["included"])
+
+
+def arm_deltas(model: str, long: bool) -> dict[str, float | None]:
+    """H1's delta per included family, for one monitor on the short or long logs. Empty if no file yet."""
+    raw = PROJECT_DIR / "results" / "raw"
+    if long:
+        out, readings = raw / f"long-{model}.jsonl", LONG_READINGS
+    else:
+        out = raw / ("main.jsonl" if model == CONFIRMATORY_MONITOR else f"main-{model}.jsonl")
+        readings = 40
+    families = [f"long-{f}" if long else f for f in included_for(model)]
+    if not out.exists() or not families:
+        return {}
+    rows = _rows(out, timing_scenarios(families), WHOLE_VIEWS, readings, model, 1.0, MAX_OUTPUT_TOKENS)
+    return {f.removeprefix("long-"): h1_delta(rows, f) for f in families}
+
+
+def print_summary() -> None:
+    """H1's delta per family for every monitor and both arms, side by side (amendments 2 and 3)."""
+    arms = [(m, long) for long in (False, True) for m in (CONFIRMATORY_MONITOR, *REPLICATION_MONITORS)]
+    table = {arm: arm_deltas(*arm) for arm in arms}
+    arms = [a for a in arms if table[a]]
+    names = [f"{m.split('-')[0]}{' long' if long else ''}" for m, long in arms]
+    print("H1 delta per family (interleaved separation minus the mean of the two grouped views); blank = not included or no data\n")
+    print(f"{'family':10}" + "".join(f"{n:>14}" for n in names))
+    for family in INCLUDED_FAMILIES:
+        cells = [table[a].get(family) for a in arms]
+        print(f"{family:10}" + "".join(f"{_num(c, signed=True) if c is not None else '':>14}" for c in cells))
+    print()
+    p_values = {}
+    for arm, name in zip(arms, names):
+        present = [v for v in table[arm].values() if v is not None]
+        if not present:
+            continue
+        p = sign_flip_p(present)
+        if arm[0] in REPLICATION_MONITORS and not arm[1]:
+            p_values[name] = p
+        if arm[1]:
+            status = "secondary, long logs"
+        elif arm[0] == CONFIRMATORY_MONITOR:
+            status = "confirmatory" if len(present) >= MIN_FAMILIES_FOR_TEST else "confirmatory monitor, too few families yet"
+        else:
+            status = "replication"
+        print(f"{name:14} n={len(present):2}  mean {_num(mean(present), signed=True):>7}  "
+              f"{sum(v > 0 for v in present)} positive  one-sided p = {p:.4f}  ({status})")
+    if p_values:
+        print("\nReplication monitors, short logs, Holm-corrected: " +
+              ", ".join(f"{n} {adj:.4f}" for n, adj in holm(p_values).items()))
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
-    parser.add_argument("stage", choices=["dev", "main"])
+    parser.add_argument("stage", choices=["dev", "main", "summary"])
     parser.add_argument("--model", default="deepseek-v4-flash")
     parser.add_argument("--temperature", type=float, default=1.0)
     parser.add_argument("--max-output-tokens", type=int, default=MAX_OUTPUT_TOKENS)
@@ -342,6 +408,9 @@ def main() -> None:
                         help="Dev stage for a replication monitor: only the two interleaved rules decide inclusion.")
     args = parser.parse_args()
 
+    if args.stage == "summary":
+        print_summary()
+        return
     dev = args.stage == "dev"
     out = args.out or PROJECT_DIR / "results" / "raw" / ("dev.jsonl" if dev else "main.jsonl")
     whole_readings = args.readings or (10 if dev else 40)
@@ -353,7 +422,8 @@ def main() -> None:
     families = sorted({s.family for s in scenarios})
     settings = (args.model, args.temperature, args.max_output_tokens)
     whole_views = (SOLO, INTERLEAVED) if dev else WHOLE_VIEWS
-    rows = _rows(out, scenarios, ("per_agent",), agent_readings, *settings) + _rows(
+    long_only = all(f.startswith("long-") for f in families)  # the long arm has no per-agent readings
+    rows = ([] if long_only else _rows(out, scenarios, ("per_agent",), agent_readings, *settings)) + _rows(
         out, scenarios, whole_views, whole_readings, *settings
     )
     if dev:
