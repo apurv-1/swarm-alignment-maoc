@@ -49,8 +49,11 @@ CONDITIONS = ("per_agent", *SINGLE_TRANSCRIPT)
 # of them twins, and none was looping; the gateway honours caps far above this one.
 MAX_OUTPUT_TOKENS = 64000
 # A 64,000-token reply at about 90 tokens a second takes about 12 minutes. The read timeout
-# applies to each streamed chunk, so this only ends a stream that has gone silent.
-READ_TIMEOUT = 1800
+# applies to each streamed chunk, so this only ends a stream that has gone silent. Across about
+# 1,700 pilot and development calls the slowest successful call took 222 seconds in all, while the
+# 4 development timeouts sat silent for the full 30 minutes, so 10 minutes of silence means a hung
+# stream.
+READ_TIMEOUT = 600
 
 # Credits per million tokens (input, output), from Adaption's hosted model list.
 PRICES = {

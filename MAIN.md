@@ -100,6 +100,9 @@ To keep that selection from carrying over as noise, the main run uses fresh read
 - Output cap: 64,000 tokens, up from 16,000. In the pilot, 43 readings were cut off at 16,000, 36 of them twins in whole-log views, and none of the 43 reasonings was looping. The gateway honours caps above 16,000; a test with a cap of 24,000 produced exactly 24,000 tokens.
 - Readings: 40 per whole-log cell (solo, team_interleaved, team_grouped, team_grouped_swapped, each for disguised and twin); 20 per per-agent log, including the direct saboteur log.
 - Results go to `results/raw/main.jsonl`.
+- The run is two commands into the same file, one for per_agent at 20 readings and one for the four whole-log views at 40 readings, with 16 workers. The pilot ran 12 workers with no rate limits, and rate limits are now waited out automatically.
+- The stream read timeout drops from 30 to 10 minutes of silence. It applies to the gap between streamed chunks, not to the whole call. Across about 1,700 pilot and development calls, the slowest successful call took 222 seconds in all, and the 4 development timeouts were streams that stayed silent for the full 30 minutes. A timed-out call is a missing reading under either limit, so this changes only how long a hung call holds a worker.
+- Expected cost for six families, from the mean cost per call in development round 0: about 0.31 credits for 480 per-agent calls and about 1.1 for 1,920 whole-log calls, about 1.4 in all. The file's budget is set to 3 credits.
 - Rate-limited calls are retried automatically after the server's wait. Calls that may have been billed are retried once with `--retry-maybe-billed`.
 
 ## Analysis
