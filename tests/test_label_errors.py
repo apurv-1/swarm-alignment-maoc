@@ -178,3 +178,103 @@ def test_label_run_appends_and_resumes(tmp_path, monkeypatch):
     assert {s["key"] for s in saved} == {"e1", "e2"} and saved[1]["asserted"] == "unclear"
     assert shown[0] == "main: 1 errors labelled, 1 to go."
 
+
+
+def _export(tmp_path, monkeypatch, rows_by_run):
+    family = _family()
+    monkeypatch.setattr(label_errors, "run_rows", lambda model, long: (rows_by_run.get((model, long), []), family))
+    runs = list(rows_by_run)
+    return label_errors.export_blind(tmp_path / "blind", runs, chunk=2), json.loads(
+        (tmp_path / "blind" / "key-map.json").read_text())
+
+
+def test_export_writes_blind_items_mixed_across_runs_with_a_private_key_map(tmp_path, monkeypatch):
+    rows = {("deepseek-v4-flash", False): [_row("a1", GROUPED, "twin", 90), _row("a2", INTERLEAVED, "disguised", 0),
+                                           _row("ok", SOLO, "twin", 0)],
+            ("qwen3.5-397b", True): [_row("b1", SWAPPED, "disguised", 10, model="qwen3.5-397b")]}
+    count, key_map = _export(tmp_path, monkeypatch, rows)
+    assert count == 3 and sorted(i["key"] for i in key_map.values()) == ["a1", "a2", "b1"]
+    assert {i["run"] for i in key_map.values()} == {"main", "long-qwen3.5-397b"}
+    items = "".join(f.read_text() for f in sorted((tmp_path / "blind" / "items").iterdir()))
+    assert len(list((tmp_path / "blind" / "items").iterdir())) == 2
+    for hidden in ("team_grouped", "team_interleaved", "<score>", "qwen", "deepseek", "long-", "main"):
+        assert hidden not in items
+    assert "The monitor's words for a1." in items and "## Item 0003" in items
+    # The offered order is fixed by the key, so a second export is identical.
+    first = items
+    _export(tmp_path, monkeypatch, rows)
+    assert "".join(f.read_text() for f in sorted((tmp_path / "blind" / "items").iterdir())) == first
+
+
+def _answers(path, picks):
+    path.write_text("".join(json.dumps({"id": i, "answer": a, "note": ""}) + "\n" for i, a in picks.items()))
+
+
+def test_reconcile_keeps_agreed_labels_lists_disputes_and_never_overrides_a_human(tmp_path, monkeypatch):
+    rows = {("deepseek-v4-flash", False): [_row(f"e{i}", INTERLEAVED, "disguised", 0) for i in range(4)]}
+    _, key_map = _export(tmp_path, monkeypatch, rows)
+    blind, labels = tmp_path / "blind", tmp_path / "labels"
+    ids = sorted(key_map)
+    _answers(blind / "answers-a.jsonl", {ids[0]: "1", ids[1]: "n", ids[2]: "1", ids[3]: "u"})
+    _answers(blind / "answers-b.jsonl", {ids[0]: "1", ids[1]: "n", ids[2]: "2"})
+    labels.mkdir()
+    human = {"key": key_map[ids[1]]["key"], "asserted": "unclear", "note": "", "labeller": "apurv"}
+    (labels / "main.jsonl").write_text(json.dumps(human) + "\n")
+
+    counts = label_errors.reconcile(["a", "b"], blind, labels)
+    assert counts == {"items": 4, "answered_by_all": 3, "agreed": 2, "written": 1, "disputed": 2}
+    saved = label_errors.load_labels(labels / "main.jsonl")
+    assert saved[key_map[ids[0]]["key"]]["asserted"] == key_map[ids[0]]["options"]["1"]
+    assert saved[key_map[ids[0]]["key"]]["labeller"] == "a+b"
+    assert saved[key_map[ids[1]]["key"]]["labeller"] == "apurv"
+    assert json.loads((blind / "disputed.json").read_text()) == {
+        "main": [key_map[ids[2]]["key"], key_map[ids[3]]["key"]]}
+
+
+def test_answers_with_unknown_items_or_choices_are_rejected(tmp_path, monkeypatch):
+    _, key_map = _export(tmp_path, monkeypatch, {("deepseek-v4-flash", False): [_row("e", INTERLEAVED, "disguised", 0)]})
+    path = tmp_path / "answers.jsonl"
+    _answers(path, {"0999": "1"})
+    with pytest.raises(ValueError, match="unknown item"):
+        label_errors.load_answers(path, key_map)
+    _answers(path, {"0001": "3"})
+    with pytest.raises(ValueError, match="unknown answer"):
+        label_errors.load_answers(path, key_map)
+
+
+def test_label_run_with_only_offers_just_those_keys_and_reports_a_quit(tmp_path, monkeypatch):
+    family = _family()
+    rows = [_row("e1", INTERLEAVED, "disguised", 0), _row("e2", GROUPED, "twin", 90)]
+    monkeypatch.setattr(label_errors, "run_rows", lambda model, long: (rows, family))
+    shown = []
+    assert label_run("deepseek-v4-flash", False, "t", lambda _: "q", shown.append, tmp_path, only={"e2"}) is False
+    assert shown[0] == "main: 0 errors labelled, 1 to go."
+
+
+def test_review_shows_model_answers_keeps_on_enter_changes_on_a_letter_and_resumes(tmp_path, monkeypatch):
+    rows = {("deepseek-v4-flash", False): [_row(f"e{i}", INTERLEAVED, "disguised", 0) for i in range(3)]}
+    _, key_map = _export(tmp_path, monkeypatch, rows)
+    blind, labels = tmp_path / "blind", tmp_path / "labels"
+    ids = sorted(key_map)
+    for name in ("a", "b"):
+        _answers(blind / f"answers-{name}.jsonl", {i: "1" for i in ids})
+    label_errors.reconcile(["a", "b"], blind, labels)
+
+    shown = []
+    answers = iter(["", "x", "2", "says so", "q"])  # keep the first, change the second, quit on the third
+    assert label_errors.review_run("me", ["a", "b"], lambda _: next(answers), shown.append, blind, labels) is False
+    text = "\n".join(shown)
+    assert "  a: 1" in text and "  b: 1" in text and "Saved label: 1 (models agreed)" in text
+    assert "The monitor's words for" in text and "Please press Enter" in text
+
+    saved = label_errors.load_labels(labels / "main.jsonl")
+    second = key_map[ids[1]]
+    assert saved[second["key"]] == saved[second["key"]] | {"asserted": second["options"]["2"], "labeller": "me",
+                                                           "note": "says so"}
+    assert saved[key_map[ids[0]]["key"]]["labeller"] == "a+b"
+    assert label_errors.review_counts("me", blind) == {"reviewed": 2, "changed": 1, "items": 3}
+
+    shown = []
+    assert label_errors.review_run("me", ["a", "b"], lambda _: "", shown.append, blind, labels) is True
+    assert shown[0] == "2 of 3 labels reviewed, 1 to go."
+    assert label_errors.review_counts("me", blind)["reviewed"] == 3

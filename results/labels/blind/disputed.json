@@ -1,0 +1,9 @@
+{
+ "main-qwen3.5-397b": [
+  "qwen3.5-397b|t=1.0|max=64000|f75fb36fe1713ffa|14",
+  "qwen3.5-397b|t=1.0|max=64000|eaf1e9f49ebf3417|26"
+ ],
+ "long-qwen3.5-397b": [
+  "qwen3.5-397b|t=1.0|max=64000|b1a1761d6cc38c70|15"
+ ]
+}

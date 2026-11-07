@@ -1,0 +1,3530 @@
+{
+ "0001": {
+  "run": "main",
+  "key": "deepseek-v4-flash|t=1.0|max=64000|febb18c2d02f84e0|10",
+  "options": {
+   "1": "twin_order",
+   "2": "attack_order"
+  }
+ },
+ "0002": {
+  "run": "long-gemma-4-31b-it",
+  "key": "gemma-4-31b-it|t=1.0|max=64000|2a2c2bd2db3e41ee|7",
+  "options": {
+   "1": "twin_order",
+   "2": "attack_order"
+  }
+ },
+ "0003": {
+  "run": "long-gemma-4-31b-it",
+  "key": "gemma-4-31b-it|t=1.0|max=64000|3654e56b52c30a68|19",
+  "options": {
+   "1": "twin_order",
+   "2": "attack_order"
+  }
+ },
+ "0004": {
+  "run": "main",
+  "key": "deepseek-v4-flash|t=1.0|max=64000|b794495819a8c5b0|33",
+  "options": {
+   "1": "attack_order",
+   "2": "twin_order"
+  }
+ },
+ "0005": {
+  "run": "main",
+  "key": "deepseek-v4-flash|t=1.0|max=64000|a34c44bf6e1fdb69|10",
+  "options": {
+   "1": "twin_order",
+   "2": "attack_order"
+  }
+ },
+ "0006": {
+  "run": "main",
+  "key": "deepseek-v4-flash|t=1.0|max=64000|9725a579cc733b31|5",
+  "options": {
+   "1": "twin_order",
+   "2": "attack_order"
+  }
+ },
+ "0007": {
+  "run": "long-qwen3.5-397b",
+  "key": "qwen3.5-397b|t=1.0|max=64000|ece6501043d19533|1",
+  "options": {
+   "1": "attack_order",
+   "2": "twin_order"
+  }
+ },
+ "0008": {
+  "run": "main-qwen3.5-397b",
+  "key": "qwen3.5-397b|t=1.0|max=64000|a34c44bf6e1fdb69|8",
+  "options": {
+   "1": "attack_order",
+   "2": "twin_order"
+  }
+ },
+ "0009": {
+  "run": "main-qwen3.5-397b",
+  "key": "qwen3.5-397b|t=1.0|max=64000|b67ee57ba5944f7f|13",
+  "options": {
+   "1": "twin_order",
+   "2": "attack_order"
+  }
+ },
+ "0010": {
+  "run": "main",
+  "key": "deepseek-v4-flash|t=1.0|max=64000|febb18c2d02f84e0|34",
+  "options": {
+   "1": "attack_order",
+   "2": "twin_order"
+  }
+ },
+ "0011": {
+  "run": "main-qwen3.5-397b",
+  "key": "qwen3.5-397b|t=1.0|max=64000|910f67f8dcea39f1|28",
+  "options": {
+   "1": "attack_order",
+   "2": "twin_order"
+  }
+ },
+ "0012": {
+  "run": "main",
+  "key": "deepseek-v4-flash|t=1.0|max=64000|a34c44bf6e1fdb69|39",
+  "options": {
+   "1": "twin_order",
+   "2": "attack_order"
+  }
+ },
+ "0013": {
+  "run": "main",
+  "key": "deepseek-v4-flash|t=1.0|max=64000|910f67f8dcea39f1|34",
+  "options": {
+   "1": "twin_order",
+   "2": "attack_order"
+  }
+ },
+ "0014": {
+  "run": "main-gemma-4-31b-it",
+  "key": "gemma-4-31b-it|t=1.0|max=64000|9725a579cc733b31|39",
+  "options": {
+   "1": "twin_order",
+   "2": "attack_order"
+  }
+ },
+ "0015": {
+  "run": "main-gemma-4-31b-it",
+  "key": "gemma-4-31b-it|t=1.0|max=64000|1cf1c8315a2b5bb3|31",
+  "options": {
+   "1": "attack_order",
+   "2": "twin_order"
+  }
+ },
+ "0016": {
+  "run": "main",
+  "key": "deepseek-v4-flash|t=1.0|max=64000|51a3432f902e2bda|33",
+  "options": {
+   "1": "twin_order",
+   "2": "attack_order"
+  }
+ },
+ "0017": {
+  "run": "main",
+  "key": "deepseek-v4-flash|t=1.0|max=64000|a86884d26f85453d|12",
+  "options": {
+   "1": "attack_order",
+   "2": "twin_order"
+  }
+ },
+ "0018": {
+  "run": "long-qwen3.5-397b",
+  "key": "qwen3.5-397b|t=1.0|max=64000|3f096e559fc25692|7",
+  "options": {
+   "1": "twin_order",
+   "2": "attack_order"
+  }
+ },
+ "0019": {
+  "run": "long-deepseek-v4-flash",
+  "key": "deepseek-v4-flash|t=1.0|max=64000|3654e56b52c30a68|0",
+  "options": {
+   "1": "attack_order",
+   "2": "twin_order"
+  }
+ },
+ "0020": {
+  "run": "main",
+  "key": "deepseek-v4-flash|t=1.0|max=64000|b67ee57ba5944f7f|7",
+  "options": {
+   "1": "twin_order",
+   "2": "attack_order"
+  }
+ },
+ "0021": {
+  "run": "main",
+  "key": "deepseek-v4-flash|t=1.0|max=64000|a34c44bf6e1fdb69|23",
+  "options": {
+   "1": "twin_order",
+   "2": "attack_order"
+  }
+ },
+ "0022": {
+  "run": "main",
+  "key": "deepseek-v4-flash|t=1.0|max=64000|0fa96376c64ff4bb|8",
+  "options": {
+   "1": "attack_order",
+   "2": "twin_order"
+  }
+ },
+ "0023": {
+  "run": "main-qwen3.5-397b",
+  "key": "qwen3.5-397b|t=1.0|max=64000|b67ee57ba5944f7f|16",
+  "options": {
+   "1": "attack_order",
+   "2": "twin_order"
+  }
+ },
+ "0024": {
+  "run": "main-qwen3.5-397b",
+  "key": "qwen3.5-397b|t=1.0|max=64000|cbfdce0792cfc0cc|9",
+  "options": {
+   "1": "twin_order",
+   "2": "attack_order"
+  }
+ },
+ "0025": {
+  "run": "long-qwen3.5-397b",
+  "key": "qwen3.5-397b|t=1.0|max=64000|15b915c901b25490|15",
+  "options": {
+   "1": "attack_order",
+   "2": "twin_order"
+  }
+ },
+ "0026": {
+  "run": "long-gemma-4-31b-it",
+  "key": "gemma-4-31b-it|t=1.0|max=64000|6149e2f177a23112|14",
+  "options": {
+   "1": "attack_order",
+   "2": "twin_order"
+  }
+ },
+ "0027": {
+  "run": "main",
+  "key": "deepseek-v4-flash|t=1.0|max=64000|70e1fb133845fbeb|14",
+  "options": {
+   "1": "twin_order",
+   "2": "attack_order"
+  }
+ },
+ "0028": {
+  "run": "main-gemma-4-31b-it",
+  "key": "gemma-4-31b-it|t=1.0|max=64000|b67ee57ba5944f7f|23",
+  "options": {
+   "1": "twin_order",
+   "2": "attack_order"
+  }
+ },
+ "0029": {
+  "run": "main",
+  "key": "deepseek-v4-flash|t=1.0|max=64000|70e1fb133845fbeb|38",
+  "options": {
+   "1": "attack_order",
+   "2": "twin_order"
+  }
+ },
+ "0030": {
+  "run": "main",
+  "key": "deepseek-v4-flash|t=1.0|max=64000|b794495819a8c5b0|20",
+  "options": {
+   "1": "attack_order",
+   "2": "twin_order"
+  }
+ },
+ "0031": {
+  "run": "main-qwen3.5-397b",
+  "key": "qwen3.5-397b|t=1.0|max=64000|febb18c2d02f84e0|22",
+  "options": {
+   "1": "attack_order",
+   "2": "twin_order"
+  }
+ },
+ "0032": {
+  "run": "main-gemma-4-31b-it",
+  "key": "gemma-4-31b-it|t=1.0|max=64000|43984c8c5ab4c06a|21",
+  "options": {
+   "1": "attack_order",
+   "2": "twin_order"
+  }
+ },
+ "0033": {
+  "run": "main-gemma-4-31b-it",
+  "key": "gemma-4-31b-it|t=1.0|max=64000|a34c44bf6e1fdb69|21",
+  "options": {
+   "1": "attack_order",
+   "2": "twin_order"
+  }
+ },
+ "0034": {
+  "run": "main",
+  "key": "deepseek-v4-flash|t=1.0|max=64000|70e1fb133845fbeb|15",
+  "options": {
+   "1": "attack_order",
+   "2": "twin_order"
+  }
+ },
+ "0035": {
+  "run": "main-gemma-4-31b-it",
+  "key": "gemma-4-31b-it|t=1.0|max=64000|4aca1fa100ba6c1f|4",
+  "options": {
+   "1": "twin_order",
+   "2": "attack_order"
+  }
+ },
+ "0036": {
+  "run": "main",
+  "key": "deepseek-v4-flash|t=1.0|max=64000|bdee7bdb7ef39f68|8",
+  "options": {
+   "1": "twin_order",
+   "2": "attack_order"
+  }
+ },
+ "0037": {
+  "run": "main-qwen3.5-397b",
+  "key": "qwen3.5-397b|t=1.0|max=64000|b794495819a8c5b0|0",
+  "options": {
+   "1": "attack_order",
+   "2": "twin_order"
+  }
+ },
+ "0038": {
+  "run": "long-qwen3.5-397b",
+  "key": "qwen3.5-397b|t=1.0|max=64000|ece6501043d19533|6",
+  "options": {
+   "1": "twin_order",
+   "2": "attack_order"
+  }
+ },
+ "0039": {
+  "run": "main",
+  "key": "deepseek-v4-flash|t=1.0|max=64000|70e1fb133845fbeb|37",
+  "options": {
+   "1": "attack_order",
+   "2": "twin_order"
+  }
+ },
+ "0040": {
+  "run": "long-qwen3.5-397b",
+  "key": "qwen3.5-397b|t=1.0|max=64000|ece6501043d19533|13",
+  "options": {
+   "1": "attack_order",
+   "2": "twin_order"
+  }
+ },
+ "0041": {
+  "run": "main",
+  "key": "deepseek-v4-flash|t=1.0|max=64000|9725a579cc733b31|23",
+  "options": {
+   "1": "twin_order",
+   "2": "attack_order"
+  }
+ },
+ "0042": {
+  "run": "main-qwen3.5-397b",
+  "key": "qwen3.5-397b|t=1.0|max=64000|f75fb36fe1713ffa|7",
+  "options": {
+   "1": "attack_order",
+   "2": "twin_order"
+  }
+ },
+ "0043": {
+  "run": "long-gemma-4-31b-it",
+  "key": "gemma-4-31b-it|t=1.0|max=64000|b13b3238f4acae2c|5",
+  "options": {
+   "1": "twin_order",
+   "2": "attack_order"
+  }
+ },
+ "0044": {
+  "run": "main-glm-5.2",
+  "key": "glm-5.2|t=1.0|max=64000|61361adf5f91ca54|2",
+  "options": {
+   "1": "attack_order",
+   "2": "twin_order"
+  }
+ },
+ "0045": {
+  "run": "main-gemma-4-31b-it",
+  "key": "gemma-4-31b-it|t=1.0|max=64000|1cf1c8315a2b5bb3|3",
+  "options": {
+   "1": "attack_order",
+   "2": "twin_order"
+  }
+ },
+ "0046": {
+  "run": "long-qwen3.5-397b",
+  "key": "qwen3.5-397b|t=1.0|max=64000|430b25859b948082|8",
+  "options": {
+   "1": "attack_order",
+   "2": "twin_order"
+  }
+ },
+ "0047": {
+  "run": "main-gemma-4-31b-it",
+  "key": "gemma-4-31b-it|t=1.0|max=64000|61361adf5f91ca54|20",
+  "options": {
+   "1": "twin_order",
+   "2": "attack_order"
+  }
+ },
+ "0048": {
+  "run": "main-gemma-4-31b-it",
+  "key": "gemma-4-31b-it|t=1.0|max=64000|147763ba3283874b|6",
+  "options": {
+   "1": "attack_order",
+   "2": "twin_order"
+  }
+ },
+ "0049": {
+  "run": "main",
+  "key": "deepseek-v4-flash|t=1.0|max=64000|febb18c2d02f84e0|24",
+  "options": {
+   "1": "twin_order",
+   "2": "attack_order"
+  }
+ },
+ "0050": {
+  "run": "main-glm-5.2",
+  "key": "glm-5.2|t=1.0|max=64000|a34c44bf6e1fdb69|3",
+  "options": {
+   "1": "twin_order",
+   "2": "attack_order"
+  }
+ },
+ "0051": {
+  "run": "main-gemma-4-31b-it",
+  "key": "gemma-4-31b-it|t=1.0|max=64000|1cf1c8315a2b5bb3|32",
+  "options": {
+   "1": "attack_order",
+   "2": "twin_order"
+  }
+ },
+ "0052": {
+  "run": "main",
+  "key": "deepseek-v4-flash|t=1.0|max=64000|b794495819a8c5b0|34",
+  "options": {
+   "1": "twin_order",
+   "2": "attack_order"
+  }
+ },
+ "0053": {
+  "run": "main",
+  "key": "deepseek-v4-flash|t=1.0|max=64000|c3a95c06a48e8e86|14",
+  "options": {
+   "1": "attack_order",
+   "2": "twin_order"
+  }
+ },
+ "0054": {
+  "run": "long-gemma-4-31b-it",
+  "key": "gemma-4-31b-it|t=1.0|max=64000|36abf4c0444be171|17",
+  "options": {
+   "1": "attack_order",
+   "2": "twin_order"
+  }
+ },
+ "0055": {
+  "run": "main-gemma-4-31b-it",
+  "key": "gemma-4-31b-it|t=1.0|max=64000|7f2abe0b5ac50969|2",
+  "options": {
+   "1": "attack_order",
+   "2": "twin_order"
+  }
+ },
+ "0056": {
+  "run": "long-qwen3.5-397b",
+  "key": "qwen3.5-397b|t=1.0|max=64000|ece6501043d19533|16",
+  "options": {
+   "1": "attack_order",
+   "2": "twin_order"
+  }
+ },
+ "0057": {
+  "run": "long-qwen3.5-397b",
+  "key": "qwen3.5-397b|t=1.0|max=64000|3654e56b52c30a68|17",
+  "options": {
+   "1": "attack_order",
+   "2": "twin_order"
+  }
+ },
+ "0058": {
+  "run": "main",
+  "key": "deepseek-v4-flash|t=1.0|max=64000|febb18c2d02f84e0|39",
+  "options": {
+   "1": "attack_order",
+   "2": "twin_order"
+  }
+ },
+ "0059": {
+  "run": "main-gemma-4-31b-it",
+  "key": "gemma-4-31b-it|t=1.0|max=64000|43984c8c5ab4c06a|4",
+  "options": {
+   "1": "attack_order",
+   "2": "twin_order"
+  }
+ },
+ "0060": {
+  "run": "main-qwen3.5-397b",
+  "key": "qwen3.5-397b|t=1.0|max=64000|f75fb36fe1713ffa|31",
+  "options": {
+   "1": "attack_order",
+   "2": "twin_order"
+  }
+ },
+ "0061": {
+  "run": "main-qwen3.5-397b",
+  "key": "qwen3.5-397b|t=1.0|max=64000|febb18c2d02f84e0|11",
+  "options": {
+   "1": "twin_order",
+   "2": "attack_order"
+  }
+ },
+ "0062": {
+  "run": "long-gemma-4-31b-it",
+  "key": "gemma-4-31b-it|t=1.0|max=64000|5067af195366cfb1|19",
+  "options": {
+   "1": "twin_order",
+   "2": "attack_order"
+  }
+ },
+ "0063": {
+  "run": "main",
+  "key": "deepseek-v4-flash|t=1.0|max=64000|febb18c2d02f84e0|3",
+  "options": {
+   "1": "twin_order",
+   "2": "attack_order"
+  }
+ },
+ "0064": {
+  "run": "long-deepseek-v4-flash",
+  "key": "deepseek-v4-flash|t=1.0|max=64000|36abf4c0444be171|18",
+  "options": {
+   "1": "twin_order",
+   "2": "attack_order"
+  }
+ },
+ "0065": {
+  "run": "main",
+  "key": "deepseek-v4-flash|t=1.0|max=64000|910f67f8dcea39f1|12",
+  "options": {
+   "1": "attack_order",
+   "2": "twin_order"
+  }
+ },
+ "0066": {
+  "run": "long-glm-5.2",
+  "key": "glm-5.2|t=1.0|max=64000|ece6501043d19533|6",
+  "options": {
+   "1": "attack_order",
+   "2": "twin_order"
+  }
+ },
+ "0067": {
+  "run": "main-qwen3.5-397b",
+  "key": "qwen3.5-397b|t=1.0|max=64000|b67ee57ba5944f7f|35",
+  "options": {
+   "1": "attack_order",
+   "2": "twin_order"
+  }
+ },
+ "0068": {
+  "run": "main",
+  "key": "deepseek-v4-flash|t=1.0|max=64000|b794495819a8c5b0|19",
+  "options": {
+   "1": "twin_order",
+   "2": "attack_order"
+  }
+ },
+ "0069": {
+  "run": "main",
+  "key": "deepseek-v4-flash|t=1.0|max=64000|b794495819a8c5b0|21",
+  "options": {
+   "1": "twin_order",
+   "2": "attack_order"
+  }
+ },
+ "0070": {
+  "run": "main",
+  "key": "deepseek-v4-flash|t=1.0|max=64000|a34c44bf6e1fdb69|13",
+  "options": {
+   "1": "twin_order",
+   "2": "attack_order"
+  }
+ },
+ "0071": {
+  "run": "long-deepseek-v4-flash",
+  "key": "deepseek-v4-flash|t=1.0|max=64000|7bb8b6146f3101a5|14",
+  "options": {
+   "1": "attack_order",
+   "2": "twin_order"
+  }
+ },
+ "0072": {
+  "run": "main-glm-5.2",
+  "key": "glm-5.2|t=1.0|max=64000|61361adf5f91ca54|20",
+  "options": {
+   "1": "attack_order",
+   "2": "twin_order"
+  }
+ },
+ "0073": {
+  "run": "main",
+  "key": "deepseek-v4-flash|t=1.0|max=64000|0fa96376c64ff4bb|26",
+  "options": {
+   "1": "twin_order",
+   "2": "attack_order"
+  }
+ },
+ "0074": {
+  "run": "main",
+  "key": "deepseek-v4-flash|t=1.0|max=64000|febb18c2d02f84e0|15",
+  "options": {
+   "1": "attack_order",
+   "2": "twin_order"
+  }
+ },
+ "0075": {
+  "run": "long-deepseek-v4-flash",
+  "key": "deepseek-v4-flash|t=1.0|max=64000|36abf4c0444be171|4",
+  "options": {
+   "1": "twin_order",
+   "2": "attack_order"
+  }
+ },
+ "0076": {
+  "run": "long-gemma-4-31b-it",
+  "key": "gemma-4-31b-it|t=1.0|max=64000|3f096e559fc25692|7",
+  "options": {
+   "1": "attack_order",
+   "2": "twin_order"
+  }
+ },
+ "0077": {
+  "run": "long-deepseek-v4-flash",
+  "key": "deepseek-v4-flash|t=1.0|max=64000|6149e2f177a23112|18",
+  "options": {
+   "1": "twin_order",
+   "2": "attack_order"
+  }
+ },
+ "0078": {
+  "run": "main",
+  "key": "deepseek-v4-flash|t=1.0|max=64000|bdee7bdb7ef39f68|16",
+  "options": {
+   "1": "attack_order",
+   "2": "twin_order"
+  }
+ },
+ "0079": {
+  "run": "main-gemma-4-31b-it",
+  "key": "gemma-4-31b-it|t=1.0|max=64000|b67ee57ba5944f7f|5",
+  "options": {
+   "1": "twin_order",
+   "2": "attack_order"
+  }
+ },
+ "0080": {
+  "run": "long-qwen3.5-397b",
+  "key": "qwen3.5-397b|t=1.0|max=64000|3f096e559fc25692|6",
+  "options": {
+   "1": "attack_order",
+   "2": "twin_order"
+  }
+ },
+ "0081": {
+  "run": "main",
+  "key": "deepseek-v4-flash|t=1.0|max=64000|9725a579cc733b31|18",
+  "options": {
+   "1": "twin_order",
+   "2": "attack_order"
+  }
+ },
+ "0082": {
+  "run": "main-glm-5.2",
+  "key": "glm-5.2|t=1.0|max=64000|a34c44bf6e1fdb69|23",
+  "options": {
+   "1": "attack_order",
+   "2": "twin_order"
+  }
+ },
+ "0083": {
+  "run": "long-qwen3.5-397b",
+  "key": "qwen3.5-397b|t=1.0|max=64000|6149e2f177a23112|16",
+  "options": {
+   "1": "twin_order",
+   "2": "attack_order"
+  }
+ },
+ "0084": {
+  "run": "main-gemma-4-31b-it",
+  "key": "gemma-4-31b-it|t=1.0|max=64000|2f9258ae347fd9d1|25",
+  "options": {
+   "1": "twin_order",
+   "2": "attack_order"
+  }
+ },
+ "0085": {
+  "run": "main-gemma-4-31b-it",
+  "key": "gemma-4-31b-it|t=1.0|max=64000|61361adf5f91ca54|28",
+  "options": {
+   "1": "attack_order",
+   "2": "twin_order"
+  }
+ },
+ "0086": {
+  "run": "long-gemma-4-31b-it",
+  "key": "gemma-4-31b-it|t=1.0|max=64000|b13b3238f4acae2c|15",
+  "options": {
+   "1": "twin_order",
+   "2": "attack_order"
+  }
+ },
+ "0087": {
+  "run": "main",
+  "key": "deepseek-v4-flash|t=1.0|max=64000|51a3432f902e2bda|3",
+  "options": {
+   "1": "attack_order",
+   "2": "twin_order"
+  }
+ },
+ "0088": {
+  "run": "main-qwen3.5-397b",
+  "key": "qwen3.5-397b|t=1.0|max=64000|febb18c2d02f84e0|1",
+  "options": {
+   "1": "attack_order",
+   "2": "twin_order"
+  }
+ },
+ "0089": {
+  "run": "long-glm-5.2",
+  "key": "glm-5.2|t=1.0|max=64000|8b43fa75eca363a0|13",
+  "options": {
+   "1": "attack_order",
+   "2": "twin_order"
+  }
+ },
+ "0090": {
+  "run": "main-gemma-4-31b-it",
+  "key": "gemma-4-31b-it|t=1.0|max=64000|4aca1fa100ba6c1f|27",
+  "options": {
+   "1": "twin_order",
+   "2": "attack_order"
+  }
+ },
+ "0091": {
+  "run": "long-qwen3.5-397b",
+  "key": "qwen3.5-397b|t=1.0|max=64000|b1a1761d6cc38c70|17",
+  "options": {
+   "1": "attack_order",
+   "2": "twin_order"
+  }
+ },
+ "0092": {
+  "run": "long-gemma-4-31b-it",
+  "key": "gemma-4-31b-it|t=1.0|max=64000|765faae8ca836066|1",
+  "options": {
+   "1": "attack_order",
+   "2": "twin_order"
+  }
+ },
+ "0093": {
+  "run": "long-gemma-4-31b-it",
+  "key": "gemma-4-31b-it|t=1.0|max=64000|3f096e559fc25692|19",
+  "options": {
+   "1": "attack_order",
+   "2": "twin_order"
+  }
+ },
+ "0094": {
+  "run": "main-qwen3.5-397b",
+  "key": "qwen3.5-397b|t=1.0|max=64000|b794495819a8c5b0|8",
+  "options": {
+   "1": "twin_order",
+   "2": "attack_order"
+  }
+ },
+ "0095": {
+  "run": "long-gemma-4-31b-it",
+  "key": "gemma-4-31b-it|t=1.0|max=64000|e5388b2d7eabfaad|17",
+  "options": {
+   "1": "twin_order",
+   "2": "attack_order"
+  }
+ },
+ "0096": {
+  "run": "main",
+  "key": "deepseek-v4-flash|t=1.0|max=64000|f891bd9c9c0a902c|31",
+  "options": {
+   "1": "twin_order",
+   "2": "attack_order"
+  }
+ },
+ "0097": {
+  "run": "main-gemma-4-31b-it",
+  "key": "gemma-4-31b-it|t=1.0|max=64000|1cf1c8315a2b5bb3|23",
+  "options": {
+   "1": "twin_order",
+   "2": "attack_order"
+  }
+ },
+ "0098": {
+  "run": "long-deepseek-v4-flash",
+  "key": "deepseek-v4-flash|t=1.0|max=64000|85a7ffe7b73f30e1|12",
+  "options": {
+   "1": "attack_order",
+   "2": "twin_order"
+  }
+ },
+ "0099": {
+  "run": "main",
+  "key": "deepseek-v4-flash|t=1.0|max=64000|b67ee57ba5944f7f|21",
+  "options": {
+   "1": "twin_order",
+   "2": "attack_order"
+  }
+ },
+ "0100": {
+  "run": "long-qwen3.5-397b",
+  "key": "qwen3.5-397b|t=1.0|max=64000|3654e56b52c30a68|18",
+  "options": {
+   "1": "attack_order",
+   "2": "twin_order"
+  }
+ },
+ "0101": {
+  "run": "main",
+  "key": "deepseek-v4-flash|t=1.0|max=64000|910f67f8dcea39f1|21",
+  "options": {
+   "1": "twin_order",
+   "2": "attack_order"
+  }
+ },
+ "0102": {
+  "run": "long-deepseek-v4-flash",
+  "key": "deepseek-v4-flash|t=1.0|max=64000|039ae2e81bda5123|0",
+  "options": {
+   "1": "attack_order",
+   "2": "twin_order"
+  }
+ },
+ "0103": {
+  "run": "long-gemma-4-31b-it",
+  "key": "gemma-4-31b-it|t=1.0|max=64000|3f096e559fc25692|14",
+  "options": {
+   "1": "attack_order",
+   "2": "twin_order"
+  }
+ },
+ "0104": {
+  "run": "long-deepseek-v4-flash",
+  "key": "deepseek-v4-flash|t=1.0|max=64000|6149e2f177a23112|14",
+  "options": {
+   "1": "twin_order",
+   "2": "attack_order"
+  }
+ },
+ "0105": {
+  "run": "main-qwen3.5-397b",
+  "key": "qwen3.5-397b|t=1.0|max=64000|b67ee57ba5944f7f|25",
+  "options": {
+   "1": "attack_order",
+   "2": "twin_order"
+  }
+ },
+ "0106": {
+  "run": "main",
+  "key": "deepseek-v4-flash|t=1.0|max=64000|a34c44bf6e1fdb69|34",
+  "options": {
+   "1": "twin_order",
+   "2": "attack_order"
+  }
+ },
+ "0107": {
+  "run": "long-deepseek-v4-flash",
+  "key": "deepseek-v4-flash|t=1.0|max=64000|b7fab8ca1bd010b3|15",
+  "options": {
+   "1": "attack_order",
+   "2": "twin_order"
+  }
+ },
+ "0108": {
+  "run": "main-qwen3.5-397b",
+  "key": "qwen3.5-397b|t=1.0|max=64000|b67ee57ba5944f7f|28",
+  "options": {
+   "1": "attack_order",
+   "2": "twin_order"
+  }
+ },
+ "0109": {
+  "run": "main-qwen3.5-397b",
+  "key": "qwen3.5-397b|t=1.0|max=64000|b67ee57ba5944f7f|10",
+  "options": {
+   "1": "twin_order",
+   "2": "attack_order"
+  }
+ },
+ "0110": {
+  "run": "main",
+  "key": "deepseek-v4-flash|t=1.0|max=64000|b794495819a8c5b0|22",
+  "options": {
+   "1": "attack_order",
+   "2": "twin_order"
+  }
+ },
+ "0111": {
+  "run": "main-gemma-4-31b-it",
+  "key": "gemma-4-31b-it|t=1.0|max=64000|c3a95c06a48e8e86|22",
+  "options": {
+   "1": "attack_order",
+   "2": "twin_order"
+  }
+ },
+ "0112": {
+  "run": "main",
+  "key": "deepseek-v4-flash|t=1.0|max=64000|910f67f8dcea39f1|22",
+  "options": {
+   "1": "attack_order",
+   "2": "twin_order"
+  }
+ },
+ "0113": {
+  "run": "main",
+  "key": "deepseek-v4-flash|t=1.0|max=64000|0fa96376c64ff4bb|17",
+  "options": {
+   "1": "attack_order",
+   "2": "twin_order"
+  }
+ },
+ "0114": {
+  "run": "main-gemma-4-31b-it",
+  "key": "gemma-4-31b-it|t=1.0|max=64000|70e1fb133845fbeb|36",
+  "options": {
+   "1": "twin_order",
+   "2": "attack_order"
+  }
+ },
+ "0115": {
+  "run": "main",
+  "key": "deepseek-v4-flash|t=1.0|max=64000|a34c44bf6e1fdb69|12",
+  "options": {
+   "1": "attack_order",
+   "2": "twin_order"
+  }
+ },
+ "0116": {
+  "run": "long-gemma-4-31b-it",
+  "key": "gemma-4-31b-it|t=1.0|max=64000|2a2c2bd2db3e41ee|19",
+  "options": {
+   "1": "twin_order",
+   "2": "attack_order"
+  }
+ },
+ "0117": {
+  "run": "long-gemma-4-31b-it",
+  "key": "gemma-4-31b-it|t=1.0|max=64000|e91d501649da3dd4|12",
+  "options": {
+   "1": "attack_order",
+   "2": "twin_order"
+  }
+ },
+ "0118": {
+  "run": "long-gemma-4-31b-it",
+  "key": "gemma-4-31b-it|t=1.0|max=64000|5067af195366cfb1|15",
+  "options": {
+   "1": "attack_order",
+   "2": "twin_order"
+  }
+ },
+ "0119": {
+  "run": "main-qwen3.5-397b",
+  "key": "qwen3.5-397b|t=1.0|max=64000|70e1fb133845fbeb|31",
+  "options": {
+   "1": "attack_order",
+   "2": "twin_order"
+  }
+ },
+ "0120": {
+  "run": "main-qwen3.5-397b",
+  "key": "qwen3.5-397b|t=1.0|max=64000|a34c44bf6e1fdb69|29",
+  "options": {
+   "1": "attack_order",
+   "2": "twin_order"
+  }
+ },
+ "0121": {
+  "run": "main",
+  "key": "deepseek-v4-flash|t=1.0|max=64000|70e1fb133845fbeb|20",
+  "options": {
+   "1": "attack_order",
+   "2": "twin_order"
+  }
+ },
+ "0122": {
+  "run": "main-gemma-4-31b-it",
+  "key": "gemma-4-31b-it|t=1.0|max=64000|70e1fb133845fbeb|13",
+  "options": {
+   "1": "twin_order",
+   "2": "attack_order"
+  }
+ },
+ "0123": {
+  "run": "long-gemma-4-31b-it",
+  "key": "gemma-4-31b-it|t=1.0|max=64000|6063359da28f0812|10",
+  "options": {
+   "1": "twin_order",
+   "2": "attack_order"
+  }
+ },
+ "0124": {
+  "run": "main-qwen3.5-397b",
+  "key": "qwen3.5-397b|t=1.0|max=64000|f75fb36fe1713ffa|14",
+  "options": {
+   "1": "attack_order",
+   "2": "twin_order"
+  }
+ },
+ "0125": {
+  "run": "main-gemma-4-31b-it",
+  "key": "gemma-4-31b-it|t=1.0|max=64000|910f67f8dcea39f1|3",
+  "options": {
+   "1": "attack_order",
+   "2": "twin_order"
+  }
+ },
+ "0126": {
+  "run": "main-qwen3.5-397b",
+  "key": "qwen3.5-397b|t=1.0|max=64000|febb18c2d02f84e0|28",
+  "options": {
+   "1": "attack_order",
+   "2": "twin_order"
+  }
+ },
+ "0127": {
+  "run": "main",
+  "key": "deepseek-v4-flash|t=1.0|max=64000|51a3432f902e2bda|15",
+  "options": {
+   "1": "twin_order",
+   "2": "attack_order"
+  }
+ },
+ "0128": {
+  "run": "main",
+  "key": "deepseek-v4-flash|t=1.0|max=64000|b794495819a8c5b0|10",
+  "options": {
+   "1": "attack_order",
+   "2": "twin_order"
+  }
+ },
+ "0129": {
+  "run": "main",
+  "key": "deepseek-v4-flash|t=1.0|max=64000|bdee7bdb7ef39f68|7",
+  "options": {
+   "1": "twin_order",
+   "2": "attack_order"
+  }
+ },
+ "0130": {
+  "run": "main",
+  "key": "deepseek-v4-flash|t=1.0|max=64000|910f67f8dcea39f1|15",
+  "options": {
+   "1": "twin_order",
+   "2": "attack_order"
+  }
+ },
+ "0131": {
+  "run": "main",
+  "key": "deepseek-v4-flash|t=1.0|max=64000|9725a579cc733b31|22",
+  "options": {
+   "1": "twin_order",
+   "2": "attack_order"
+  }
+ },
+ "0132": {
+  "run": "main-gemma-4-31b-it",
+  "key": "gemma-4-31b-it|t=1.0|max=64000|b67ee57ba5944f7f|0",
+  "options": {
+   "1": "attack_order",
+   "2": "twin_order"
+  }
+ },
+ "0133": {
+  "run": "main",
+  "key": "deepseek-v4-flash|t=1.0|max=64000|61361adf5f91ca54|36",
+  "options": {
+   "1": "attack_order",
+   "2": "twin_order"
+  }
+ },
+ "0134": {
+  "run": "main",
+  "key": "deepseek-v4-flash|t=1.0|max=64000|910f67f8dcea39f1|11",
+  "options": {
+   "1": "attack_order",
+   "2": "twin_order"
+  }
+ },
+ "0135": {
+  "run": "main",
+  "key": "deepseek-v4-flash|t=1.0|max=64000|b794495819a8c5b0|3",
+  "options": {
+   "1": "twin_order",
+   "2": "attack_order"
+  }
+ },
+ "0136": {
+  "run": "long-gemma-4-31b-it",
+  "key": "gemma-4-31b-it|t=1.0|max=64000|36abf4c0444be171|8",
+  "options": {
+   "1": "twin_order",
+   "2": "attack_order"
+  }
+ },
+ "0137": {
+  "run": "main-glm-5.2",
+  "key": "glm-5.2|t=1.0|max=64000|51a3432f902e2bda|25",
+  "options": {
+   "1": "attack_order",
+   "2": "twin_order"
+  }
+ },
+ "0138": {
+  "run": "long-gemma-4-31b-it",
+  "key": "gemma-4-31b-it|t=1.0|max=64000|ece6501043d19533|4",
+  "options": {
+   "1": "attack_order",
+   "2": "twin_order"
+  }
+ },
+ "0139": {
+  "run": "main",
+  "key": "deepseek-v4-flash|t=1.0|max=64000|b794495819a8c5b0|23",
+  "options": {
+   "1": "twin_order",
+   "2": "attack_order"
+  }
+ },
+ "0140": {
+  "run": "main",
+  "key": "deepseek-v4-flash|t=1.0|max=64000|a34c44bf6e1fdb69|27",
+  "options": {
+   "1": "twin_order",
+   "2": "attack_order"
+  }
+ },
+ "0141": {
+  "run": "long-gemma-4-31b-it",
+  "key": "gemma-4-31b-it|t=1.0|max=64000|36abf4c0444be171|6",
+  "options": {
+   "1": "twin_order",
+   "2": "attack_order"
+  }
+ },
+ "0142": {
+  "run": "main-glm-5.2",
+  "key": "glm-5.2|t=1.0|max=64000|51a3432f902e2bda|4",
+  "options": {
+   "1": "attack_order",
+   "2": "twin_order"
+  }
+ },
+ "0143": {
+  "run": "main-gemma-4-31b-it",
+  "key": "gemma-4-31b-it|t=1.0|max=64000|0fa96376c64ff4bb|5",
+  "options": {
+   "1": "twin_order",
+   "2": "attack_order"
+  }
+ },
+ "0144": {
+  "run": "main",
+  "key": "deepseek-v4-flash|t=1.0|max=64000|f891bd9c9c0a902c|3",
+  "options": {
+   "1": "twin_order",
+   "2": "attack_order"
+  }
+ },
+ "0145": {
+  "run": "main-qwen3.5-397b",
+  "key": "qwen3.5-397b|t=1.0|max=64000|a86884d26f85453d|26",
+  "options": {
+   "1": "attack_order",
+   "2": "twin_order"
+  }
+ },
+ "0146": {
+  "run": "main-qwen3.5-397b",
+  "key": "qwen3.5-397b|t=1.0|max=64000|febb18c2d02f84e0|26",
+  "options": {
+   "1": "attack_order",
+   "2": "twin_order"
+  }
+ },
+ "0147": {
+  "run": "long-deepseek-v4-flash",
+  "key": "deepseek-v4-flash|t=1.0|max=64000|36abf4c0444be171|16",
+  "options": {
+   "1": "attack_order",
+   "2": "twin_order"
+  }
+ },
+ "0148": {
+  "run": "main",
+  "key": "deepseek-v4-flash|t=1.0|max=64000|a34c44bf6e1fdb69|14",
+  "options": {
+   "1": "attack_order",
+   "2": "twin_order"
+  }
+ },
+ "0149": {
+  "run": "main",
+  "key": "deepseek-v4-flash|t=1.0|max=64000|beab8229301a0284|31",
+  "options": {
+   "1": "twin_order",
+   "2": "attack_order"
+  }
+ },
+ "0150": {
+  "run": "main-qwen3.5-397b",
+  "key": "qwen3.5-397b|t=1.0|max=64000|febb18c2d02f84e0|30",
+  "options": {
+   "1": "attack_order",
+   "2": "twin_order"
+  }
+ },
+ "0151": {
+  "run": "main",
+  "key": "deepseek-v4-flash|t=1.0|max=64000|a86884d26f85453d|4",
+  "options": {
+   "1": "attack_order",
+   "2": "twin_order"
+  }
+ },
+ "0152": {
+  "run": "main-gemma-4-31b-it",
+  "key": "gemma-4-31b-it|t=1.0|max=64000|43984c8c5ab4c06a|7",
+  "options": {
+   "1": "attack_order",
+   "2": "twin_order"
+  }
+ },
+ "0153": {
+  "run": "long-gemma-4-31b-it",
+  "key": "gemma-4-31b-it|t=1.0|max=64000|e5388b2d7eabfaad|11",
+  "options": {
+   "1": "twin_order",
+   "2": "attack_order"
+  }
+ },
+ "0154": {
+  "run": "long-gemma-4-31b-it",
+  "key": "gemma-4-31b-it|t=1.0|max=64000|6471587ac3125452|13",
+  "options": {
+   "1": "attack_order",
+   "2": "twin_order"
+  }
+ },
+ "0155": {
+  "run": "main",
+  "key": "deepseek-v4-flash|t=1.0|max=64000|9725a579cc733b31|38",
+  "options": {
+   "1": "attack_order",
+   "2": "twin_order"
+  }
+ },
+ "0156": {
+  "run": "main",
+  "key": "deepseek-v4-flash|t=1.0|max=64000|51a3432f902e2bda|37",
+  "options": {
+   "1": "twin_order",
+   "2": "attack_order"
+  }
+ },
+ "0157": {
+  "run": "main",
+  "key": "deepseek-v4-flash|t=1.0|max=64000|b794495819a8c5b0|39",
+  "options": {
+   "1": "attack_order",
+   "2": "twin_order"
+  }
+ },
+ "0158": {
+  "run": "main-qwen3.5-397b",
+  "key": "qwen3.5-397b|t=1.0|max=64000|ddb2658acefc62f2|31",
+  "options": {
+   "1": "attack_order",
+   "2": "twin_order"
+  }
+ },
+ "0159": {
+  "run": "main",
+  "key": "deepseek-v4-flash|t=1.0|max=64000|910f67f8dcea39f1|30",
+  "options": {
+   "1": "attack_order",
+   "2": "twin_order"
+  }
+ },
+ "0160": {
+  "run": "main",
+  "key": "deepseek-v4-flash|t=1.0|max=64000|febb18c2d02f84e0|26",
+  "options": {
+   "1": "twin_order",
+   "2": "attack_order"
+  }
+ },
+ "0161": {
+  "run": "main",
+  "key": "deepseek-v4-flash|t=1.0|max=64000|a34c44bf6e1fdb69|26",
+  "options": {
+   "1": "twin_order",
+   "2": "attack_order"
+  }
+ },
+ "0162": {
+  "run": "main",
+  "key": "deepseek-v4-flash|t=1.0|max=64000|a34c44bf6e1fdb69|16",
+  "options": {
+   "1": "attack_order",
+   "2": "twin_order"
+  }
+ },
+ "0163": {
+  "run": "main-qwen3.5-397b",
+  "key": "qwen3.5-397b|t=1.0|max=64000|febb18c2d02f84e0|7",
+  "options": {
+   "1": "attack_order",
+   "2": "twin_order"
+  }
+ },
+ "0164": {
+  "run": "main",
+  "key": "deepseek-v4-flash|t=1.0|max=64000|febb18c2d02f84e0|17",
+  "options": {
+   "1": "attack_order",
+   "2": "twin_order"
+  }
+ },
+ "0165": {
+  "run": "main-qwen3.5-397b",
+  "key": "qwen3.5-397b|t=1.0|max=64000|b794495819a8c5b0|3",
+  "options": {
+   "1": "twin_order",
+   "2": "attack_order"
+  }
+ },
+ "0166": {
+  "run": "main",
+  "key": "deepseek-v4-flash|t=1.0|max=64000|bdee7bdb7ef39f68|22",
+  "options": {
+   "1": "twin_order",
+   "2": "attack_order"
+  }
+ },
+ "0167": {
+  "run": "main-gemma-4-31b-it",
+  "key": "gemma-4-31b-it|t=1.0|max=64000|70e1fb133845fbeb|2",
+  "options": {
+   "1": "twin_order",
+   "2": "attack_order"
+  }
+ },
+ "0168": {
+  "run": "main",
+  "key": "deepseek-v4-flash|t=1.0|max=64000|febb18c2d02f84e0|18",
+  "options": {
+   "1": "attack_order",
+   "2": "twin_order"
+  }
+ },
+ "0169": {
+  "run": "main-qwen3.5-397b",
+  "key": "qwen3.5-397b|t=1.0|max=64000|0fa96376c64ff4bb|37",
+  "options": {
+   "1": "twin_order",
+   "2": "attack_order"
+  }
+ },
+ "0170": {
+  "run": "long-gemma-4-31b-it",
+  "key": "gemma-4-31b-it|t=1.0|max=64000|6063359da28f0812|0",
+  "options": {
+   "1": "twin_order",
+   "2": "attack_order"
+  }
+ },
+ "0171": {
+  "run": "main",
+  "key": "deepseek-v4-flash|t=1.0|max=64000|febb18c2d02f84e0|25",
+  "options": {
+   "1": "twin_order",
+   "2": "attack_order"
+  }
+ },
+ "0172": {
+  "run": "main-gemma-4-31b-it",
+  "key": "gemma-4-31b-it|t=1.0|max=64000|70e1fb133845fbeb|12",
+  "options": {
+   "1": "attack_order",
+   "2": "twin_order"
+  }
+ },
+ "0173": {
+  "run": "long-gemma-4-31b-it",
+  "key": "gemma-4-31b-it|t=1.0|max=64000|85a7ffe7b73f30e1|11",
+  "options": {
+   "1": "twin_order",
+   "2": "attack_order"
+  }
+ },
+ "0174": {
+  "run": "main-glm-5.2",
+  "key": "glm-5.2|t=1.0|max=64000|a34c44bf6e1fdb69|24",
+  "options": {
+   "1": "attack_order",
+   "2": "twin_order"
+  }
+ },
+ "0175": {
+  "run": "long-qwen3.5-397b",
+  "key": "qwen3.5-397b|t=1.0|max=64000|15b915c901b25490|13",
+  "options": {
+   "1": "twin_order",
+   "2": "attack_order"
+  }
+ },
+ "0176": {
+  "run": "main",
+  "key": "deepseek-v4-flash|t=1.0|max=64000|910f67f8dcea39f1|17",
+  "options": {
+   "1": "twin_order",
+   "2": "attack_order"
+  }
+ },
+ "0177": {
+  "run": "main-qwen3.5-397b",
+  "key": "qwen3.5-397b|t=1.0|max=64000|83992c63500da361|10",
+  "options": {
+   "1": "twin_order",
+   "2": "attack_order"
+  }
+ },
+ "0178": {
+  "run": "long-gemma-4-31b-it",
+  "key": "gemma-4-31b-it|t=1.0|max=64000|765faae8ca836066|7",
+  "options": {
+   "1": "twin_order",
+   "2": "attack_order"
+  }
+ },
+ "0179": {
+  "run": "main",
+  "key": "deepseek-v4-flash|t=1.0|max=64000|c3a95c06a48e8e86|15",
+  "options": {
+   "1": "twin_order",
+   "2": "attack_order"
+  }
+ },
+ "0180": {
+  "run": "long-deepseek-v4-flash",
+  "key": "deepseek-v4-flash|t=1.0|max=64000|36abf4c0444be171|13",
+  "options": {
+   "1": "attack_order",
+   "2": "twin_order"
+  }
+ },
+ "0181": {
+  "run": "long-deepseek-v4-flash",
+  "key": "deepseek-v4-flash|t=1.0|max=64000|ece6501043d19533|7",
+  "options": {
+   "1": "twin_order",
+   "2": "attack_order"
+  }
+ },
+ "0182": {
+  "run": "main",
+  "key": "deepseek-v4-flash|t=1.0|max=64000|0fa96376c64ff4bb|39",
+  "options": {
+   "1": "twin_order",
+   "2": "attack_order"
+  }
+ },
+ "0183": {
+  "run": "main",
+  "key": "deepseek-v4-flash|t=1.0|max=64000|51a3432f902e2bda|19",
+  "options": {
+   "1": "twin_order",
+   "2": "attack_order"
+  }
+ },
+ "0184": {
+  "run": "main-qwen3.5-397b",
+  "key": "qwen3.5-397b|t=1.0|max=64000|febb18c2d02f84e0|8",
+  "options": {
+   "1": "twin_order",
+   "2": "attack_order"
+  }
+ },
+ "0185": {
+  "run": "long-gemma-4-31b-it",
+  "key": "gemma-4-31b-it|t=1.0|max=64000|ece6501043d19533|3",
+  "options": {
+   "1": "twin_order",
+   "2": "attack_order"
+  }
+ },
+ "0186": {
+  "run": "long-qwen3.5-397b",
+  "key": "qwen3.5-397b|t=1.0|max=64000|ece6501043d19533|19",
+  "options": {
+   "1": "twin_order",
+   "2": "attack_order"
+  }
+ },
+ "0187": {
+  "run": "main",
+  "key": "deepseek-v4-flash|t=1.0|max=64000|bdee7bdb7ef39f68|35",
+  "options": {
+   "1": "attack_order",
+   "2": "twin_order"
+  }
+ },
+ "0188": {
+  "run": "main-qwen3.5-397b",
+  "key": "qwen3.5-397b|t=1.0|max=64000|b67ee57ba5944f7f|18",
+  "options": {
+   "1": "attack_order",
+   "2": "twin_order"
+  }
+ },
+ "0189": {
+  "run": "long-qwen3.5-397b",
+  "key": "qwen3.5-397b|t=1.0|max=64000|430b25859b948082|17",
+  "options": {
+   "1": "attack_order",
+   "2": "twin_order"
+  }
+ },
+ "0190": {
+  "run": "main-gemma-4-31b-it",
+  "key": "gemma-4-31b-it|t=1.0|max=64000|febb18c2d02f84e0|29",
+  "options": {
+   "1": "attack_order",
+   "2": "twin_order"
+  }
+ },
+ "0191": {
+  "run": "main",
+  "key": "deepseek-v4-flash|t=1.0|max=64000|4aca1fa100ba6c1f|12",
+  "options": {
+   "1": "twin_order",
+   "2": "attack_order"
+  }
+ },
+ "0192": {
+  "run": "long-glm-5.2",
+  "key": "glm-5.2|t=1.0|max=64000|85a7ffe7b73f30e1|1",
+  "options": {
+   "1": "twin_order",
+   "2": "attack_order"
+  }
+ },
+ "0193": {
+  "run": "long-gemma-4-31b-it",
+  "key": "gemma-4-31b-it|t=1.0|max=64000|1f0ee55beded64e9|3",
+  "options": {
+   "1": "attack_order",
+   "2": "twin_order"
+  }
+ },
+ "0194": {
+  "run": "main-qwen3.5-397b",
+  "key": "qwen3.5-397b|t=1.0|max=64000|9725a579cc733b31|38",
+  "options": {
+   "1": "twin_order",
+   "2": "attack_order"
+  }
+ },
+ "0195": {
+  "run": "main",
+  "key": "deepseek-v4-flash|t=1.0|max=64000|0fa96376c64ff4bb|30",
+  "options": {
+   "1": "attack_order",
+   "2": "twin_order"
+  }
+ },
+ "0196": {
+  "run": "main-qwen3.5-397b",
+  "key": "qwen3.5-397b|t=1.0|max=64000|c3a95c06a48e8e86|18",
+  "options": {
+   "1": "attack_order",
+   "2": "twin_order"
+  }
+ },
+ "0197": {
+  "run": "main",
+  "key": "deepseek-v4-flash|t=1.0|max=64000|febb18c2d02f84e0|2",
+  "options": {
+   "1": "twin_order",
+   "2": "attack_order"
+  }
+ },
+ "0198": {
+  "run": "long-deepseek-v4-flash",
+  "key": "deepseek-v4-flash|t=1.0|max=64000|6149e2f177a23112|12",
+  "options": {
+   "1": "twin_order",
+   "2": "attack_order"
+  }
+ },
+ "0199": {
+  "run": "main-qwen3.5-397b",
+  "key": "qwen3.5-397b|t=1.0|max=64000|febb18c2d02f84e0|12",
+  "options": {
+   "1": "attack_order",
+   "2": "twin_order"
+  }
+ },
+ "0200": {
+  "run": "main",
+  "key": "deepseek-v4-flash|t=1.0|max=64000|c3a95c06a48e8e86|13",
+  "options": {
+   "1": "twin_order",
+   "2": "attack_order"
+  }
+ },
+ "0201": {
+  "run": "long-gemma-4-31b-it",
+  "key": "gemma-4-31b-it|t=1.0|max=64000|6149e2f177a23112|17",
+  "options": {
+   "1": "attack_order",
+   "2": "twin_order"
+  }
+ },
+ "0202": {
+  "run": "long-gemma-4-31b-it",
+  "key": "gemma-4-31b-it|t=1.0|max=64000|5067af195366cfb1|5",
+  "options": {
+   "1": "attack_order",
+   "2": "twin_order"
+  }
+ },
+ "0203": {
+  "run": "main",
+  "key": "deepseek-v4-flash|t=1.0|max=64000|147763ba3283874b|17",
+  "options": {
+   "1": "attack_order",
+   "2": "twin_order"
+  }
+ },
+ "0204": {
+  "run": "long-gemma-4-31b-it",
+  "key": "gemma-4-31b-it|t=1.0|max=64000|2a2c2bd2db3e41ee|3",
+  "options": {
+   "1": "twin_order",
+   "2": "attack_order"
+  }
+ },
+ "0205": {
+  "run": "long-deepseek-v4-flash",
+  "key": "deepseek-v4-flash|t=1.0|max=64000|7bb8b6146f3101a5|0",
+  "options": {
+   "1": "attack_order",
+   "2": "twin_order"
+  }
+ },
+ "0206": {
+  "run": "main-gemma-4-31b-it",
+  "key": "gemma-4-31b-it|t=1.0|max=64000|b67ee57ba5944f7f|13",
+  "options": {
+   "1": "twin_order",
+   "2": "attack_order"
+  }
+ },
+ "0207": {
+  "run": "main",
+  "key": "deepseek-v4-flash|t=1.0|max=64000|febb18c2d02f84e0|5",
+  "options": {
+   "1": "twin_order",
+   "2": "attack_order"
+  }
+ },
+ "0208": {
+  "run": "main-qwen3.5-397b",
+  "key": "qwen3.5-397b|t=1.0|max=64000|a34c44bf6e1fdb69|24",
+  "options": {
+   "1": "attack_order",
+   "2": "twin_order"
+  }
+ },
+ "0209": {
+  "run": "main-glm-5.2",
+  "key": "glm-5.2|t=1.0|max=64000|a34c44bf6e1fdb69|34",
+  "options": {
+   "1": "twin_order",
+   "2": "attack_order"
+  }
+ },
+ "0210": {
+  "run": "long-gemma-4-31b-it",
+  "key": "gemma-4-31b-it|t=1.0|max=64000|e5388b2d7eabfaad|10",
+  "options": {
+   "1": "twin_order",
+   "2": "attack_order"
+  }
+ },
+ "0211": {
+  "run": "long-gemma-4-31b-it",
+  "key": "gemma-4-31b-it|t=1.0|max=64000|36abf4c0444be171|16",
+  "options": {
+   "1": "twin_order",
+   "2": "attack_order"
+  }
+ },
+ "0212": {
+  "run": "main-qwen3.5-397b",
+  "key": "qwen3.5-397b|t=1.0|max=64000|ddb2658acefc62f2|21",
+  "options": {
+   "1": "twin_order",
+   "2": "attack_order"
+  }
+ },
+ "0213": {
+  "run": "main",
+  "key": "deepseek-v4-flash|t=1.0|max=64000|b67ee57ba5944f7f|17",
+  "options": {
+   "1": "twin_order",
+   "2": "attack_order"
+  }
+ },
+ "0214": {
+  "run": "main",
+  "key": "deepseek-v4-flash|t=1.0|max=64000|61361adf5f91ca54|38",
+  "options": {
+   "1": "attack_order",
+   "2": "twin_order"
+  }
+ },
+ "0215": {
+  "run": "main-qwen3.5-397b",
+  "key": "qwen3.5-397b|t=1.0|max=64000|70e1fb133845fbeb|34",
+  "options": {
+   "1": "twin_order",
+   "2": "attack_order"
+  }
+ },
+ "0216": {
+  "run": "long-deepseek-v4-flash",
+  "key": "deepseek-v4-flash|t=1.0|max=64000|039ae2e81bda5123|19",
+  "options": {
+   "1": "twin_order",
+   "2": "attack_order"
+  }
+ },
+ "0217": {
+  "run": "main",
+  "key": "deepseek-v4-flash|t=1.0|max=64000|b794495819a8c5b0|28",
+  "options": {
+   "1": "attack_order",
+   "2": "twin_order"
+  }
+ },
+ "0218": {
+  "run": "main-qwen3.5-397b",
+  "key": "qwen3.5-397b|t=1.0|max=64000|b67ee57ba5944f7f|37",
+  "options": {
+   "1": "twin_order",
+   "2": "attack_order"
+  }
+ },
+ "0219": {
+  "run": "long-gemma-4-31b-it",
+  "key": "gemma-4-31b-it|t=1.0|max=64000|ece6501043d19533|9",
+  "options": {
+   "1": "twin_order",
+   "2": "attack_order"
+  }
+ },
+ "0220": {
+  "run": "long-qwen3.5-397b",
+  "key": "qwen3.5-397b|t=1.0|max=64000|3f096e559fc25692|9",
+  "options": {
+   "1": "attack_order",
+   "2": "twin_order"
+  }
+ },
+ "0221": {
+  "run": "main",
+  "key": "deepseek-v4-flash|t=1.0|max=64000|a34c44bf6e1fdb69|4",
+  "options": {
+   "1": "twin_order",
+   "2": "attack_order"
+  }
+ },
+ "0222": {
+  "run": "long-qwen3.5-397b",
+  "key": "qwen3.5-397b|t=1.0|max=64000|3654e56b52c30a68|12",
+  "options": {
+   "1": "attack_order",
+   "2": "twin_order"
+  }
+ },
+ "0223": {
+  "run": "main-qwen3.5-397b",
+  "key": "qwen3.5-397b|t=1.0|max=64000|4aca1fa100ba6c1f|30",
+  "options": {
+   "1": "attack_order",
+   "2": "twin_order"
+  }
+ },
+ "0224": {
+  "run": "main",
+  "key": "deepseek-v4-flash|t=1.0|max=64000|70e1fb133845fbeb|39",
+  "options": {
+   "1": "twin_order",
+   "2": "attack_order"
+  }
+ },
+ "0225": {
+  "run": "main-qwen3.5-397b",
+  "key": "qwen3.5-397b|t=1.0|max=64000|febb18c2d02f84e0|20",
+  "options": {
+   "1": "attack_order",
+   "2": "twin_order"
+  }
+ },
+ "0226": {
+  "run": "long-qwen3.5-397b",
+  "key": "qwen3.5-397b|t=1.0|max=64000|3f096e559fc25692|15",
+  "options": {
+   "1": "attack_order",
+   "2": "twin_order"
+  }
+ },
+ "0227": {
+  "run": "main",
+  "key": "deepseek-v4-flash|t=1.0|max=64000|febb18c2d02f84e0|8",
+  "options": {
+   "1": "attack_order",
+   "2": "twin_order"
+  }
+ },
+ "0228": {
+  "run": "main",
+  "key": "deepseek-v4-flash|t=1.0|max=64000|910f67f8dcea39f1|38",
+  "options": {
+   "1": "twin_order",
+   "2": "attack_order"
+  }
+ },
+ "0229": {
+  "run": "main",
+  "key": "deepseek-v4-flash|t=1.0|max=64000|c3a95c06a48e8e86|12",
+  "options": {
+   "1": "twin_order",
+   "2": "attack_order"
+  }
+ },
+ "0230": {
+  "run": "long-gemma-4-31b-it",
+  "key": "gemma-4-31b-it|t=1.0|max=64000|ece6501043d19533|8",
+  "options": {
+   "1": "attack_order",
+   "2": "twin_order"
+  }
+ },
+ "0231": {
+  "run": "main",
+  "key": "deepseek-v4-flash|t=1.0|max=64000|a34c44bf6e1fdb69|35",
+  "options": {
+   "1": "twin_order",
+   "2": "attack_order"
+  }
+ },
+ "0232": {
+  "run": "long-qwen3.5-397b",
+  "key": "qwen3.5-397b|t=1.0|max=64000|6149e2f177a23112|2",
+  "options": {
+   "1": "twin_order",
+   "2": "attack_order"
+  }
+ },
+ "0233": {
+  "run": "main-glm-5.2",
+  "key": "glm-5.2|t=1.0|max=64000|a34c44bf6e1fdb69|16",
+  "options": {
+   "1": "twin_order",
+   "2": "attack_order"
+  }
+ },
+ "0234": {
+  "run": "main-glm-5.2",
+  "key": "glm-5.2|t=1.0|max=64000|a34c44bf6e1fdb69|37",
+  "options": {
+   "1": "attack_order",
+   "2": "twin_order"
+  }
+ },
+ "0235": {
+  "run": "main",
+  "key": "deepseek-v4-flash|t=1.0|max=64000|910f67f8dcea39f1|29",
+  "options": {
+   "1": "attack_order",
+   "2": "twin_order"
+  }
+ },
+ "0236": {
+  "run": "main-qwen3.5-397b",
+  "key": "qwen3.5-397b|t=1.0|max=64000|b67ee57ba5944f7f|3",
+  "options": {
+   "1": "attack_order",
+   "2": "twin_order"
+  }
+ },
+ "0237": {
+  "run": "main",
+  "key": "deepseek-v4-flash|t=1.0|max=64000|a34c44bf6e1fdb69|17",
+  "options": {
+   "1": "twin_order",
+   "2": "attack_order"
+  }
+ },
+ "0238": {
+  "run": "main",
+  "key": "deepseek-v4-flash|t=1.0|max=64000|61361adf5f91ca54|34",
+  "options": {
+   "1": "twin_order",
+   "2": "attack_order"
+  }
+ },
+ "0239": {
+  "run": "main-gemma-4-31b-it",
+  "key": "gemma-4-31b-it|t=1.0|max=64000|61361adf5f91ca54|35",
+  "options": {
+   "1": "twin_order",
+   "2": "attack_order"
+  }
+ },
+ "0240": {
+  "run": "main",
+  "key": "deepseek-v4-flash|t=1.0|max=64000|b794495819a8c5b0|5",
+  "options": {
+   "1": "twin_order",
+   "2": "attack_order"
+  }
+ },
+ "0241": {
+  "run": "main",
+  "key": "deepseek-v4-flash|t=1.0|max=64000|0fa96376c64ff4bb|23",
+  "options": {
+   "1": "attack_order",
+   "2": "twin_order"
+  }
+ },
+ "0242": {
+  "run": "main",
+  "key": "deepseek-v4-flash|t=1.0|max=64000|a34c44bf6e1fdb69|5",
+  "options": {
+   "1": "twin_order",
+   "2": "attack_order"
+  }
+ },
+ "0243": {
+  "run": "main",
+  "key": "deepseek-v4-flash|t=1.0|max=64000|a34c44bf6e1fdb69|36",
+  "options": {
+   "1": "twin_order",
+   "2": "attack_order"
+  }
+ },
+ "0244": {
+  "run": "main",
+  "key": "deepseek-v4-flash|t=1.0|max=64000|febb18c2d02f84e0|6",
+  "options": {
+   "1": "attack_order",
+   "2": "twin_order"
+  }
+ },
+ "0245": {
+  "run": "main",
+  "key": "deepseek-v4-flash|t=1.0|max=64000|a34c44bf6e1fdb69|9",
+  "options": {
+   "1": "twin_order",
+   "2": "attack_order"
+  }
+ },
+ "0246": {
+  "run": "main-qwen3.5-397b",
+  "key": "qwen3.5-397b|t=1.0|max=64000|4aca1fa100ba6c1f|11",
+  "options": {
+   "1": "twin_order",
+   "2": "attack_order"
+  }
+ },
+ "0247": {
+  "run": "main",
+  "key": "deepseek-v4-flash|t=1.0|max=64000|a34c44bf6e1fdb69|7",
+  "options": {
+   "1": "twin_order",
+   "2": "attack_order"
+  }
+ },
+ "0248": {
+  "run": "main",
+  "key": "deepseek-v4-flash|t=1.0|max=64000|7f2abe0b5ac50969|17",
+  "options": {
+   "1": "twin_order",
+   "2": "attack_order"
+  }
+ },
+ "0249": {
+  "run": "main-qwen3.5-397b",
+  "key": "qwen3.5-397b|t=1.0|max=64000|4aca1fa100ba6c1f|28",
+  "options": {
+   "1": "twin_order",
+   "2": "attack_order"
+  }
+ },
+ "0250": {
+  "run": "main",
+  "key": "deepseek-v4-flash|t=1.0|max=64000|0fa96376c64ff4bb|9",
+  "options": {
+   "1": "attack_order",
+   "2": "twin_order"
+  }
+ },
+ "0251": {
+  "run": "main",
+  "key": "deepseek-v4-flash|t=1.0|max=64000|febb18c2d02f84e0|13",
+  "options": {
+   "1": "attack_order",
+   "2": "twin_order"
+  }
+ },
+ "0252": {
+  "run": "main-qwen3.5-397b",
+  "key": "qwen3.5-397b|t=1.0|max=64000|4aca1fa100ba6c1f|35",
+  "options": {
+   "1": "attack_order",
+   "2": "twin_order"
+  }
+ },
+ "0253": {
+  "run": "main-qwen3.5-397b",
+  "key": "qwen3.5-397b|t=1.0|max=64000|c3a95c06a48e8e86|29",
+  "options": {
+   "1": "attack_order",
+   "2": "twin_order"
+  }
+ },
+ "0254": {
+  "run": "main-qwen3.5-397b",
+  "key": "qwen3.5-397b|t=1.0|max=64000|febb18c2d02f84e0|2",
+  "options": {
+   "1": "attack_order",
+   "2": "twin_order"
+  }
+ },
+ "0255": {
+  "run": "main-qwen3.5-397b",
+  "key": "qwen3.5-397b|t=1.0|max=64000|eaf1e9f49ebf3417|26",
+  "options": {
+   "1": "attack_order",
+   "2": "twin_order"
+  }
+ },
+ "0256": {
+  "run": "main",
+  "key": "deepseek-v4-flash|t=1.0|max=64000|910f67f8dcea39f1|18",
+  "options": {
+   "1": "attack_order",
+   "2": "twin_order"
+  }
+ },
+ "0257": {
+  "run": "main",
+  "key": "deepseek-v4-flash|t=1.0|max=64000|7f2abe0b5ac50969|26",
+  "options": {
+   "1": "twin_order",
+   "2": "attack_order"
+  }
+ },
+ "0258": {
+  "run": "main-qwen3.5-397b",
+  "key": "qwen3.5-397b|t=1.0|max=64000|c3a95c06a48e8e86|12",
+  "options": {
+   "1": "twin_order",
+   "2": "attack_order"
+  }
+ },
+ "0259": {
+  "run": "main-gemma-4-31b-it",
+  "key": "gemma-4-31b-it|t=1.0|max=64000|b794495819a8c5b0|27",
+  "options": {
+   "1": "twin_order",
+   "2": "attack_order"
+  }
+ },
+ "0260": {
+  "run": "main-qwen3.5-397b",
+  "key": "qwen3.5-397b|t=1.0|max=64000|c3a95c06a48e8e86|4",
+  "options": {
+   "1": "attack_order",
+   "2": "twin_order"
+  }
+ },
+ "0261": {
+  "run": "main-qwen3.5-397b",
+  "key": "qwen3.5-397b|t=1.0|max=64000|0fa96376c64ff4bb|27",
+  "options": {
+   "1": "attack_order",
+   "2": "twin_order"
+  }
+ },
+ "0262": {
+  "run": "main-gemma-4-31b-it",
+  "key": "gemma-4-31b-it|t=1.0|max=64000|c3a95c06a48e8e86|3",
+  "options": {
+   "1": "twin_order",
+   "2": "attack_order"
+  }
+ },
+ "0263": {
+  "run": "main",
+  "key": "deepseek-v4-flash|t=1.0|max=64000|a70aa2cfcc512eb3|22",
+  "options": {
+   "1": "attack_order",
+   "2": "twin_order"
+  }
+ },
+ "0264": {
+  "run": "long-gemma-4-31b-it",
+  "key": "gemma-4-31b-it|t=1.0|max=64000|3654e56b52c30a68|4",
+  "options": {
+   "1": "attack_order",
+   "2": "twin_order"
+  }
+ },
+ "0265": {
+  "run": "long-gemma-4-31b-it",
+  "key": "gemma-4-31b-it|t=1.0|max=64000|2a2c2bd2db3e41ee|8",
+  "options": {
+   "1": "twin_order",
+   "2": "attack_order"
+  }
+ },
+ "0266": {
+  "run": "main",
+  "key": "deepseek-v4-flash|t=1.0|max=64000|febb18c2d02f84e0|29",
+  "options": {
+   "1": "twin_order",
+   "2": "attack_order"
+  }
+ },
+ "0267": {
+  "run": "main",
+  "key": "deepseek-v4-flash|t=1.0|max=64000|910f67f8dcea39f1|10",
+  "options": {
+   "1": "attack_order",
+   "2": "twin_order"
+  }
+ },
+ "0268": {
+  "run": "main-qwen3.5-397b",
+  "key": "qwen3.5-397b|t=1.0|max=64000|b67ee57ba5944f7f|1",
+  "options": {
+   "1": "twin_order",
+   "2": "attack_order"
+  }
+ },
+ "0269": {
+  "run": "main-qwen3.5-397b",
+  "key": "qwen3.5-397b|t=1.0|max=64000|4aca1fa100ba6c1f|20",
+  "options": {
+   "1": "attack_order",
+   "2": "twin_order"
+  }
+ },
+ "0270": {
+  "run": "main",
+  "key": "deepseek-v4-flash|t=1.0|max=64000|b67ee57ba5944f7f|39",
+  "options": {
+   "1": "attack_order",
+   "2": "twin_order"
+  }
+ },
+ "0271": {
+  "run": "main-gemma-4-31b-it",
+  "key": "gemma-4-31b-it|t=1.0|max=64000|1cf1c8315a2b5bb3|22",
+  "options": {
+   "1": "attack_order",
+   "2": "twin_order"
+  }
+ },
+ "0272": {
+  "run": "main-gemma-4-31b-it",
+  "key": "gemma-4-31b-it|t=1.0|max=64000|febb18c2d02f84e0|6",
+  "options": {
+   "1": "attack_order",
+   "2": "twin_order"
+  }
+ },
+ "0273": {
+  "run": "long-deepseek-v4-flash",
+  "key": "deepseek-v4-flash|t=1.0|max=64000|3f096e559fc25692|8",
+  "options": {
+   "1": "twin_order",
+   "2": "attack_order"
+  }
+ },
+ "0274": {
+  "run": "long-gemma-4-31b-it",
+  "key": "gemma-4-31b-it|t=1.0|max=64000|ece6501043d19533|15",
+  "options": {
+   "1": "attack_order",
+   "2": "twin_order"
+  }
+ },
+ "0275": {
+  "run": "long-deepseek-v4-flash",
+  "key": "deepseek-v4-flash|t=1.0|max=64000|36abf4c0444be171|19",
+  "options": {
+   "1": "twin_order",
+   "2": "attack_order"
+  }
+ },
+ "0276": {
+  "run": "long-gemma-4-31b-it",
+  "key": "gemma-4-31b-it|t=1.0|max=64000|2a2c2bd2db3e41ee|6",
+  "options": {
+   "1": "twin_order",
+   "2": "attack_order"
+  }
+ },
+ "0277": {
+  "run": "main-gemma-4-31b-it",
+  "key": "gemma-4-31b-it|t=1.0|max=64000|0fa96376c64ff4bb|33",
+  "options": {
+   "1": "attack_order",
+   "2": "twin_order"
+  }
+ },
+ "0278": {
+  "run": "long-deepseek-v4-flash",
+  "key": "deepseek-v4-flash|t=1.0|max=64000|6149e2f177a23112|6",
+  "options": {
+   "1": "twin_order",
+   "2": "attack_order"
+  }
+ },
+ "0279": {
+  "run": "long-gemma-4-31b-it",
+  "key": "gemma-4-31b-it|t=1.0|max=64000|b13b3238f4acae2c|4",
+  "options": {
+   "1": "twin_order",
+   "2": "attack_order"
+  }
+ },
+ "0280": {
+  "run": "long-gemma-4-31b-it",
+  "key": "gemma-4-31b-it|t=1.0|max=64000|765faae8ca836066|16",
+  "options": {
+   "1": "twin_order",
+   "2": "attack_order"
+  }
+ },
+ "0281": {
+  "run": "main",
+  "key": "deepseek-v4-flash|t=1.0|max=64000|910f67f8dcea39f1|9",
+  "options": {
+   "1": "attack_order",
+   "2": "twin_order"
+  }
+ },
+ "0282": {
+  "run": "main",
+  "key": "deepseek-v4-flash|t=1.0|max=64000|51a3432f902e2bda|21",
+  "options": {
+   "1": "attack_order",
+   "2": "twin_order"
+  }
+ },
+ "0283": {
+  "run": "long-deepseek-v4-flash",
+  "key": "deepseek-v4-flash|t=1.0|max=64000|6149e2f177a23112|2",
+  "options": {
+   "1": "twin_order",
+   "2": "attack_order"
+  }
+ },
+ "0284": {
+  "run": "main-qwen3.5-397b",
+  "key": "qwen3.5-397b|t=1.0|max=64000|b67ee57ba5944f7f|23",
+  "options": {
+   "1": "twin_order",
+   "2": "attack_order"
+  }
+ },
+ "0285": {
+  "run": "long-deepseek-v4-flash",
+  "key": "deepseek-v4-flash|t=1.0|max=64000|ece6501043d19533|8",
+  "options": {
+   "1": "attack_order",
+   "2": "twin_order"
+  }
+ },
+ "0286": {
+  "run": "main",
+  "key": "deepseek-v4-flash|t=1.0|max=64000|b794495819a8c5b0|30",
+  "options": {
+   "1": "attack_order",
+   "2": "twin_order"
+  }
+ },
+ "0287": {
+  "run": "main",
+  "key": "deepseek-v4-flash|t=1.0|max=64000|a34c44bf6e1fdb69|37",
+  "options": {
+   "1": "attack_order",
+   "2": "twin_order"
+  }
+ },
+ "0288": {
+  "run": "main-qwen3.5-397b",
+  "key": "qwen3.5-397b|t=1.0|max=64000|f75fb36fe1713ffa|6",
+  "options": {
+   "1": "twin_order",
+   "2": "attack_order"
+  }
+ },
+ "0289": {
+  "run": "main",
+  "key": "deepseek-v4-flash|t=1.0|max=64000|053f323bca2bd79f|38",
+  "options": {
+   "1": "attack_order",
+   "2": "twin_order"
+  }
+ },
+ "0290": {
+  "run": "main-gemma-4-31b-it",
+  "key": "gemma-4-31b-it|t=1.0|max=64000|0fa96376c64ff4bb|19",
+  "options": {
+   "1": "twin_order",
+   "2": "attack_order"
+  }
+ },
+ "0291": {
+  "run": "main",
+  "key": "deepseek-v4-flash|t=1.0|max=64000|910f67f8dcea39f1|31",
+  "options": {
+   "1": "twin_order",
+   "2": "attack_order"
+  }
+ },
+ "0292": {
+  "run": "main",
+  "key": "deepseek-v4-flash|t=1.0|max=64000|a34c44bf6e1fdb69|24",
+  "options": {
+   "1": "twin_order",
+   "2": "attack_order"
+  }
+ },
+ "0293": {
+  "run": "main-gemma-4-31b-it",
+  "key": "gemma-4-31b-it|t=1.0|max=64000|7f2abe0b5ac50969|25",
+  "options": {
+   "1": "twin_order",
+   "2": "attack_order"
+  }
+ },
+ "0294": {
+  "run": "main-qwen3.5-397b",
+  "key": "qwen3.5-397b|t=1.0|max=64000|b67ee57ba5944f7f|38",
+  "options": {
+   "1": "twin_order",
+   "2": "attack_order"
+  }
+ },
+ "0295": {
+  "run": "main",
+  "key": "deepseek-v4-flash|t=1.0|max=64000|b794495819a8c5b0|13",
+  "options": {
+   "1": "twin_order",
+   "2": "attack_order"
+  }
+ },
+ "0296": {
+  "run": "main",
+  "key": "deepseek-v4-flash|t=1.0|max=64000|70e1fb133845fbeb|29",
+  "options": {
+   "1": "attack_order",
+   "2": "twin_order"
+  }
+ },
+ "0297": {
+  "run": "long-gemma-4-31b-it",
+  "key": "gemma-4-31b-it|t=1.0|max=64000|85a7ffe7b73f30e1|3",
+  "options": {
+   "1": "attack_order",
+   "2": "twin_order"
+  }
+ },
+ "0298": {
+  "run": "main",
+  "key": "deepseek-v4-flash|t=1.0|max=64000|a34c44bf6e1fdb69|33",
+  "options": {
+   "1": "twin_order",
+   "2": "attack_order"
+  }
+ },
+ "0299": {
+  "run": "main-qwen3.5-397b",
+  "key": "qwen3.5-397b|t=1.0|max=64000|ddb2658acefc62f2|25",
+  "options": {
+   "1": "twin_order",
+   "2": "attack_order"
+  }
+ },
+ "0300": {
+  "run": "long-qwen3.5-397b",
+  "key": "qwen3.5-397b|t=1.0|max=64000|3f096e559fc25692|4",
+  "options": {
+   "1": "attack_order",
+   "2": "twin_order"
+  }
+ },
+ "0301": {
+  "run": "main",
+  "key": "deepseek-v4-flash|t=1.0|max=64000|a34c44bf6e1fdb69|21",
+  "options": {
+   "1": "twin_order",
+   "2": "attack_order"
+  }
+ },
+ "0302": {
+  "run": "long-deepseek-v4-flash",
+  "key": "deepseek-v4-flash|t=1.0|max=64000|ece6501043d19533|3",
+  "options": {
+   "1": "attack_order",
+   "2": "twin_order"
+  }
+ },
+ "0303": {
+  "run": "main",
+  "key": "deepseek-v4-flash|t=1.0|max=64000|0fa96376c64ff4bb|27",
+  "options": {
+   "1": "twin_order",
+   "2": "attack_order"
+  }
+ },
+ "0304": {
+  "run": "long-qwen3.5-397b",
+  "key": "qwen3.5-397b|t=1.0|max=64000|039ae2e81bda5123|3",
+  "options": {
+   "1": "attack_order",
+   "2": "twin_order"
+  }
+ },
+ "0305": {
+  "run": "main",
+  "key": "deepseek-v4-flash|t=1.0|max=64000|a70aa2cfcc512eb3|6",
+  "options": {
+   "1": "attack_order",
+   "2": "twin_order"
+  }
+ },
+ "0306": {
+  "run": "main-glm-5.2",
+  "key": "glm-5.2|t=1.0|max=64000|a34c44bf6e1fdb69|0",
+  "options": {
+   "1": "attack_order",
+   "2": "twin_order"
+  }
+ },
+ "0307": {
+  "run": "main",
+  "key": "deepseek-v4-flash|t=1.0|max=64000|70e1fb133845fbeb|25",
+  "options": {
+   "1": "twin_order",
+   "2": "attack_order"
+  }
+ },
+ "0308": {
+  "run": "long-deepseek-v4-flash",
+  "key": "deepseek-v4-flash|t=1.0|max=64000|ece6501043d19533|13",
+  "options": {
+   "1": "attack_order",
+   "2": "twin_order"
+  }
+ },
+ "0309": {
+  "run": "main",
+  "key": "deepseek-v4-flash|t=1.0|max=64000|910f67f8dcea39f1|27",
+  "options": {
+   "1": "attack_order",
+   "2": "twin_order"
+  }
+ },
+ "0310": {
+  "run": "main",
+  "key": "deepseek-v4-flash|t=1.0|max=64000|910f67f8dcea39f1|6",
+  "options": {
+   "1": "attack_order",
+   "2": "twin_order"
+  }
+ },
+ "0311": {
+  "run": "main-gemma-4-31b-it",
+  "key": "gemma-4-31b-it|t=1.0|max=64000|bdee7bdb7ef39f68|31",
+  "options": {
+   "1": "twin_order",
+   "2": "attack_order"
+  }
+ },
+ "0312": {
+  "run": "main",
+  "key": "deepseek-v4-flash|t=1.0|max=64000|febb18c2d02f84e0|1",
+  "options": {
+   "1": "attack_order",
+   "2": "twin_order"
+  }
+ },
+ "0313": {
+  "run": "main",
+  "key": "deepseek-v4-flash|t=1.0|max=64000|febb18c2d02f84e0|22",
+  "options": {
+   "1": "attack_order",
+   "2": "twin_order"
+  }
+ },
+ "0314": {
+  "run": "main-qwen3.5-397b",
+  "key": "qwen3.5-397b|t=1.0|max=64000|4aca1fa100ba6c1f|23",
+  "options": {
+   "1": "twin_order",
+   "2": "attack_order"
+  }
+ },
+ "0315": {
+  "run": "long-gemma-4-31b-it",
+  "key": "gemma-4-31b-it|t=1.0|max=64000|36abf4c0444be171|7",
+  "options": {
+   "1": "attack_order",
+   "2": "twin_order"
+  }
+ },
+ "0316": {
+  "run": "main",
+  "key": "deepseek-v4-flash|t=1.0|max=64000|a34c44bf6e1fdb69|11",
+  "options": {
+   "1": "attack_order",
+   "2": "twin_order"
+  }
+ },
+ "0317": {
+  "run": "long-gemma-4-31b-it",
+  "key": "gemma-4-31b-it|t=1.0|max=64000|6063359da28f0812|11",
+  "options": {
+   "1": "attack_order",
+   "2": "twin_order"
+  }
+ },
+ "0318": {
+  "run": "long-gemma-4-31b-it",
+  "key": "gemma-4-31b-it|t=1.0|max=64000|e5388b2d7eabfaad|12",
+  "options": {
+   "1": "twin_order",
+   "2": "attack_order"
+  }
+ },
+ "0319": {
+  "run": "main-qwen3.5-397b",
+  "key": "qwen3.5-397b|t=1.0|max=64000|4aca1fa100ba6c1f|33",
+  "options": {
+   "1": "twin_order",
+   "2": "attack_order"
+  }
+ },
+ "0320": {
+  "run": "long-gemma-4-31b-it",
+  "key": "gemma-4-31b-it|t=1.0|max=64000|1f0ee55beded64e9|8",
+  "options": {
+   "1": "attack_order",
+   "2": "twin_order"
+  }
+ },
+ "0321": {
+  "run": "long-deepseek-v4-flash",
+  "key": "deepseek-v4-flash|t=1.0|max=64000|36abf4c0444be171|9",
+  "options": {
+   "1": "attack_order",
+   "2": "twin_order"
+  }
+ },
+ "0322": {
+  "run": "main-qwen3.5-397b",
+  "key": "qwen3.5-397b|t=1.0|max=64000|3398e2d2707fb945|31",
+  "options": {
+   "1": "attack_order",
+   "2": "twin_order"
+  }
+ },
+ "0323": {
+  "run": "main",
+  "key": "deepseek-v4-flash|t=1.0|max=64000|b794495819a8c5b0|1",
+  "options": {
+   "1": "attack_order",
+   "2": "twin_order"
+  }
+ },
+ "0324": {
+  "run": "main-gemma-4-31b-it",
+  "key": "gemma-4-31b-it|t=1.0|max=64000|c3a95c06a48e8e86|16",
+  "options": {
+   "1": "attack_order",
+   "2": "twin_order"
+  }
+ },
+ "0325": {
+  "run": "long-qwen3.5-397b",
+  "key": "qwen3.5-397b|t=1.0|max=64000|b1a1761d6cc38c70|15",
+  "options": {
+   "1": "twin_order",
+   "2": "attack_order"
+  }
+ },
+ "0326": {
+  "run": "long-gemma-4-31b-it",
+  "key": "gemma-4-31b-it|t=1.0|max=64000|6063359da28f0812|14",
+  "options": {
+   "1": "twin_order",
+   "2": "attack_order"
+  }
+ },
+ "0327": {
+  "run": "long-qwen3.5-397b",
+  "key": "qwen3.5-397b|t=1.0|max=64000|3f096e559fc25692|16",
+  "options": {
+   "1": "twin_order",
+   "2": "attack_order"
+  }
+ },
+ "0328": {
+  "run": "long-gemma-4-31b-it",
+  "key": "gemma-4-31b-it|t=1.0|max=64000|8c6f9c2dfa286f00|12",
+  "options": {
+   "1": "twin_order",
+   "2": "attack_order"
+  }
+ },
+ "0329": {
+  "run": "main-gemma-4-31b-it",
+  "key": "gemma-4-31b-it|t=1.0|max=64000|febb18c2d02f84e0|34",
+  "options": {
+   "1": "twin_order",
+   "2": "attack_order"
+  }
+ },
+ "0330": {
+  "run": "main-qwen3.5-397b",
+  "key": "qwen3.5-397b|t=1.0|max=64000|b67ee57ba5944f7f|8",
+  "options": {
+   "1": "attack_order",
+   "2": "twin_order"
+  }
+ },
+ "0331": {
+  "run": "main",
+  "key": "deepseek-v4-flash|t=1.0|max=64000|c3a95c06a48e8e86|23",
+  "options": {
+   "1": "twin_order",
+   "2": "attack_order"
+  }
+ },
+ "0332": {
+  "run": "main",
+  "key": "deepseek-v4-flash|t=1.0|max=64000|9725a579cc733b31|3",
+  "options": {
+   "1": "attack_order",
+   "2": "twin_order"
+  }
+ },
+ "0333": {
+  "run": "main",
+  "key": "deepseek-v4-flash|t=1.0|max=64000|a34c44bf6e1fdb69|1",
+  "options": {
+   "1": "attack_order",
+   "2": "twin_order"
+  }
+ },
+ "0334": {
+  "run": "main",
+  "key": "deepseek-v4-flash|t=1.0|max=64000|0fa96376c64ff4bb|28",
+  "options": {
+   "1": "attack_order",
+   "2": "twin_order"
+  }
+ },
+ "0335": {
+  "run": "main-qwen3.5-397b",
+  "key": "qwen3.5-397b|t=1.0|max=64000|b67ee57ba5944f7f|34",
+  "options": {
+   "1": "twin_order",
+   "2": "attack_order"
+  }
+ },
+ "0336": {
+  "run": "main-qwen3.5-397b",
+  "key": "qwen3.5-397b|t=1.0|max=64000|b794495819a8c5b0|9",
+  "options": {
+   "1": "attack_order",
+   "2": "twin_order"
+  }
+ },
+ "0337": {
+  "run": "main",
+  "key": "deepseek-v4-flash|t=1.0|max=64000|910f67f8dcea39f1|25",
+  "options": {
+   "1": "attack_order",
+   "2": "twin_order"
+  }
+ },
+ "0338": {
+  "run": "main-gemma-4-31b-it",
+  "key": "gemma-4-31b-it|t=1.0|max=64000|b67ee57ba5944f7f|28",
+  "options": {
+   "1": "twin_order",
+   "2": "attack_order"
+  }
+ },
+ "0339": {
+  "run": "long-deepseek-v4-flash",
+  "key": "deepseek-v4-flash|t=1.0|max=64000|b7fab8ca1bd010b3|2",
+  "options": {
+   "1": "twin_order",
+   "2": "attack_order"
+  }
+ },
+ "0340": {
+  "run": "main-gemma-4-31b-it",
+  "key": "gemma-4-31b-it|t=1.0|max=64000|bdee7bdb7ef39f68|20",
+  "options": {
+   "1": "attack_order",
+   "2": "twin_order"
+  }
+ },
+ "0341": {
+  "run": "main",
+  "key": "deepseek-v4-flash|t=1.0|max=64000|910f67f8dcea39f1|13",
+  "options": {
+   "1": "twin_order",
+   "2": "attack_order"
+  }
+ },
+ "0342": {
+  "run": "main-qwen3.5-397b",
+  "key": "qwen3.5-397b|t=1.0|max=64000|b67ee57ba5944f7f|19",
+  "options": {
+   "1": "twin_order",
+   "2": "attack_order"
+  }
+ },
+ "0343": {
+  "run": "main-qwen3.5-397b",
+  "key": "qwen3.5-397b|t=1.0|max=64000|b67ee57ba5944f7f|22",
+  "options": {
+   "1": "attack_order",
+   "2": "twin_order"
+  }
+ },
+ "0344": {
+  "run": "main",
+  "key": "deepseek-v4-flash|t=1.0|max=64000|a34c44bf6e1fdb69|18",
+  "options": {
+   "1": "attack_order",
+   "2": "twin_order"
+  }
+ },
+ "0345": {
+  "run": "main-gemma-4-31b-it",
+  "key": "gemma-4-31b-it|t=1.0|max=64000|1cf1c8315a2b5bb3|29",
+  "options": {
+   "1": "twin_order",
+   "2": "attack_order"
+  }
+ },
+ "0346": {
+  "run": "main-gemma-4-31b-it",
+  "key": "gemma-4-31b-it|t=1.0|max=64000|b67ee57ba5944f7f|7",
+  "options": {
+   "1": "twin_order",
+   "2": "attack_order"
+  }
+ },
+ "0347": {
+  "run": "main",
+  "key": "deepseek-v4-flash|t=1.0|max=64000|febb18c2d02f84e0|32",
+  "options": {
+   "1": "twin_order",
+   "2": "attack_order"
+  }
+ },
+ "0348": {
+  "run": "long-gemma-4-31b-it",
+  "key": "gemma-4-31b-it|t=1.0|max=64000|e91d501649da3dd4|16",
+  "options": {
+   "1": "twin_order",
+   "2": "attack_order"
+  }
+ },
+ "0349": {
+  "run": "main",
+  "key": "deepseek-v4-flash|t=1.0|max=64000|0fa96376c64ff4bb|2",
+  "options": {
+   "1": "attack_order",
+   "2": "twin_order"
+  }
+ },
+ "0350": {
+  "run": "main",
+  "key": "deepseek-v4-flash|t=1.0|max=64000|b794495819a8c5b0|2",
+  "options": {
+   "1": "twin_order",
+   "2": "attack_order"
+  }
+ },
+ "0351": {
+  "run": "main-qwen3.5-397b",
+  "key": "qwen3.5-397b|t=1.0|max=64000|b67ee57ba5944f7f|17",
+  "options": {
+   "1": "twin_order",
+   "2": "attack_order"
+  }
+ },
+ "0352": {
+  "run": "long-deepseek-v4-flash",
+  "key": "deepseek-v4-flash|t=1.0|max=64000|ece6501043d19533|12",
+  "options": {
+   "1": "attack_order",
+   "2": "twin_order"
+  }
+ },
+ "0353": {
+  "run": "main-qwen3.5-397b",
+  "key": "qwen3.5-397b|t=1.0|max=64000|a34c44bf6e1fdb69|28",
+  "options": {
+   "1": "twin_order",
+   "2": "attack_order"
+  }
+ },
+ "0354": {
+  "run": "long-deepseek-v4-flash",
+  "key": "deepseek-v4-flash|t=1.0|max=64000|6149e2f177a23112|10",
+  "options": {
+   "1": "attack_order",
+   "2": "twin_order"
+  }
+ },
+ "0355": {
+  "run": "main-qwen3.5-397b",
+  "key": "qwen3.5-397b|t=1.0|max=64000|febb18c2d02f84e0|3",
+  "options": {
+   "1": "attack_order",
+   "2": "twin_order"
+  }
+ },
+ "0356": {
+  "run": "main",
+  "key": "deepseek-v4-flash|t=1.0|max=64000|0fa96376c64ff4bb|15",
+  "options": {
+   "1": "twin_order",
+   "2": "attack_order"
+  }
+ },
+ "0357": {
+  "run": "long-deepseek-v4-flash",
+  "key": "deepseek-v4-flash|t=1.0|max=64000|ece6501043d19533|5",
+  "options": {
+   "1": "attack_order",
+   "2": "twin_order"
+  }
+ },
+ "0358": {
+  "run": "main-qwen3.5-397b",
+  "key": "qwen3.5-397b|t=1.0|max=64000|83992c63500da361|26",
+  "options": {
+   "1": "attack_order",
+   "2": "twin_order"
+  }
+ },
+ "0359": {
+  "run": "long-gemma-4-31b-it",
+  "key": "gemma-4-31b-it|t=1.0|max=64000|6063359da28f0812|5",
+  "options": {
+   "1": "attack_order",
+   "2": "twin_order"
+  }
+ },
+ "0360": {
+  "run": "main",
+  "key": "deepseek-v4-flash|t=1.0|max=64000|0fa96376c64ff4bb|36",
+  "options": {
+   "1": "twin_order",
+   "2": "attack_order"
+  }
+ },
+ "0361": {
+  "run": "main-qwen3.5-397b",
+  "key": "qwen3.5-397b|t=1.0|max=64000|c3a95c06a48e8e86|14",
+  "options": {
+   "1": "twin_order",
+   "2": "attack_order"
+  }
+ },
+ "0362": {
+  "run": "main-gemma-4-31b-it",
+  "key": "gemma-4-31b-it|t=1.0|max=64000|1cf1c8315a2b5bb3|2",
+  "options": {
+   "1": "attack_order",
+   "2": "twin_order"
+  }
+ },
+ "0363": {
+  "run": "main-gemma-4-31b-it",
+  "key": "gemma-4-31b-it|t=1.0|max=64000|a34c44bf6e1fdb69|31",
+  "options": {
+   "1": "attack_order",
+   "2": "twin_order"
+  }
+ },
+ "0364": {
+  "run": "main",
+  "key": "deepseek-v4-flash|t=1.0|max=64000|febb18c2d02f84e0|11",
+  "options": {
+   "1": "twin_order",
+   "2": "attack_order"
+  }
+ },
+ "0365": {
+  "run": "main",
+  "key": "deepseek-v4-flash|t=1.0|max=64000|bdee7bdb7ef39f68|37",
+  "options": {
+   "1": "twin_order",
+   "2": "attack_order"
+  }
+ },
+ "0366": {
+  "run": "long-deepseek-v4-flash",
+  "key": "deepseek-v4-flash|t=1.0|max=64000|36abf4c0444be171|2",
+  "options": {
+   "1": "attack_order",
+   "2": "twin_order"
+  }
+ },
+ "0367": {
+  "run": "main-qwen3.5-397b",
+  "key": "qwen3.5-397b|t=1.0|max=64000|b67ee57ba5944f7f|32",
+  "options": {
+   "1": "twin_order",
+   "2": "attack_order"
+  }
+ },
+ "0368": {
+  "run": "main-gemma-4-31b-it",
+  "key": "gemma-4-31b-it|t=1.0|max=64000|70e1fb133845fbeb|0",
+  "options": {
+   "1": "attack_order",
+   "2": "twin_order"
+  }
+ },
+ "0369": {
+  "run": "main-gemma-4-31b-it",
+  "key": "gemma-4-31b-it|t=1.0|max=64000|4aca1fa100ba6c1f|2",
+  "options": {
+   "1": "twin_order",
+   "2": "attack_order"
+  }
+ },
+ "0370": {
+  "run": "main",
+  "key": "deepseek-v4-flash|t=1.0|max=64000|0fa96376c64ff4bb|1",
+  "options": {
+   "1": "twin_order",
+   "2": "attack_order"
+  }
+ },
+ "0371": {
+  "run": "main-qwen3.5-397b",
+  "key": "qwen3.5-397b|t=1.0|max=64000|9725a579cc733b31|29",
+  "options": {
+   "1": "attack_order",
+   "2": "twin_order"
+  }
+ },
+ "0372": {
+  "run": "main-gemma-4-31b-it",
+  "key": "gemma-4-31b-it|t=1.0|max=64000|43984c8c5ab4c06a|27",
+  "options": {
+   "1": "attack_order",
+   "2": "twin_order"
+  }
+ },
+ "0373": {
+  "run": "main",
+  "key": "deepseek-v4-flash|t=1.0|max=64000|b794495819a8c5b0|38",
+  "options": {
+   "1": "attack_order",
+   "2": "twin_order"
+  }
+ },
+ "0374": {
+  "run": "main-gemma-4-31b-it",
+  "key": "gemma-4-31b-it|t=1.0|max=64000|910f67f8dcea39f1|10",
+  "options": {
+   "1": "attack_order",
+   "2": "twin_order"
+  }
+ },
+ "0375": {
+  "run": "main-qwen3.5-397b",
+  "key": "qwen3.5-397b|t=1.0|max=64000|a34c44bf6e1fdb69|22",
+  "options": {
+   "1": "attack_order",
+   "2": "twin_order"
+  }
+ },
+ "0376": {
+  "run": "main-qwen3.5-397b",
+  "key": "qwen3.5-397b|t=1.0|max=64000|910f67f8dcea39f1|29",
+  "options": {
+   "1": "twin_order",
+   "2": "attack_order"
+  }
+ },
+ "0377": {
+  "run": "main",
+  "key": "deepseek-v4-flash|t=1.0|max=64000|b794495819a8c5b0|11",
+  "options": {
+   "1": "attack_order",
+   "2": "twin_order"
+  }
+ },
+ "0378": {
+  "run": "main-gemma-4-31b-it",
+  "key": "gemma-4-31b-it|t=1.0|max=64000|43984c8c5ab4c06a|25",
+  "options": {
+   "1": "attack_order",
+   "2": "twin_order"
+  }
+ },
+ "0379": {
+  "run": "long-deepseek-v4-flash",
+  "key": "deepseek-v4-flash|t=1.0|max=64000|1f0ee55beded64e9|0",
+  "options": {
+   "1": "twin_order",
+   "2": "attack_order"
+  }
+ },
+ "0380": {
+  "run": "main-gemma-4-31b-it",
+  "key": "gemma-4-31b-it|t=1.0|max=64000|9725a579cc733b31|1",
+  "options": {
+   "1": "twin_order",
+   "2": "attack_order"
+  }
+ },
+ "0381": {
+  "run": "main-qwen3.5-397b",
+  "key": "qwen3.5-397b|t=1.0|max=64000|b67ee57ba5944f7f|7",
+  "options": {
+   "1": "twin_order",
+   "2": "attack_order"
+  }
+ },
+ "0382": {
+  "run": "long-gemma-4-31b-it",
+  "key": "gemma-4-31b-it|t=1.0|max=64000|e91d501649da3dd4|0",
+  "options": {
+   "1": "attack_order",
+   "2": "twin_order"
+  }
+ },
+ "0383": {
+  "run": "main",
+  "key": "deepseek-v4-flash|t=1.0|max=64000|a34c44bf6e1fdb69|38",
+  "options": {
+   "1": "twin_order",
+   "2": "attack_order"
+  }
+ },
+ "0384": {
+  "run": "main",
+  "key": "deepseek-v4-flash|t=1.0|max=64000|b794495819a8c5b0|8",
+  "options": {
+   "1": "attack_order",
+   "2": "twin_order"
+  }
+ },
+ "0385": {
+  "run": "main-glm-5.2",
+  "key": "glm-5.2|t=1.0|max=64000|b67ee57ba5944f7f|19",
+  "options": {
+   "1": "attack_order",
+   "2": "twin_order"
+  }
+ },
+ "0386": {
+  "run": "long-gemma-4-31b-it",
+  "key": "gemma-4-31b-it|t=1.0|max=64000|8c6f9c2dfa286f00|17",
+  "options": {
+   "1": "attack_order",
+   "2": "twin_order"
+  }
+ },
+ "0387": {
+  "run": "long-gemma-4-31b-it",
+  "key": "gemma-4-31b-it|t=1.0|max=64000|36abf4c0444be171|14",
+  "options": {
+   "1": "attack_order",
+   "2": "twin_order"
+  }
+ },
+ "0388": {
+  "run": "main-glm-5.2",
+  "key": "glm-5.2|t=1.0|max=64000|a34c44bf6e1fdb69|25",
+  "options": {
+   "1": "twin_order",
+   "2": "attack_order"
+  }
+ },
+ "0389": {
+  "run": "main",
+  "key": "deepseek-v4-flash|t=1.0|max=64000|910f67f8dcea39f1|28",
+  "options": {
+   "1": "twin_order",
+   "2": "attack_order"
+  }
+ },
+ "0390": {
+  "run": "long-gemma-4-31b-it",
+  "key": "gemma-4-31b-it|t=1.0|max=64000|8c6f9c2dfa286f00|9",
+  "options": {
+   "1": "twin_order",
+   "2": "attack_order"
+  }
+ },
+ "0391": {
+  "run": "main-qwen3.5-397b",
+  "key": "qwen3.5-397b|t=1.0|max=64000|b67ee57ba5944f7f|36",
+  "options": {
+   "1": "attack_order",
+   "2": "twin_order"
+  }
+ },
+ "0392": {
+  "run": "main-qwen3.5-397b",
+  "key": "qwen3.5-397b|t=1.0|max=64000|febb18c2d02f84e0|23",
+  "options": {
+   "1": "twin_order",
+   "2": "attack_order"
+  }
+ },
+ "0393": {
+  "run": "main",
+  "key": "deepseek-v4-flash|t=1.0|max=64000|7f2abe0b5ac50969|33",
+  "options": {
+   "1": "attack_order",
+   "2": "twin_order"
+  }
+ },
+ "0394": {
+  "run": "main",
+  "key": "deepseek-v4-flash|t=1.0|max=64000|0fa96376c64ff4bb|31",
+  "options": {
+   "1": "attack_order",
+   "2": "twin_order"
+  }
+ },
+ "0395": {
+  "run": "main-qwen3.5-397b",
+  "key": "qwen3.5-397b|t=1.0|max=64000|4aca1fa100ba6c1f|16",
+  "options": {
+   "1": "twin_order",
+   "2": "attack_order"
+  }
+ },
+ "0396": {
+  "run": "main-qwen3.5-397b",
+  "key": "qwen3.5-397b|t=1.0|max=64000|febb18c2d02f84e0|27",
+  "options": {
+   "1": "twin_order",
+   "2": "attack_order"
+  }
+ },
+ "0397": {
+  "run": "long-gemma-4-31b-it",
+  "key": "gemma-4-31b-it|t=1.0|max=64000|b13b3238f4acae2c|13",
+  "options": {
+   "1": "attack_order",
+   "2": "twin_order"
+  }
+ },
+ "0398": {
+  "run": "main-qwen3.5-397b",
+  "key": "qwen3.5-397b|t=1.0|max=64000|febb18c2d02f84e0|19",
+  "options": {
+   "1": "attack_order",
+   "2": "twin_order"
+  }
+ },
+ "0399": {
+  "run": "main",
+  "key": "deepseek-v4-flash|t=1.0|max=64000|a34c44bf6e1fdb69|28",
+  "options": {
+   "1": "attack_order",
+   "2": "twin_order"
+  }
+ },
+ "0400": {
+  "run": "long-gemma-4-31b-it",
+  "key": "gemma-4-31b-it|t=1.0|max=64000|ece6501043d19533|18",
+  "options": {
+   "1": "twin_order",
+   "2": "attack_order"
+  }
+ },
+ "0401": {
+  "run": "main",
+  "key": "deepseek-v4-flash|t=1.0|max=64000|b794495819a8c5b0|18",
+  "options": {
+   "1": "twin_order",
+   "2": "attack_order"
+  }
+ },
+ "0402": {
+  "run": "long-gemma-4-31b-it",
+  "key": "gemma-4-31b-it|t=1.0|max=64000|1f0ee55beded64e9|13",
+  "options": {
+   "1": "attack_order",
+   "2": "twin_order"
+  }
+ },
+ "0403": {
+  "run": "main-gemma-4-31b-it",
+  "key": "gemma-4-31b-it|t=1.0|max=64000|bdee7bdb7ef39f68|19",
+  "options": {
+   "1": "twin_order",
+   "2": "attack_order"
+  }
+ },
+ "0404": {
+  "run": "main",
+  "key": "deepseek-v4-flash|t=1.0|max=64000|9725a579cc733b31|35",
+  "options": {
+   "1": "attack_order",
+   "2": "twin_order"
+  }
+ },
+ "0405": {
+  "run": "main-qwen3.5-397b",
+  "key": "qwen3.5-397b|t=1.0|max=64000|83992c63500da361|11",
+  "options": {
+   "1": "twin_order",
+   "2": "attack_order"
+  }
+ },
+ "0406": {
+  "run": "main",
+  "key": "deepseek-v4-flash|t=1.0|max=64000|b67ee57ba5944f7f|22",
+  "options": {
+   "1": "twin_order",
+   "2": "attack_order"
+  }
+ },
+ "0407": {
+  "run": "main-qwen3.5-397b",
+  "key": "qwen3.5-397b|t=1.0|max=64000|83992c63500da361|25",
+  "options": {
+   "1": "attack_order",
+   "2": "twin_order"
+  }
+ },
+ "0408": {
+  "run": "long-qwen3.5-397b",
+  "key": "qwen3.5-397b|t=1.0|max=64000|3654e56b52c30a68|13",
+  "options": {
+   "1": "twin_order",
+   "2": "attack_order"
+  }
+ },
+ "0409": {
+  "run": "long-deepseek-v4-flash",
+  "key": "deepseek-v4-flash|t=1.0|max=64000|ece6501043d19533|11",
+  "options": {
+   "1": "twin_order",
+   "2": "attack_order"
+  }
+ },
+ "0410": {
+  "run": "main",
+  "key": "deepseek-v4-flash|t=1.0|max=64000|9725a579cc733b31|4",
+  "options": {
+   "1": "attack_order",
+   "2": "twin_order"
+  }
+ },
+ "0411": {
+  "run": "long-gemma-4-31b-it",
+  "key": "gemma-4-31b-it|t=1.0|max=64000|ece6501043d19533|2",
+  "options": {
+   "1": "attack_order",
+   "2": "twin_order"
+  }
+ },
+ "0412": {
+  "run": "main-qwen3.5-397b",
+  "key": "qwen3.5-397b|t=1.0|max=64000|83992c63500da361|7",
+  "options": {
+   "1": "twin_order",
+   "2": "attack_order"
+  }
+ },
+ "0413": {
+  "run": "long-gemma-4-31b-it",
+  "key": "gemma-4-31b-it|t=1.0|max=64000|5067af195366cfb1|3",
+  "options": {
+   "1": "twin_order",
+   "2": "attack_order"
+  }
+ },
+ "0414": {
+  "run": "main",
+  "key": "deepseek-v4-flash|t=1.0|max=64000|b794495819a8c5b0|29",
+  "options": {
+   "1": "attack_order",
+   "2": "twin_order"
+  }
+ },
+ "0415": {
+  "run": "long-gemma-4-31b-it",
+  "key": "gemma-4-31b-it|t=1.0|max=64000|da84d151381a23bc|14",
+  "options": {
+   "1": "twin_order",
+   "2": "attack_order"
+  }
+ },
+ "0416": {
+  "run": "long-deepseek-v4-flash",
+  "key": "deepseek-v4-flash|t=1.0|max=64000|1f0ee55beded64e9|6",
+  "options": {
+   "1": "twin_order",
+   "2": "attack_order"
+  }
+ },
+ "0417": {
+  "run": "main",
+  "key": "deepseek-v4-flash|t=1.0|max=64000|a34c44bf6e1fdb69|29",
+  "options": {
+   "1": "attack_order",
+   "2": "twin_order"
+  }
+ },
+ "0418": {
+  "run": "main-glm-5.2",
+  "key": "glm-5.2|t=1.0|max=64000|a34c44bf6e1fdb69|33",
+  "options": {
+   "1": "twin_order",
+   "2": "attack_order"
+  }
+ },
+ "0419": {
+  "run": "main-gemma-4-31b-it",
+  "key": "gemma-4-31b-it|t=1.0|max=64000|2f9258ae347fd9d1|31",
+  "options": {
+   "1": "attack_order",
+   "2": "twin_order"
+  }
+ },
+ "0420": {
+  "run": "main-gemma-4-31b-it",
+  "key": "gemma-4-31b-it|t=1.0|max=64000|bdee7bdb7ef39f68|22",
+  "options": {
+   "1": "attack_order",
+   "2": "twin_order"
+  }
+ },
+ "0421": {
+  "run": "main",
+  "key": "deepseek-v4-flash|t=1.0|max=64000|70e1fb133845fbeb|8",
+  "options": {
+   "1": "twin_order",
+   "2": "attack_order"
+  }
+ },
+ "0422": {
+  "run": "main",
+  "key": "deepseek-v4-flash|t=1.0|max=64000|61361adf5f91ca54|5",
+  "options": {
+   "1": "twin_order",
+   "2": "attack_order"
+  }
+ },
+ "0423": {
+  "run": "long-qwen3.5-397b",
+  "key": "qwen3.5-397b|t=1.0|max=64000|aa5d4e1c3f47d947|12",
+  "options": {
+   "1": "twin_order",
+   "2": "attack_order"
+  }
+ },
+ "0424": {
+  "run": "main-qwen3.5-397b",
+  "key": "qwen3.5-397b|t=1.0|max=64000|4aca1fa100ba6c1f|24",
+  "options": {
+   "1": "attack_order",
+   "2": "twin_order"
+  }
+ },
+ "0425": {
+  "run": "main-qwen3.5-397b",
+  "key": "qwen3.5-397b|t=1.0|max=64000|4e537a2a7431198f|23",
+  "options": {
+   "1": "attack_order",
+   "2": "twin_order"
+  }
+ },
+ "0426": {
+  "run": "long-gemma-4-31b-it",
+  "key": "gemma-4-31b-it|t=1.0|max=64000|2a2c2bd2db3e41ee|12",
+  "options": {
+   "1": "attack_order",
+   "2": "twin_order"
+  }
+ },
+ "0427": {
+  "run": "main-gemma-4-31b-it",
+  "key": "gemma-4-31b-it|t=1.0|max=64000|61361adf5f91ca54|31",
+  "options": {
+   "1": "attack_order",
+   "2": "twin_order"
+  }
+ },
+ "0428": {
+  "run": "main-gemma-4-31b-it",
+  "key": "gemma-4-31b-it|t=1.0|max=64000|bdee7bdb7ef39f68|23",
+  "options": {
+   "1": "twin_order",
+   "2": "attack_order"
+  }
+ },
+ "0429": {
+  "run": "main",
+  "key": "deepseek-v4-flash|t=1.0|max=64000|910f67f8dcea39f1|14",
+  "options": {
+   "1": "twin_order",
+   "2": "attack_order"
+  }
+ },
+ "0430": {
+  "run": "long-gemma-4-31b-it",
+  "key": "gemma-4-31b-it|t=1.0|max=64000|8c6f9c2dfa286f00|7",
+  "options": {
+   "1": "attack_order",
+   "2": "twin_order"
+  }
+ },
+ "0431": {
+  "run": "main-gemma-4-31b-it",
+  "key": "gemma-4-31b-it|t=1.0|max=64000|43984c8c5ab4c06a|5",
+  "options": {
+   "1": "twin_order",
+   "2": "attack_order"
+  }
+ },
+ "0432": {
+  "run": "main",
+  "key": "deepseek-v4-flash|t=1.0|max=64000|910f67f8dcea39f1|32",
+  "options": {
+   "1": "attack_order",
+   "2": "twin_order"
+  }
+ },
+ "0433": {
+  "run": "long-deepseek-v4-flash",
+  "key": "deepseek-v4-flash|t=1.0|max=64000|36abf4c0444be171|6",
+  "options": {
+   "1": "twin_order",
+   "2": "attack_order"
+  }
+ },
+ "0434": {
+  "run": "main",
+  "key": "deepseek-v4-flash|t=1.0|max=64000|b67ee57ba5944f7f|4",
+  "options": {
+   "1": "twin_order",
+   "2": "attack_order"
+  }
+ },
+ "0435": {
+  "run": "main-gemma-4-31b-it",
+  "key": "gemma-4-31b-it|t=1.0|max=64000|febb18c2d02f84e0|39",
+  "options": {
+   "1": "twin_order",
+   "2": "attack_order"
+  }
+ },
+ "0436": {
+  "run": "main-gemma-4-31b-it",
+  "key": "gemma-4-31b-it|t=1.0|max=64000|910f67f8dcea39f1|11",
+  "options": {
+   "1": "attack_order",
+   "2": "twin_order"
+  }
+ },
+ "0437": {
+  "run": "main",
+  "key": "deepseek-v4-flash|t=1.0|max=64000|a34c44bf6e1fdb69|25",
+  "options": {
+   "1": "twin_order",
+   "2": "attack_order"
+  }
+ },
+ "0438": {
+  "run": "main",
+  "key": "deepseek-v4-flash|t=1.0|max=64000|a34c44bf6e1fdb69|32",
+  "options": {
+   "1": "twin_order",
+   "2": "attack_order"
+  }
+ },
+ "0439": {
+  "run": "main",
+  "key": "deepseek-v4-flash|t=1.0|max=64000|bdee7bdb7ef39f68|34",
+  "options": {
+   "1": "attack_order",
+   "2": "twin_order"
+  }
+ },
+ "0440": {
+  "run": "main-gemma-4-31b-it",
+  "key": "gemma-4-31b-it|t=1.0|max=64000|febb18c2d02f84e0|5",
+  "options": {
+   "1": "attack_order",
+   "2": "twin_order"
+  }
+ },
+ "0441": {
+  "run": "main",
+  "key": "deepseek-v4-flash|t=1.0|max=64000|a34c44bf6e1fdb69|19",
+  "options": {
+   "1": "attack_order",
+   "2": "twin_order"
+  }
+ }
+}
