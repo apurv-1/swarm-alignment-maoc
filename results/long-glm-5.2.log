@@ -1,0 +1,92 @@
+27 scenarios, 72 transcripts, 1440 distinct calls, 1440 still to run
+  glm-5.2: 1440 calls, about 28.7454 credits, at most 419.1095
+  0.0000 credits already charged to results/raw/long-glm-5.2.jsonl; the budget for this file is 100.0
+25/1440 calls done, 0.5682 credits
+50/1440 calls done, 2.9417 credits
+75/1440 calls done, 4.2679 credits
+100/1440 calls done, 6.9163 credits
+125/1440 calls done, 8.9577 credits
+150/1440 calls done, 11.4551 credits
+175/1440 calls done, 13.4312 credits
+200/1440 calls done, 17.4424 credits
+225/1440 calls done, 19.4213 credits
+250/1440 calls done, 19.4213 credits
+275/1440 calls done, 19.6292 credits
+300/1440 calls done, 19.8683 credits
+325/1440 calls done, 20.8642 credits
+350/1440 calls done, 24.3967 credits
+375/1440 calls done, 24.9121 credits
+400/1440 calls done, 26.5861 credits
+425/1440 calls done, 28.6811 credits
+450/1440 calls done, 30.5370 credits
+475/1440 calls done, 32.9337 credits
+500/1440 calls done, 35.5415 credits
+--- restarted at 17:26 with 32 workers, cap 160
+27 scenarios, 72 transcripts, 1440 distinct calls, 1037 still to run
+  glm-5.2: 1037 calls, about 20.7025 credits, at most 301.8245
+  40.2601 credits already charged to results/raw/long-glm-5.2.jsonl; the budget for this file is 160.0
+--- stopped at 17:33: 32 workers drew constant rate limits on this account; restarted with 16
+27 scenarios, 72 transcripts, 1440 distinct calls, 1013 still to run
+  glm-5.2: 1013 calls, about 20.2247 credits, at most 294.8442
+  45.5675 credits already charged to results/raw/long-glm-5.2.jsonl; the budget for this file is 160.0
+25/1013 calls done, 1.0864 credits
+--- split at 17:54: long-race-1 and long-race-2 stay here on the new account; the other 7 families run on account 1 in results/raw/long-glm-5.2-b.jsonl, which starts as a copy of this file's first 3913 lines. Before the report, lines 3914 onward of the b file are appended here.
+6 scenarios, 16 transcripts, 320 distinct calls, 205 still to run
+  glm-5.2: 205 calls, about 4.1295 credits, at most 59.8139
+  52.7111 credits already charged to results/raw/long-glm-5.2.jsonl; the budget for this file is 78.0
+25/205 calls done, 0.9035 credits
+50/205 calls done, 3.6047 credits
+75/205 calls done, 5.5908 credits
+100/205 calls done, 8.8557 credits
+125/205 calls done, 10.9320 credits
+150/205 calls done, 13.0097 credits
+175/205 calls done, 15.1097 credits
+200/205 calls done, 18.2216 credits
+Finished 205 of 205 calls, 19.6327 credits: 0 API errors, 46 replies without a valid score, 16 rate limits waited out.
+--- merged at 20:01: appended lines 3914 onward of results/raw/long-glm-5.2-b.jsonl here
+--- split at 17:54: long-race-1 and long-race-2 stay here on the new account; the other 7 families run on account 1 in results/raw/long-glm-5.2-b.jsonl, which starts as a copy of this file's first 3913 lines. Before the report, lines 3914 onward of the b file are appended here.
+21 scenarios, 56 transcripts, 1120 distinct calls, 773 still to run
+  glm-5.2: 773 calls, about 15.3947 credits, at most 224.8365
+  52.7111 credits already charged to results/raw/long-glm-5.2-b.jsonl; the budget for this file is 133.0
+25/773 calls done, 0.8503 credits
+50/773 calls done, 3.0960 credits
+75/773 calls done, 5.7864 credits
+100/773 calls done, 7.2433 credits
+125/773 calls done, 9.6604 credits
+150/773 calls done, 11.4044 credits
+175/773 calls done, 13.5671 credits
+200/773 calls done, 15.1547 credits
+225/773 calls done, 16.1539 credits
+250/773 calls done, 18.2850 credits
+275/773 calls done, 19.9396 credits
+300/773 calls done, 21.6874 credits
+325/773 calls done, 24.3522 credits
+--- restarted at 19:06 with 48 workers
+21 scenarios, 56 transcripts, 1120 distinct calls, 445 still to run
+  glm-5.2: 445 calls, about 8.8629 credits, at most 129.4356
+  84.3304 credits already charged to results/raw/long-glm-5.2-b.jsonl; the budget for this file is 133.0
+25/445 calls done, 0.3297 credits
+50/445 calls done, 0.7375 credits
+75/445 calls done, 1.4912 credits
+100/445 calls done, 2.7095 credits
+125/445 calls done, 4.3713 credits
+150/445 calls done, 7.8965 credits
+175/445 calls done, 10.5024 credits
+200/445 calls done, 12.1402 credits
+225/445 calls done, 13.6160 credits
+250/445 calls done, 15.1665 credits
+275/445 calls done, 16.6580 credits
+300/445 calls done, 17.7362 credits
+325/445 calls done, 19.5104 credits
+350/445 calls done, 21.2610 credits
+375/445 calls done, 22.9072 credits
+400/445 calls done, 25.5555 credits
+425/445 calls done, 30.0679 credits
+Finished 445 of 445 calls, 35.5384 credits: 1 API errors, 70 replies without a valid score, 69 rate limits waited out.
+21 scenarios, 56 transcripts, 1120 distinct calls, 0 still to run
+  119.8687 credits already charged to results/raw/long-glm-5.2-b.jsonl; the budget for this file is 133.0
+Finished 0 of 0 calls, 0.0000 credits: 0 API errors, 0 replies without a valid score, 0 rate limits waited out.
+27 scenarios, 72 transcripts, 1440 distinct calls, 1 still to run
+  glm-5.2: 1 calls, about 0.0201 credits, at most 0.2915
+  139.5014 credits already charged to results/raw/long-glm-5.2.jsonl; the budget for this file is 160.0
+Finished 1 of 1 calls, 0.1263 credits: 0 API errors, 0 replies without a valid score, 0 rate limits waited out.
