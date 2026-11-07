@@ -1,0 +1,123 @@
+21 scenarios, 56 transcripts, 2240 distinct calls, 2235 still to run
+  qwen3.5-397b: 2235 calls, about 32.4077 credits, at most 505.1108
+  0.1076 credits already charged to results/raw/main-qwen3.5-397b.jsonl; the budget for this file is 90.0
+25/2235 calls done, 0.2630 credits
+50/2235 calls done, 0.8507 credits
+75/2235 calls done, 1.3832 credits
+100/2235 calls done, 1.9991 credits
+125/2235 calls done, 2.4316 credits
+150/2235 calls done, 3.1463 credits
+175/2235 calls done, 3.5679 credits
+200/2235 calls done, 4.2815 credits
+225/2235 calls done, 4.6885 credits
+250/2235 calls done, 5.2632 credits
+275/2235 calls done, 5.7355 credits
+300/2235 calls done, 6.2592 credits
+325/2235 calls done, 6.8489 credits
+350/2235 calls done, 7.3272 credits
+375/2235 calls done, 7.9717 credits
+400/2235 calls done, 8.3923 credits
+425/2235 calls done, 9.0153 credits
+450/2235 calls done, 9.5245 credits
+475/2235 calls done, 10.0689 credits
+500/2235 calls done, 10.5535 credits
+525/2235 calls done, 11.1332 credits
+550/2235 calls done, 11.7789 credits
+575/2235 calls done, 12.2856 credits
+600/2235 calls done, 13.0651 credits
+625/2235 calls done, 13.5702 credits
+650/2235 calls done, 14.2492 credits
+675/2235 calls done, 14.6419 credits
+700/2235 calls done, 15.2452 credits
+725/2235 calls done, 15.8030 credits
+750/2235 calls done, 16.2939 credits
+775/2235 calls done, 16.9547 credits
+800/2235 calls done, 17.4476 credits
+825/2235 calls done, 18.0737 credits
+850/2235 calls done, 18.6320 credits
+875/2235 calls done, 19.2479 credits
+900/2235 calls done, 19.7091 credits
+925/2235 calls done, 20.3562 credits
+950/2235 calls done, 20.9086 credits
+975/2235 calls done, 21.4317 credits
+1000/2235 calls done, 22.0037 credits
+1025/2235 calls done, 22.5393 credits
+1050/2235 calls done, 23.1434 credits
+1075/2235 calls done, 23.7130 credits
+1100/2235 calls done, 24.3065 credits
+1125/2235 calls done, 24.8383 credits
+1150/2235 calls done, 25.3990 credits
+1175/2235 calls done, 25.9585 credits
+1200/2235 calls done, 26.5381 credits
+1225/2235 calls done, 27.0673 credits
+1250/2235 calls done, 27.5440 credits
+1275/2235 calls done, 28.1880 credits
+1300/2235 calls done, 28.6716 credits
+1325/2235 calls done, 29.3383 credits
+1350/2235 calls done, 29.9039 credits
+1375/2235 calls done, 30.5054 credits
+1400/2235 calls done, 31.0162 credits
+1425/2235 calls done, 31.5757 credits
+1450/2235 calls done, 32.1356 credits
+1475/2235 calls done, 32.6676 credits
+1500/2235 calls done, 33.2518 credits
+1525/2235 calls done, 33.7961 credits
+1550/2235 calls done, 34.4005 credits
+1575/2235 calls done, 35.0220 credits
+1600/2235 calls done, 35.5529 credits
+1625/2235 calls done, 36.1437 credits
+1650/2235 calls done, 36.7273 credits
+1675/2235 calls done, 37.2896 credits
+1700/2235 calls done, 37.8469 credits
+1725/2235 calls done, 38.5270 credits
+1750/2235 calls done, 38.9815 credits
+1775/2235 calls done, 39.6501 credits
+1800/2235 calls done, 40.1660 credits
+1825/2235 calls done, 40.7704 credits
+1850/2235 calls done, 41.2260 credits
+1875/2235 calls done, 41.8771 credits
+1900/2235 calls done, 42.4242 credits
+1925/2235 calls done, 43.0059 credits
+1950/2235 calls done, 43.6358 credits
+1975/2235 calls done, 44.1349 credits
+2000/2235 calls done, 44.8079 credits
+2025/2235 calls done, 45.2805 credits
+2050/2235 calls done, 45.8892 credits
+2075/2235 calls done, 46.3327 credits
+2100/2235 calls done, 47.0669 credits
+2125/2235 calls done, 47.5569 credits
+2150/2235 calls done, 48.2600 credits
+2175/2235 calls done, 48.7252 credits
+2200/2235 calls done, 49.3222 credits
+2225/2235 calls done, 49.9091 credits
+Finished 2235 of 2235 calls, 50.2992 credits: 0 API errors, 0 replies without a valid score, 0 rate limits waited out.
+21 scenarios, 63 transcripts, 560 distinct calls, 560 still to run
+  qwen3.5-397b: 560 calls, about 7.9962 credits, at most 126.0646
+  50.4068 credits already charged to results/raw/main-qwen3.5-397b.jsonl; the budget for this file is 90.0
+25/560 calls done, 0.4213 credits
+50/560 calls done, 0.9670 credits
+75/560 calls done, 1.4804 credits
+100/560 calls done, 2.0331 credits
+125/560 calls done, 2.5518 credits
+150/560 calls done, 3.0282 credits
+175/560 calls done, 3.5810 credits
+200/560 calls done, 4.0981 credits
+225/560 calls done, 4.6032 credits
+250/560 calls done, 5.1426 credits
+275/560 calls done, 5.6321 credits
+300/560 calls done, 6.1672 credits
+325/560 calls done, 6.7075 credits
+350/560 calls done, 7.2673 credits
+375/560 calls done, 7.7186 credits
+400/560 calls done, 8.2250 credits
+425/560 calls done, 8.9326 credits
+450/560 calls done, 9.4857 credits
+475/560 calls done, 10.0099 credits
+500/560 calls done, 10.5695 credits
+525/560 calls done, 11.0429 credits
+550/560 calls done, 11.5205 credits
+Finished 560 of 560 calls, 11.8057 credits: 1 API errors, 0 replies without a valid score, 0 rate limits waited out.
+21 scenarios, 63 transcripts, 560 distinct calls, 1 still to run
+  qwen3.5-397b: 1 calls, about 0.0144 credits, at most 0.2257
+  62.2125 credits already charged to results/raw/main-qwen3.5-397b.jsonl; the budget for this file is 90.0
+Finished 1 of 1 calls, 0.0142 credits: 0 API errors, 0 replies without a valid score, 0 rate limits waited out.
