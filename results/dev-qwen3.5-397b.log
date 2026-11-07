@@ -1,0 +1,16 @@
+12 scenarios, 52 transcripts, 320 distinct calls, 320 still to run
+  qwen3.5-397b: 320 calls, about 4.6047 credits, at most 72.179
+  0.0000 credits already charged to results/raw/dev-qwen3.5-397b.jsonl; the budget for this file is 15.0
+25/320 calls done, 0.4162 credits
+50/320 calls done, 0.9955 credits
+75/320 calls done, 1.4855 credits
+100/320 calls done, 1.9400 credits
+125/320 calls done, 2.4696 credits
+150/320 calls done, 2.9304 credits
+175/320 calls done, 3.3910 credits
+200/320 calls done, 3.8681 credits
+225/320 calls done, 4.3398 credits
+250/320 calls done, 4.8356 credits
+275/320 calls done, 5.3231 credits
+300/320 calls done, 5.8917 credits
+Finished 320 of 320 calls, 6.3512 credits: 0 API errors, 0 replies without a valid score, 3 rate limits waited out.
