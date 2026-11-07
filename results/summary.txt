@@ -1,0 +1,31 @@
+H1 delta per family (interleaved separation minus the mean of the two grouped views); blank = not included or no data
+
+family          deepseek           glm       qwen3.5         gemma deepseek long      glm long  qwen3.5 long    gemma long
+race-1              +8.6          -0.5                      +100.2          +0.2          +0.2                      +100.0
+race-2             +36.2          -1.5          +2.6         +99.8          +2.8          +0.4          +0.1        +100.0
+race-3             +18.8          +0.2          +2.6        +100.0         +15.2          +0.4          +6.0        +100.0
+race-4             +12.5          -0.5         +11.8         +97.4          +8.0          -0.4         +14.2         +89.3
+race-6             +14.5          +1.2         +30.4         +98.8          +7.4          -0.2         +12.0         +99.5
+race-7             +26.2          -0.7          +4.5         +85.0         +20.1          +0.3          +0.2        +100.0
+race-11            +38.8         +11.6          +5.9         +63.8          +0.0          +0.3          -0.2         +57.5
+race-12            +24.7          -0.2         +12.8         +50.3         +17.2          +5.6          +7.0         +50.0
+race-13             +8.9          +2.4                       +98.8          +0.0          -0.1                      +100.0
+
+deepseek       n= 9  mean   +21.0  9 positive  one-sided p = 0.0020  (confirmatory)
+               without race-11: n= 8  mean   +18.8  8 positive  one-sided p = 0.0039
+glm            n= 9  mean    +1.3  4 positive  one-sided p = 0.2305  (replication)
+               without race-11: n= 8  mean    +0.1  3 positive  one-sided p = 0.4609
+qwen3.5        n= 7  mean   +10.1  7 positive  one-sided p = 0.0078  (replication)
+               without race-11: n= 6  mean   +10.8  6 positive  one-sided p = 0.0156
+gemma          n= 9  mean   +88.2  9 positive  one-sided p = 0.0020  (replication)
+               without race-11: n= 8  mean   +91.3  8 positive  one-sided p = 0.0039
+deepseek long  n= 9  mean    +7.9  7 positive  one-sided p = 0.0078  (secondary, long logs)
+               without race-11: n= 8  mean    +8.9  7 positive  one-sided p = 0.0078
+glm long       n= 9  mean    +0.7  6 positive  one-sided p = 0.0723  (secondary, long logs)
+               without race-11: n= 8  mean    +0.8  5 positive  one-sided p = 0.1133
+qwen3.5 long   n= 7  mean    +5.6  6 positive  one-sided p = 0.0312  (secondary, long logs)
+               without race-11: n= 6  mean    +6.6  6 positive  one-sided p = 0.0156
+gemma long     n= 9  mean   +88.5  9 positive  one-sided p = 0.0020  (secondary, long logs)
+               without race-11: n= 8  mean   +92.3  8 positive  one-sided p = 0.0039
+
+Replication monitors, short logs, Holm-corrected: gemma 0.0059, qwen3.5 0.0156, glm 0.2305
