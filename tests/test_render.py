@@ -64,8 +64,9 @@ def test_per_agent_splits_actions_without_loss_and_shows_the_claim(scenario):
         own = scenario.actions_by_agent(agent.id)
         for number, action in enumerate(own, 1):
             assert format_action(action, number, None) in text
+        mine = {(a.command, a.output) for a in own}  # long families share routine filler across agents
         for action in scenario.actions:
-            if action.agent != agent.id:
+            if action.agent != agent.id and (action.command, action.output) not in mine:
                 assert f"$ {action.command}\n{action.output}" not in text
 
 

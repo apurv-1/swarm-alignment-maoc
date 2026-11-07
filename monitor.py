@@ -28,6 +28,7 @@ import fcntl
 import hashlib
 import json
 import math
+import os
 import re
 import uuid
 import signal
@@ -681,6 +682,8 @@ def main() -> None:
     parser.add_argument("--temperature", type=float, default=1.0)
     parser.add_argument("--max-output-tokens", type=_positive_int, default=MAX_OUTPUT_TOKENS)
     parser.add_argument("--workers", type=_positive_int, default=4)
+    parser.add_argument("--api-key-env", default="ADAPTION_API_KEY",
+                        help="Environment variable holding the API key, so parallel runs can each use their own key.")
     parser.add_argument("--max-credits", type=float, default=1.0, help="Budget for the whole results file.")
     parser.add_argument("--retry-parse-failures", action="store_true", help="Call again for replies with no valid score.")
     parser.add_argument("--retry-maybe-billed", action="store_true", help="Call again for calls that may already have been billed.")
@@ -708,7 +711,10 @@ def main() -> None:
     from dotenv import load_dotenv
 
     load_dotenv(PROJECT_DIR / ".env")
-    client = Adaption(max_retries=0, timeout=httpx.Timeout(READ_TIMEOUT, connect=10))
+    api_key = os.environ.get(args.api_key_env)
+    if not api_key:
+        parser.error(f"{args.api_key_env} is not set in the environment or .env")
+    client = Adaption(api_key=api_key, max_retries=0, timeout=httpx.Timeout(READ_TIMEOUT, connect=10))
     try:
         counts = run(client, calls, args.out, args.workers, args.retry_parse_failures, args.retry_maybe_billed, args.max_credits)
     except KeyboardInterrupt:

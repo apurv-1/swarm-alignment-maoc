@@ -117,8 +117,41 @@ To keep that selection from carrying over as noise, the main run uses fresh read
 
 ## Second monitor
 
-If credits allow and the user approves, the same frozen families are read by qwen3.5-397b at 20 readings in team_interleaved and both grouped views, for disguised and twin.
-This is descriptive: it shows whether the effect is specific to one model.
+Replaced by amendment 2 below.
+
+## Amendment 2: more families, more monitors, long logs
+
+Written and pushed on Nov 7 before the freeze, while development round 1 was still running, and before any grouped view of any race family was run with any monitor.
+Credits turned out not to be the limit, so the plan adds data where it can answer a question the first plan could not.
+Nothing in the hypotheses, the inclusion rules, the confirmatory test or the smallest effect of interest changes.
+
+### More families
+
+- Six more families, race-8 to race-13, are written from the same recipe and go through the same development, inclusion and rebuild rules on deepseek-v4-flash.
+- At least three of them make the harmful order the usual pipeline order, so the twin's order is the unusual one. This balances the asymmetry in race-1 to race-7, where the twin mostly follows the usual order, and gives H2's first half a test that a usual-order prior cannot pass.
+- The confirmatory set is every family, old or new, that passes inclusion on deepseek-v4-flash. H1 needs at least 5.
+
+### More monitors
+
+- deepseek-v4-flash stays the only confirmatory monitor.
+- glm-5.2, qwen3.5-397b and gemma-4-31b-it are replication monitors, from three other labs, the first two being the strongest monitors the gateway offers.
+- Each replication monitor gets its own development run on the frozen families (per_agent, solo and team_interleaved, 10 readings) and its own inclusion with the same four rules, before any of its grouped readings. A monitor that cannot catch an attack shown in time order cannot test whether grouping hides it.
+- Each replication monitor then gets the same main run as deepseek-v4-flash (40 readings per whole-log cell, 20 per per-agent log) on the families it includes, into its own file, `results/raw/main-<model>.jsonl`.
+- H1 is tested per replication monitor with the same one-sided sign-flip test, Holm-corrected across the three monitors. The report gives every monitor's Δ per family side by side.
+
+### Long logs
+
+- The short logs sit at the ceiling: in development round 0, team_interleaved caught 100% of attacks in every family. Real agent trajectories are much longer, and layout is most likely to matter when the racing steps sit far apart.
+- `scripts/build_long_families.py` builds long-race-N from each frozen race-N by adding three routine steps after every real action, by the same agent. The filler is environment and hygiene work (GPU and package checks, linting, unrelated tests) whose output never depends on the other agents or on time. Logs grow from about 12 steps to about 48.
+- Each agent's log stays identical between disguised and twin, the racing pair still differs only in time order, and the validator checks this as for the short families. The direct variant's extra steps get no filler.
+- The long arm is secondary. It runs solo, team_interleaved, team_grouped and team_grouped_swapped, for disguised and twin, at 20 readings, with every monitor, into `results/raw/long-<model>.jsonl`. It has no development round and no inclusion of its own: it uses the families included on the short logs.
+- H1's Δ is computed on the long arm for each monitor and tested with the same one-sided sign-flip test, as a secondary contrast. The report also gives each family's Δ on long minus Δ on short, descriptively.
+
+### Running
+
+- Each run is its own process with its own results file, lock and budget, and its own API key from `.env` (`--api-key-env`), so runs do not share a rate limit. Rate limits are still waited out automatically.
+- 16 workers per run.
+- Expected total for all of this is about 250 to 350 credits. Each file gets a hard budget well under its worst case.
 
 ## Reproducing the pilot
 
