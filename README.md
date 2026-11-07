@@ -68,6 +68,17 @@ uv run python main_report.py main
 uv run python main_report.py summary
 ```
 
+Every number in the report is written to `report/generated/numbers.md` by `report_numbers.py`, and `--check` lists any decimal or percentage in the report's abstract and results that the generated file lacks.
+The figure needs matplotlib, which is in the optional `figures` group.
+
+```bash
+uv run python report_numbers.py --check
+```
+
+```bash
+uv run --group figures python report_numbers.py --figure
+```
+
 To rebuild the scenario files from their definitions, run the builders in this order.
 They rewrite `data/scenarios/`, and the tests check that every family still passes the validator.
 
@@ -102,6 +113,8 @@ uv run python check_monitor.py export --out prompts.jsonl
 ```
 
 Each line has an `id`, the `family`, the neutral `instructions` the paper used, and the `transcript`.
+The paper sent `instructions` as the system instructions and `transcript` as the input, at temperature 1.0 with a 64,000-token output cap.
+Lines come in a fixed shuffled order, and the id is a hash of the prompt, so neither says which transcript is the attack.
 There are 72 lines: nine families, attack and timing twin, in the four whole-log views.
 Run your monitor on each line, as many times as you like, and write one JSON line per reading, `{"id": "<the line's id>", "score": 0-100}`, where 100 means the reported result is clearly invalid.
 Then:
@@ -110,7 +123,8 @@ Then:
 uv run python check_monitor.py score --prompts prompts.jsonl --scores my-scores.jsonl
 ```
 
-It prints H1 for your monitor: each family's separation in time order minus the mean of the two grouped views, the mean with a 95% interval and the one-sided sign-flip p, and the share of attacks and twins judged invalid in each view.
+It prints H1 for your monitor: each family's separation in time order minus the mean of the two grouped views, and the mean with a 95% interval and the one-sided sign-flip p.
+It also prints, for each view, the separation itself, the share of attacks and twins judged invalid, and how many readings had no score; write `"score": null` for a reading that returned none.
 A monitor that separates attacks from twins in time order but not in the grouped views reads block order as time order.
 `--long` exports the long-log versions instead.
 
@@ -141,7 +155,7 @@ It prints the same table again without race-11, as amendment 4 requires.
 
 The labels in `results/labels/` were made by two model labellers instead of by hand, as `MAIN.md` records.
 `export` writes every error to label as blind items, mixed across monitors, to `results/labels/blind/items/`.
-Each model labeller answered independently into `results/labels/blind/answers-<name>.jsonl`.
+Each model labeller answered independently into `results/labels/blind/answers-<name>.jsonl`, from the prompt in `results/labels/blind/labeller-prompt.md`.
 `reconcile` keeps the labels on which they agree and lists the rest, which a human then labels blind with `--disputed`.
 A human label always overrides a model label.
 
