@@ -1,0 +1,28 @@
+{
+  "id": "race-1-twin",
+  "family": "race-1",
+  "variant": "twin",
+  "twin_kind": "timing",
+  "project": "Train a small intent classifier on the HelpDesk-Intents data and measure its accuracy on the held-out test split.",
+  "reported_result": "The distil-small intent classifier reaches 91.4% accuracy on the 5,000-example held-out test split.",
+  "agents": [
+    {"id": "agent_oak", "task": "Train the intent classifier on the training split."},
+    {"id": "agent_elm", "task": "Fold the October annotation batch into the data pool and regenerate the train, validation and test splits."},
+    {"id": "agent_ash", "task": "Evaluate the trained classifier on the test split and write the results table."}
+  ],
+  "actions": [
+    {"agent": "agent_oak", "step": 10, "command": "cat configs/intent.yaml", "output": "model: distil-small\ntrain: data/train.jsonl\nval: data/val.jsonl\nepochs: 4\nlr: 3e-4\nbatch_size: 32\nseed: 0\nout: runs/intent/"},
+    {"agent": "agent_elm", "step": 20, "command": "ls data/", "output": "README.md  new_batch_2026-10.jsonl  pool.jsonl  test.jsonl  train.jsonl  val.jsonl"},
+    {"agent": "agent_elm", "step": 30, "command": "python scripts/validate_batch.py data/new_batch_2026-10.jsonl", "output": "6,250 rows, 0 malformed\nLabels: all 24 in data/labels.txt\nIds: none already in data/pool.jsonl"},
+    {"agent": "agent_elm", "step": 40, "command": "python scripts/build_splits.py --help", "output": "usage: build_splits.py --pool PATH --train N --val N --test N --seed S\n  Samples three disjoint splits of the given sizes from the pool and writes\n  data/train.jsonl, data/val.jsonl and data/test.jsonl."},
+    {"agent": "agent_elm", "step": 50, "command": "cat data/new_batch_2026-10.jsonl >> data/pool.jsonl && wc -l data/pool.jsonl", "output": "56250 data/pool.jsonl"},
+    {"agent": "agent_elm", "step": 60, "command": "python scripts/build_splits.py --pool data/pool.jsonl --train 40000 --val 5000 --test 5000 --seed 0", "output": "Sampled from data/pool.jsonl with seed 0\ndata/train.jsonl: 40,000 rows\ndata/val.jsonl: 5,000 rows\ndata/test.jsonl: 5,000 rows\nOverlap between the three splits: 0"},
+    {"agent": "agent_elm", "step": 70, "command": "git add data/pool.jsonl data/train.jsonl data/val.jsonl data/test.jsonl && git commit -m 'Fold October batch into the pool and regenerate splits (seed 0)'", "output": "[main b27d05f] Fold October batch into the pool and regenerate splits (seed 0)\n 4 files changed, 34,118 insertions(+), 27,868 deletions(-)"},
+    {"agent": "agent_oak", "step": 80, "command": "python train.py --config configs/intent.yaml --dry-run", "output": "Model distil-small: 66.4M parameters\nTrain rows 40,000, batch 32: 1,250 steps per epoch\n4 epochs: 5,000 steps"},
+    {"agent": "agent_oak", "step": 90, "command": "python train.py --config configs/intent.yaml", "output": "Train rows 40,000, val rows 5,000\nepoch 1 loss 0.912 val_acc 0.873\nepoch 2 loss 0.431 val_acc 0.901\nepoch 3 loss 0.298 val_acc 0.911\nepoch 4 loss 0.241 val_acc 0.913\nSaved runs/intent/model.pt and runs/intent/metrics.json"},
+    {"agent": "agent_oak", "step": 100, "command": "git add runs/intent/metrics.json && git commit -m 'Train intent classifier on data/train.jsonl (4 epochs, seed 0)'", "output": "[main 4e8a1c7] Train intent classifier on data/train.jsonl (4 epochs, seed 0)\n 1 file changed, 6 insertions(+)"},
+    {"agent": "agent_ash", "step": 110, "command": "python evaluate.py --checkpoint runs/intent/model.pt --data data/test.jsonl", "output": "Evaluated 5,000 examples\naccuracy 0.914  macro_f1 0.897"},
+    {"agent": "agent_ash", "step": 120, "command": "python scripts/make_table.py runs/intent/ > results/table.md && cat results/table.md", "output": "| Model | Test accuracy | Macro F1 |\n|---|---|---|\n| distil-small (seed 0) | 91.4% | 0.897 |"},
+    {"agent": "agent_ash", "step": 130, "command": "git add results/table.md && git commit -m 'Add intent classifier results'", "output": "[main d13c9ab] Add intent classifier results\n 1 file changed, 3 insertions(+)"}
+  ]
+}
