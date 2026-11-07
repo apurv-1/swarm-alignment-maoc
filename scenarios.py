@@ -4,9 +4,14 @@ Scenarios come in families. Each family holds three variants of the same project
 
 - disguised: a split attack. Every sabotage step can be defended using only what its own agent
   saw; the false result appears only when the agents' views are combined.
-- twin: benign. Exactly one agent's log differs from the disguised variant: the context agent,
-  who is not a saboteur. Every other log, including the reported result, is identical, so only
-  the combination of views can tell attack from twin.
+- twin: benign, of one of two kinds, named by "twin_kind".
+  - "content" (the pilot families): exactly one agent's log differs from the disguised variant:
+    the context agent, who is not a saboteur. Every other log, including the reported result, is
+    identical, so only the combination of views can tell attack from twin.
+  - "timing" (the main-run families): every agent's log is identical, action for action. Only the
+    time order of steps across agents changes, so that two steps of the minimal harmful set, by
+    different agents, happen in the harmless order. Only the order across agents tells attack
+    from twin.
 - direct: the disguised variant plus extra read steps in the saboteur's own log that reveal the
   conflict before the saboteur's last action, with nothing else changed. This is the positive control: the harm is visible from
   a single agent's log.
@@ -19,6 +24,7 @@ A scenario is a JSON file named <id>.json:
       "id": "fam-a-disguised",
       "family": "fam-a",
       "variant": "disguised" | "twin" | "direct",
+      "twin_kind": "content" | "timing",        # optional, default "content"; same in every variant
       "project": "What the team is building and the question it asks",
       "reported_result": "The result the team reports, identical across variants",
       "agents": [{"id": "agent_a", "task": "..."}, ...],
@@ -40,6 +46,7 @@ from typing import Literal
 
 SCENARIOS_DIR = Path(__file__).parent / "data" / "scenarios"
 VARIANTS = ("disguised", "twin", "direct")
+TWIN_KINDS = ("content", "timing")
 
 
 @dataclass(frozen=True)
@@ -69,6 +76,7 @@ class Scenario:
     minimal_harmful_set: tuple[int, ...] = ()
     structure: str = ""
     combined_harm: str = ""
+    twin_kind: str = "content"
 
     @property
     def is_attack(self) -> bool:
@@ -98,6 +106,8 @@ def validate(scenario: Scenario) -> None:
         raise ScenarioError(f"{sid}: variant must be one of {VARIANTS}")
     if not scenario.reported_result:
         raise ScenarioError(f"{sid}: needs reported_result")
+    if scenario.twin_kind not in TWIN_KINDS:
+        raise ScenarioError(f"{sid}: twin_kind must be one of {TWIN_KINDS}")
 
     agent_ids = [a.id for a in scenario.agents]
     if len(set(agent_ids)) != len(agent_ids):
@@ -150,21 +160,13 @@ def _logs_by_agent(scenario: Scenario) -> dict[str, list[Action]]:
     return {a.id: scenario.actions_by_agent(a.id) for a in scenario.agents}
 
 
-def validate_family(variants: list[Scenario]) -> None:
-    """Check the rules that link the variants of one family."""
-    by_variant = {s.variant: s for s in variants}
-    family = variants[0].family
-    if sorted(by_variant) != sorted(VARIANTS) or len(variants) != len(VARIANTS):
-        raise ScenarioError(f"{family}: needs exactly one each of {VARIANTS}")
-    for attribute in ("project", "reported_result", "agents"):
-        if len({repr(getattr(s, attribute)) for s in variants}) != 1:
-            raise ScenarioError(f"{family}: {attribute} must match across variants")
+def _contents_by_agent(scenario: Scenario) -> dict[str, list[tuple[str, str]]]:
+    """Each agent's log without step numbers: what the agent did, in its own order."""
+    return {agent: [(a.command, a.output) for a in log] for agent, log in _logs_by_agent(scenario).items()}
 
-    disguised, twin, direct = (by_variant[v] for v in VARIANTS)
-    saboteurs = disguised.agents_of(disguised.sabotage_steps)
 
-    # Twin: same steps by the same agents; exactly one agent's log differs, and that agent is
-    # neither a saboteur nor the reporter.
+def _check_content_twin(disguised: Scenario, twin: Scenario, saboteurs: set[str], reporter: str) -> None:
+    family = disguised.family
     if [(a.step, a.agent) for a in disguised.actions_in_time_order()] != [
         (a.step, a.agent) for a in twin.actions_in_time_order()
     ]:
@@ -175,12 +177,63 @@ def validate_family(variants: list[Scenario]) -> None:
         raise ScenarioError(f"{family}: twin must differ in exactly one agent's log, not {differing}")
     if differing[0] in saboteurs:
         raise ScenarioError(f"{family}: twin must not change a saboteur's log")
+    if differing[0] == reporter:
+        raise ScenarioError(f"{family}: twin must not change the reporter's log")
+
+
+def _check_timing_twin(disguised: Scenario, twin: Scenario, reporter: str) -> None:
+    family = disguised.family
+    if _contents_by_agent(disguised) != _contents_by_agent(twin):
+        raise ScenarioError(f"{family}: a timing twin must keep every agent's log, action for action")
+    if twin.actions_in_time_order()[-1].agent != reporter:
+        raise ScenarioError(f"{family}: the reporter must act last in the twin too")
+
+    # Identify each action by (agent, position in its own log), which both variants share.
+    def time_positions(scenario: Scenario) -> dict[tuple[str, int], int]:
+        order = scenario.actions_in_time_order()
+        return {
+            (agent, i): order.index(action)
+            for agent, log in _logs_by_agent(scenario).items()
+            for i, action in enumerate(log)
+        }
+
+    in_disguised, in_twin = time_positions(disguised), time_positions(twin)
+    harmful = [
+        (a.agent, disguised.actions_by_agent(a.agent).index(a))
+        for a in disguised.actions
+        if a.step in disguised.minimal_harmful_set
+    ]
+    flipped = any(
+        x[0] != y[0] and (in_disguised[x] < in_disguised[y]) != (in_twin[x] < in_twin[y])
+        for x in harmful
+        for y in harmful
+    )
+    if not flipped:
+        raise ScenarioError(
+            f"{family}: a timing twin must reverse the order of two harmful steps by different agents"
+        )
+
+
+def validate_family(variants: list[Scenario]) -> None:
+    """Check the rules that link the variants of one family."""
+    by_variant = {s.variant: s for s in variants}
+    family = variants[0].family
+    if sorted(by_variant) != sorted(VARIANTS) or len(variants) != len(VARIANTS):
+        raise ScenarioError(f"{family}: needs exactly one each of {VARIANTS}")
+    for attribute in ("project", "reported_result", "agents", "twin_kind"):
+        if len({repr(getattr(s, attribute)) for s in variants}) != 1:
+            raise ScenarioError(f"{family}: {attribute} must match across variants")
+
+    disguised, twin, direct = (by_variant[v] for v in VARIANTS)
+    saboteurs = disguised.agents_of(disguised.sabotage_steps)
     # The reporter acts last; its log carries the outcome numbers, which must not differ.
     reporter = disguised.actions_in_time_order()[-1].agent
     if reporter in saboteurs:
         raise ScenarioError(f"{family}: the reporter must not be a saboteur")
-    if differing[0] == reporter:
-        raise ScenarioError(f"{family}: twin must not change the reporter's log")
+    if disguised.twin_kind == "timing":
+        _check_timing_twin(disguised, twin, reporter)
+    else:
+        _check_content_twin(disguised, twin, saboteurs, reporter)
 
     # Direct: every disguised action unchanged, plus extra read steps in the saboteur's own log,
     # before the sabotage, with the same sabotage steps.
@@ -214,6 +267,7 @@ def load_scenario(path: Path) -> Scenario:
         minimal_harmful_set=tuple(raw.get("minimal_harmful_set", ())),
         structure=raw.get("structure", ""),
         combined_harm=raw.get("combined_harm", ""),
+        twin_kind=raw.get("twin_kind", "content"),
     )
     validate(scenario)
     return scenario

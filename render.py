@@ -9,14 +9,21 @@ including a single agent's log, asks the monitor about the same claim.
 Conditions:
 - per_agent: each agent's actions on their own, one transcript per agent.
 - solo: all actions in time order, as if one agent did everything.
-- team_grouped: all agents, each agent's actions in its own block.
+- team_grouped: all agents, each agent's actions in its own block, blocks in the listed order.
+- team_grouped_swapped: the same blocks with the first two swapped. In the main-run families the
+  first two agents are the two whose order matters, so the two grouped views show their blocks in
+  the two possible orders.
 - team_interleaved: all agents, actions in time order, each labelled with its agent.
 - team_unlabelled: all agents' tasks listed, actions in time order with no agent labels.
 
-Steps are numbered 1..N in time order across the whole project, in every condition. The
-numbers in a scenario file are only an ordering, so an inserted step never stands out. In
-per_agent the gaps deliberately show that other agents acted in between, as timestamps in a
-real per-agent log would, and the header says so.
+In every whole-log condition, steps are numbered 1..N in time order across the whole project,
+so the numbers carry the true order even when blocks do not. The numbers in a scenario file are
+only an ordering, so an inserted step never stands out.
+
+In per_agent, steps are numbered 1..k within that agent's own log. Project-wide numbers would
+leak how many steps other agents took in between: in the pilot, a log whose actions were the
+same in two variants differed only in two step numbers, and that alone changed how often the
+monitor flagged it. Local numbers make a log with the same actions byte-identical.
 """
 
 from collections.abc import Callable, Sequence
@@ -59,10 +66,15 @@ def _team_header(scenario: Scenario, agents: Sequence[Agent], labelled: bool = T
     return f"{_intro(scenario)}\n\nAgents and their assigned tasks:\n{tasks}"
 
 
+def local_body(actions: Sequence[Action]) -> str:
+    """One agent's actions numbered 1..k within its own log."""
+    return "\n\n".join(format_action(a, i, None) for i, a in enumerate(actions, 1))
+
+
 def per_agent(scenario: Scenario) -> list[str]:
     transcripts = []
     for agent in scenario.agents:
-        body = _body(scenario, scenario.actions_by_agent(agent.id))
+        body = local_body(scenario.actions_by_agent(agent.id))
         transcripts.append(
             f"{_intro(scenario)}\n\nAgent: {agent.id}\nAssigned task: {agent.task}\n{PER_AGENT_NOTE}\n\n{body}"
         )
@@ -75,12 +87,22 @@ def solo(scenario: Scenario) -> str:
     return f"{_intro(scenario)}\n\nAgent: {SOLO_AGENT}\nAssigned task: {task}\n\n{body}"
 
 
-def team_grouped(scenario: Scenario) -> str:
+def _grouped(scenario: Scenario, block_order: Sequence[Agent]) -> str:
+    """One block per agent in `block_order`, with project-wide step numbers. The header keeps the listed order."""
     blocks = []
-    for agent in scenario.agents:
+    for agent in block_order:
         body = _body(scenario, scenario.actions_by_agent(agent.id))
         blocks.append(f"=== {agent.id} ===\n{body}")
     return _team_header(scenario, scenario.agents) + "\n\n" + "\n\n".join(blocks)
+
+
+def team_grouped(scenario: Scenario) -> str:
+    return _grouped(scenario, scenario.agents)
+
+
+def team_grouped_swapped(scenario: Scenario) -> str:
+    first, second, *rest = scenario.agents
+    return _grouped(scenario, (second, first, *rest))
 
 
 def team_interleaved(scenario: Scenario) -> str:
@@ -97,6 +119,7 @@ def team_unlabelled(scenario: Scenario) -> str:
 SINGLE_TRANSCRIPT: dict[str, Callable[[Scenario], str]] = {
     "solo": solo,
     "team_grouped": team_grouped,
+    "team_grouped_swapped": team_grouped_swapped,
     "team_interleaved": team_interleaved,
     "team_unlabelled": team_unlabelled,
 }

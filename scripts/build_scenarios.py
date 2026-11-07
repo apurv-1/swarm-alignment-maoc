@@ -298,8 +298,10 @@ def dump(data):
 
 if __name__ == "__main__":
     out = Path(sys.argv[1]) if len(sys.argv) > 1 else Path(__file__).parent.parent / "data" / "scenarios"
-    for old in out.glob("*.json"):
-        old.unlink()
+    # Only this builder's families: the main-run families come from build_race_families.py.
+    for spec in FAMILIES:
+        for old in out.glob(f"{spec['family']}-*.json"):
+            old.unlink()
     for spec in FAMILIES:
         for data in build(spec):
             (out / f"{data['id']}.json").write_text(dump(data))

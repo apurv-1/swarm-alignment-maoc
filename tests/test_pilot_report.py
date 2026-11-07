@@ -1,16 +1,15 @@
 import pytest
 
-from monitor import CONDITIONS, build_jobs, plan_calls
-from pilot_report import BORDERLINE, FAIL, PASS, hit, report, roles
-from scenarios import load_all
+from monitor import build_jobs, plan_calls
+from pilot_report import BORDERLINE, FAIL, PASS, PILOT_CONDITIONS, hit, pilot_scenarios, report, roles
 
-SCENARIOS = load_all()
+SCENARIOS = pilot_scenarios()
 ROLE = roles(SCENARIOS)
 
 
 def _rows(score_for, readings=20):
     """Synthetic results: one row per job and reading, scored by `score_for(job, reading)`."""
-    jobs = build_jobs(SCENARIOS, CONDITIONS)
+    jobs = build_jobs(SCENARIOS, PILOT_CONDITIONS)
     calls = plan_calls(jobs, ["m"], readings, 1.0, 100)
     rows = []
     for job in jobs:
