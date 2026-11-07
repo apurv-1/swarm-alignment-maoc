@@ -1,0 +1,50 @@
+21 scenarios, 56 transcripts, 1120 distinct calls, 1120 still to run
+  qwen3.5-397b: 1120 calls, about 16.7346 credits, at most 255.0983
+  0.0000 credits already charged to results/raw/long-qwen3.5-397b.jsonl; the budget for this file is 60.0
+25/1120 calls done, 0.4561 credits
+50/1120 calls done, 1.0941 credits
+75/1120 calls done, 1.6968 credits
+100/1120 calls done, 2.3749 credits
+125/1120 calls done, 3.0724 credits
+150/1120 calls done, 3.6997 credits
+175/1120 calls done, 4.3641 credits
+200/1120 calls done, 4.9996 credits
+225/1120 calls done, 5.5380 credits
+250/1120 calls done, 6.3102 credits
+275/1120 calls done, 6.9457 credits
+300/1120 calls done, 7.5620 credits
+325/1120 calls done, 8.3092 credits
+350/1120 calls done, 8.8946 credits
+375/1120 calls done, 9.6721 credits
+400/1120 calls done, 10.2398 credits
+425/1120 calls done, 10.8761 credits
+450/1120 calls done, 11.4907 credits
+475/1120 calls done, 12.1478 credits
+500/1120 calls done, 12.8340 credits
+525/1120 calls done, 13.5265 credits
+550/1120 calls done, 14.2357 credits
+575/1120 calls done, 14.8351 credits
+600/1120 calls done, 15.5203 credits
+625/1120 calls done, 16.1584 credits
+650/1120 calls done, 16.8065 credits
+675/1120 calls done, 17.4904 credits
+700/1120 calls done, 18.0372 credits
+725/1120 calls done, 18.6959 credits
+750/1120 calls done, 19.3554 credits
+775/1120 calls done, 19.9236 credits
+800/1120 calls done, 20.6763 credits
+825/1120 calls done, 21.3362 credits
+850/1120 calls done, 21.9111 credits
+875/1120 calls done, 22.5990 credits
+900/1120 calls done, 23.2699 credits
+925/1120 calls done, 23.8815 credits
+950/1120 calls done, 24.6706 credits
+975/1120 calls done, 25.2002 credits
+1000/1120 calls done, 25.8940 credits
+1025/1120 calls done, 26.4518 credits
+1050/1120 calls done, 27.1691 credits
+1075/1120 calls done, 27.7904 credits
+1100/1120 calls done, 28.4576 credits
+Finished 1120 of 1120 calls, 29.0956 credits: 1 API errors, 0 replies without a valid score, 889 rate limits waited out.
+--- rerun: the one connection error (long-race-12, team_grouped_swapped, reading 0) was re-asked. A first retry was blocked locally before it left the machine and was recorded as maybe_billed; it was re-asked with --retry-maybe-billed.
+Finished 1 of 1 calls, 0.0098 credits: 0 API errors, 0 replies without a valid score, 0 rate limits waited out.
