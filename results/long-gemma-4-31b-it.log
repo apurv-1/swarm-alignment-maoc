@@ -1,0 +1,67 @@
+27 scenarios, 72 transcripts, 1440 distinct calls, 1440 still to run
+  gemma-4-31b-it: 1440 calls, about 2.1771 credits, at most 32.209
+  0.0000 credits already charged to results/raw/long-gemma-4-31b-it.jsonl; the budget for this file is 3.0
+25/1440 calls done, 0.0740 credits
+50/1440 calls done, 0.0821 credits
+75/1440 calls done, 0.0899 credits
+100/1440 calls done, 0.0959 credits
+125/1440 calls done, 0.1021 credits
+150/1440 calls done, 0.1085 credits
+175/1440 calls done, 0.1138 credits
+200/1440 calls done, 0.2089 credits
+225/1440 calls done, 0.2151 credits
+250/1440 calls done, 0.2206 credits
+275/1440 calls done, 0.2711 credits
+300/1440 calls done, 0.2768 credits
+325/1440 calls done, 0.3930 credits
+350/1440 calls done, 0.3994 credits
+375/1440 calls done, 0.4054 credits
+400/1440 calls done, 0.5216 credits
+425/1440 calls done, 0.5279 credits
+450/1440 calls done, 0.5337 credits
+475/1440 calls done, 0.6499 credits
+500/1440 calls done, 0.6561 credits
+525/1440 calls done, 0.7068 credits
+550/1440 calls done, 0.7788 credits
+575/1440 calls done, 0.7850 credits
+600/1440 calls done, 0.7909 credits
+625/1440 calls done, 0.9077 credits
+650/1440 calls done, 0.9137 credits
+675/1440 calls done, 0.9193 credits
+700/1440 calls done, 0.9476 credits
+725/1440 calls done, 0.9979 credits
+750/1440 calls done, 1.0035 credits
+775/1440 calls done, 1.0320 credits
+800/1440 calls done, 1.0821 credits
+825/1440 calls done, 1.0880 credits
+850/1440 calls done, 1.1605 credits
+875/1440 calls done, 1.1662 credits
+900/1440 calls done, 1.1720 credits
+925/1440 calls done, 1.2445 credits
+950/1440 calls done, 1.2504 credits
+975/1440 calls done, 1.2567 credits
+1000/1440 calls done, 1.2629 credits
+1025/1440 calls done, 1.2688 credits
+1050/1440 calls done, 1.2746 credits
+1075/1440 calls done, 1.2812 credits
+1100/1440 calls done, 1.4864 credits
+1125/1440 calls done, 1.4922 credits
+1150/1440 calls done, 1.4984 credits
+1175/1440 calls done, 1.5046 credits
+1200/1440 calls done, 1.5550 credits
+1225/1440 calls done, 1.5614 credits
+1250/1440 calls done, 1.5670 credits
+1275/1440 calls done, 1.5733 credits
+1300/1440 calls done, 1.6241 credits
+1325/1440 calls done, 1.6294 credits
+1350/1440 calls done, 1.6362 credits
+1375/1440 calls done, 1.6422 credits
+1400/1440 calls done, 1.6700 credits
+1425/1440 calls done, 1.6761 credits
+Finished 1440 of 1440 calls, 1.7015 credits: 60 API errors, 1 replies without a valid score, 8 rate limits waited out.
+27 scenarios, 72 transcripts, 1440 distinct calls, 60 still to run
+  gemma-4-31b-it: 60 calls, about 0.0907 credits, at most 1.3421
+  1.7015 credits already charged to results/raw/long-gemma-4-31b-it.jsonl; the budget for this file is 3.0
+25/60 calls done, 0.0053 credits
+50/60 calls done, 0.0110 credits
+Finished 60 of 60 calls, 0.1460 credits: 6 API errors, 0 replies without a valid score, 0 rate limits waited out.
