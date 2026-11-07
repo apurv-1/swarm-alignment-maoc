@@ -329,6 +329,8 @@ def print_control(out: Path, model: str, temperature: float, readings: int) -> N
 REPLICATION_MONITORS = ("glm-5.2", "qwen3.5-397b", "gemma-4-31b-it")
 CONFIRMATORY_MONITOR = "deepseek-v4-flash"
 LONG_READINGS = 20
+# Amendment 4: race-11 carries an order cue, so every result is also reported without it.
+SENSITIVITY_EXCLUDED = ("race-11",)
 
 
 def included_for(model: str) -> tuple[str, ...]:
@@ -387,6 +389,10 @@ def print_summary() -> None:
             status = "replication"
         print(f"{name:14} n={len(present):2}  mean {_num(mean(present), signed=True):>7}  "
               f"{sum(v > 0 for v in present)} positive  one-sided p = {p:.4f}  ({status})")
+        kept = [v for f, v in table[arm].items() if v is not None and f not in SENSITIVITY_EXCLUDED]
+        if kept and len(kept) < len(present):
+            print(f"{'':14} without {', '.join(SENSITIVITY_EXCLUDED)}: n={len(kept):2}  mean {_num(mean(kept), signed=True):>7}  "
+                  f"{sum(v > 0 for v in kept)} positive  one-sided p = {sign_flip_p(kept):.4f}")
     if p_values:
         print("\nReplication monitors, short logs, Holm-corrected: " +
               ", ".join(f"{n} {adj:.4f}" for n, adj in holm(p_values).items()))
