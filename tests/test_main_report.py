@@ -153,3 +153,19 @@ def test_errored_or_truncated_readings_count_as_missing_even_with_a_score(field)
             row["score"] = 100
             row[field] = "boom" if field == "error" else True
     assert h1_delta(rows, "t") is None
+
+
+@pytest.mark.parametrize(
+    "options, included",
+    [({}, True), ({"per_agent": 0.5}, True), ({"direct": 20}, True), ({"attack": 0.7}, False), ({"twin": 0.3}, False)],
+)
+def test_replication_monitors_are_included_on_the_interleaved_rules_only(options, included):
+    result = dev_checks(_dev_rows(**options), _family(), replication=True)["t"]
+    assert result["included"] == included
+
+
+def test_the_frozen_families_are_timing_families_on_disk():
+    from main_report import INCLUDED_FAMILIES, timing_scenarios
+
+    assert len(INCLUDED_FAMILIES) >= 5
+    assert {s.family for s in timing_scenarios(INCLUDED_FAMILIES)} == set(INCLUDED_FAMILIES)

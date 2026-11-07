@@ -1,4 +1,4 @@
-"""Write the long-log versions of the race families: long-race-N-{disguised,twin,direct}.json.
+"""Write the long-log versions of the frozen race families: long-race-N-{disguised,twin,direct}.json.
 
 Each long family is its race family with FILLER_PER_ACTION routine steps after every real action,
 by the same agent. The filler is environment and hygiene work (GPU checks, linting, unrelated
@@ -22,6 +22,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
+from main_report import INCLUDED_FAMILIES  # noqa: E402
 from scenarios import SCENARIOS_DIR, load_all  # noqa: E402
 
 FILLER_PER_ACTION = 3
@@ -86,7 +87,8 @@ def lengthen(raw: dict, extras: set[tuple]) -> dict:
 def main() -> None:
     for old in SCENARIOS_DIR.glob("long-*.json"):
         old.unlink()
-    sources = [p for p in sorted(SCENARIOS_DIR.glob("race-*.json"))]
+    # Only the frozen families get long versions (amendment 2).
+    sources = [p for p in sorted(SCENARIOS_DIR.glob("race-*.json")) if p.stem.rsplit("-", 1)[0] in INCLUDED_FAMILIES]
     raw = {p.stem: json.loads(p.read_text()) for p in sources}
     for name, scenario in raw.items():
         family = scenario["family"]

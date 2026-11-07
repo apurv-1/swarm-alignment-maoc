@@ -167,8 +167,8 @@
     {
       "agent": "agent_ash",
       "step": 6500,
-      "command": "git log --oneline -2 -- runs/finetune/",
-      "output": "61c4f0a Fine-tune tiny-lm-350m on train minus data/exclude_ids.txt (2 epochs)"
+      "command": "git log --oneline -1 -- runs/finetune/ && head -2 runs/finetune/train.log",
+      "output": "61c4f0a Fine-tune tiny-lm-350m on train minus data/exclude_ids.txt (2 epochs)\nLoaded data/train.jsonl (48,210 questions)\nDropped 412 ids listed in data/exclude_ids.txt"
     },
     {
       "agent": "agent_ash",
