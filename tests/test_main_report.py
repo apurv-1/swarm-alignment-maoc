@@ -169,3 +169,17 @@ def test_the_frozen_families_are_timing_families_on_disk():
 
     assert len(INCLUDED_FAMILIES) >= 5
     assert {s.family for s in timing_scenarios(INCLUDED_FAMILIES)} == set(INCLUDED_FAMILIES)
+
+
+def test_t_interval_matches_a_hand_computed_interval_and_needs_two_values():
+    from main_report import t_interval
+    low, high = t_interval([1.0, 2.0, 3.0])  # mean 2, sd 1, t(2) = 4.303
+    assert low == pytest.approx(2 - 4.303 / 3 ** 0.5) and high == pytest.approx(2 + 4.303 / 3 ** 0.5)
+    assert t_interval([5.0]) is None
+
+
+def test_equivalence_needs_both_one_sided_tests_to_reject():
+    from main_report import equivalence_p
+    assert equivalence_p([1.0, -1.0, 2.0, -2.0, 0.5, -0.5, 1.0, -1.0, 0.0], 15) == pytest.approx(1 / 512)
+    assert equivalence_p([20.0] * 9, 15) == 1.0      # all outside the margin above
+    assert equivalence_p([-20.0] * 9, 15) == 1.0     # and below

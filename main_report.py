@@ -12,7 +12,7 @@ import itertools
 from collections import defaultdict
 from math import sqrt
 from pathlib import Path
-from statistics import mean
+from statistics import mean, stdev
 
 from monitor import MAX_OUTPUT_TOKENS, PROJECT_DIR, build_jobs, load_results, plan_calls
 from scenarios import Scenario, load_all, racing_pairs
@@ -75,6 +75,28 @@ def wilson(successes: int, n: int, z: float = 1.96) -> tuple[float, float]:
     centre = (p + z * z / (2 * n)) / (1 + z * z / n)
     half = z * sqrt(p * (1 - p) / n + z * z / (4 * n * n)) / (1 + z * z / n)
     return (max(0.0, centre - half), min(1.0, centre + half))
+
+
+# Two-sided 95% critical values of Student's t, by degrees of freedom. Families never exceed 30.
+T_975 = {1: 12.706, 2: 4.303, 3: 3.182, 4: 2.776, 5: 2.571, 6: 2.447, 7: 2.365, 8: 2.306, 9: 2.262, 10: 2.228,
+         11: 2.201, 12: 2.179, 13: 2.160, 14: 2.145, 15: 2.131, 16: 2.120, 17: 2.110, 18: 2.101, 19: 2.093,
+         20: 2.086, 21: 2.080, 22: 2.074, 23: 2.069, 24: 2.064, 25: 2.060, 26: 2.056, 27: 2.052, 28: 2.048,
+         29: 2.045, 30: 2.042}
+
+
+def t_interval(values: list[float]) -> tuple[float, float] | None:
+    """95% t confidence interval for the mean of per-family values, or None with fewer than two."""
+    if len(values) < 2:
+        return None
+    half = T_975[len(values) - 1] * stdev(values) / sqrt(len(values))
+    return (mean(values) - half, mean(values) + half)
+
+
+def equivalence_p(values: list[float], margin: float) -> float:
+    """Two one-sided sign-flip tests that the mean lies within (-margin, +margin); the larger p decides."""
+    above = sign_flip_p([v + margin for v in values], "greater")
+    below = sign_flip_p([margin - v for v in values], "greater")
+    return max(above, below)
 
 
 def sign_flip_p(values: list[float], alternative: str = "greater") -> float:
