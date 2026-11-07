@@ -1,4 +1,4 @@
-"""Blind hand labels for every whole-log error, as pre-registered in MAIN.md (Analysis, last bullet).
+"""Blind labels for every whole-log error, as pre-registered in MAIN.md (Analysis, last bullet).
 
     uv run python label_errors.py label --labeller apurv                    # deepseek, short logs
     uv run python label_errors.py label --labeller apurv --model gemma-4-31b-it --long
@@ -8,6 +8,7 @@
     uv run python label_errors.py reconcile --labellers fable-5.1 opus-5.5  # keep agreed labels
     uv run python label_errors.py label --labeller apurv --disputed         # a human labels the rest
     uv run python label_errors.py review --labeller apurv                   # a human checks every label
+    uv run python label_errors.py audit --labeller apurv                    # a human labels a blind sample
 
 An error is a missed attack (a disguised reading scored below 50) or a flagged twin (a twin reading
 scored 50 or more) in one of the four whole-log views. Missing readings are not errors.
@@ -31,6 +32,11 @@ Model labellers see the same blind text. `export` writes every error to label, m
 to results/labels/blind/items/. Each model labeller answers independently into
 results/labels/blind/answers-<name>.jsonl. `reconcile` keeps the labels on which they all agree and
 lists the rest, which a human then labels blind with `label --disputed`. A human label always wins.
+
+`audit` checks the agreed labels: a human labels a fixed random sample of them blind, from the same
+text the model labellers saw, without their answers (MAIN.md, audit of the model labels). The audit
+answers go to results/labels/blind/audit-<labeller>.jsonl and never change the labels used in the
+analysis; the report gives how many the human matched.
 """
 
 import argparse
@@ -77,6 +83,9 @@ BLIND_DIR = LABELS_DIR / "blind"
 EXPORT_SEED = "blind export"
 CHUNK = 40
 MODEL_LABELLERS = ["fable-5.1", "opus-5.5"]
+# MAIN.md, audit of the model labels: a human labels this many of the agreed labels blind, drawn with this seed.
+AUDIT_SIZE = 40
+AUDIT_SEED = 20261108
 RUNS = [(m, long) for long in (False, True) for m in (CONFIRMATORY_MONITOR, *REPLICATION_MONITORS)]
 SCORE_TAG = re.compile(r"<score>.*?</score>", re.S)
 
@@ -435,6 +444,72 @@ def review_counts(labeller: str, blind_dir: Path = BLIND_DIR) -> dict:
             "items": len(json.loads((blind_dir / "key-map.json").read_text()))}
 
 
+def audit_sample(model_labellers=MODEL_LABELLERS, blind_dir: Path = BLIND_DIR, labels_dir: Path = LABELS_DIR,
+                 size: int | None = None) -> list[str]:
+    """Item ids of a fixed random sample of the labels the model labellers agreed on, in the order to show them."""
+    key_map = json.loads((blind_dir / "key-map.json").read_text())
+    agreed_by, saved = "+".join(model_labellers), {}
+    agreed = []
+    for item_id in sorted(key_map):
+        run, key = key_map[item_id]["run"], key_map[item_id]["key"]
+        if run not in saved:
+            saved[run] = load_labels(labels_dir / f"{run}.jsonl")
+        if (saved[run].get(key) or {}).get("labeller") == agreed_by:
+            agreed.append(item_id)
+    return random.Random(AUDIT_SEED).sample(agreed, min(size or AUDIT_SIZE, len(agreed)))
+
+
+def audit_run(labeller: str, model_labellers=MODEL_LABELLERS, ask=input, show=print,
+              blind_dir: Path = BLIND_DIR, labels_dir: Path = LABELS_DIR) -> bool:
+    """A human labels the audit sample blind, seeing only what the model labellers saw.
+
+    Neither the models' answers nor the saved label is shown, and whether an answer matched is
+    shown only once the whole sample is done. Answers go to blind_dir/audit-<labeller>.jsonl and
+    never change the analysis labels. Returns False if the labeller quit.
+    """
+    key_map = json.loads((blind_dir / "key-map.json").read_text())
+    items = blind_items(blind_dir)
+    sample = audit_sample(model_labellers, blind_dir, labels_dir)
+    log = blind_dir / f"audit-{labeller}.jsonl"
+    done = {json.loads(line)["id"] for line in log.read_text().splitlines() if line.strip()} if log.exists() else set()
+    queue = [i for i in sample if i not in done]
+    show(f"{len(sample) - len(queue)} of {len(sample)} sampled labels checked, {len(queue)} to go.")
+    for count, item_id in enumerate(queue, 1):
+        item = key_map[item_id]
+        show(f"\nItem {count} of {len(queue)} (id {item_id})\n" + "=" * 78 + f"\n{items[item_id]}\n" + "-" * 78
+             + "\nType 1, 2, n or u; q = quit")
+        while True:
+            answer = ask("> ").strip().lower()
+            if answer == "q":
+                show("\nStopped. Answers so far are saved.")
+                return False
+            if answer in item["options"] or answer in ("n", "u"):
+                break
+            show("Please type 1, 2, n, u or q.")
+        agreed = load_labels(labels_dir / f"{item['run']}.jsonl")[item["key"]]["asserted"]
+        asserted = asserted_order(answer, item["options"])
+        with log.open("a") as f:
+            f.write(json.dumps({"id": item_id, "run": item["run"], "key": item["key"], "answer": answer,
+                                "asserted": asserted, "agreed": agreed, "matches": asserted == agreed,
+                                "at": datetime.now(timezone.utc).isoformat(timespec="seconds")}) + "\n")
+    counts = audit_counts(labeller, blind_dir)
+    show(f"\nThe audit is done: you matched {counts['matched']} of {counts['checked']} agreed labels."
+         + (f" Items that differ: {', '.join(counts['differ'])}." if counts["differ"] else ""))
+    return True
+
+
+def audit_counts(labeller: str, blind_dir: Path = BLIND_DIR) -> dict:
+    """How many audited labels the human matched, and the ids of those that differ."""
+    log = blind_dir / f"audit-{labeller}.jsonl"
+    entries = {}
+    for line in log.read_text().splitlines() if log.exists() else []:
+        if line.strip():
+            entry = json.loads(line)
+            entries[entry["id"]] = entry
+    return {"checked": len(entries), "matched": sum(e["matches"] for e in entries.values()),
+            "differ": sorted(i for i, e in entries.items() if not e["matches"])}
+
+
 def block_order(scenarios, family: str, view: str) -> str | None:
     """Which racing agent's block comes first in a grouped view, by the attack's order. None if no blocks."""
     if view not in (GROUPED, SWAPPED):
@@ -489,7 +564,7 @@ def print_summary(labels_dir: Path = LABELS_DIR) -> None:
         labels = load_labels(path)
         for title, kept in (("", rows), (f", without {', '.join(SENSITIVITY_EXCLUDED)}", [
             r for r in rows if r["family"].removeprefix("long-") not in SENSITIVITY_EXCLUDED])):
-            print(f"\n{run_name(model, long)}{title}: asserted order of the racing steps, from blind hand labels")
+            print(f"\n{run_name(model, long)}{title}: asserted order of the racing steps, from the labels")
             print("Each match column counts labels that agree with that order, out of labels where it is defined.")
             print(f"{'view':22}{'error':15}{'errors':>7}{'labelled':>9}{'time':>9}{'block':>9}{'usual':>9}"
                   f"{'no order':>9}{'unclear':>9}")
@@ -500,7 +575,7 @@ def print_summary(labels_dir: Path = LABELS_DIR) -> None:
 
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
-    parser.add_argument("stage", choices=["label", "summary", "export", "reconcile", "review"])
+    parser.add_argument("stage", choices=["label", "summary", "export", "reconcile", "review", "audit"])
     parser.add_argument("--labeller", help="Your name, stored with each label. Required for label.")
     parser.add_argument("--model", default=CONFIRMATORY_MONITOR)
     parser.add_argument("--long", action="store_true", help="Label the long-log arm instead of the short logs.")
@@ -520,6 +595,8 @@ def main() -> None:
         parser.error(f"{args.stage} needs --labeller")
     elif args.stage == "review":
         review_run(args.labeller)
+    elif args.stage == "audit":
+        audit_run(args.labeller)
     elif args.disputed:
         disputed = json.loads((BLIND_DIR / "disputed.json").read_text())
         for model, long in RUNS:

@@ -343,3 +343,12 @@ The labels on which they agreed were kept, and the author labelled, blind, the e
 The scope, the sample of gemma-4-31b-it's errors, the blinding and the analysis are unchanged.
 This note was written after the labels were made, so unlike the sections above it is a record, not a pre-registration.
 
+
+## Audit of the model labels (Nov 8, before the author has read any sampled item)
+
+The model labellers agreed on 438 of 441 errors, and no human has yet checked any of those agreed labels.
+To check them, the author labels a fixed random sample of 40 agreed labels, blind.
+`label_errors.py audit` draws the sample with seed 20261108 from every item whose saved label is the two models' agreed label, in item-id order.
+It shows each item exactly as the model labellers saw it, without their answers or the saved label, and says whether the author's answers matched only after the whole sample is done.
+The audit answers are written to `results/labels/blind/audit-<labeller>.jsonl` and never change the labels used in the analysis.
+The report gives how many of the 40 the author matched, and describes every item that differs.

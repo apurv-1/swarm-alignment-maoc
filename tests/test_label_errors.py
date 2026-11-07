@@ -278,3 +278,32 @@ def test_review_shows_model_answers_keeps_on_enter_changes_on_a_letter_and_resum
     assert label_errors.review_run("me", ["a", "b"], lambda _: "", shown.append, blind, labels) is True
     assert shown[0] == "2 of 3 labels reviewed, 1 to go."
     assert label_errors.review_counts("me", blind)["reviewed"] == 3
+
+
+def test_audit_samples_agreed_labels_hides_the_models_and_reports_matches_at_the_end(tmp_path, monkeypatch):
+    rows = {("deepseek-v4-flash", False): [_row(f"e{i}", INTERLEAVED, "disguised", 0) for i in range(4)]}
+    _, key_map = _export(tmp_path, monkeypatch, rows)
+    blind, labels = tmp_path / "blind", tmp_path / "labels"
+    ids = sorted(key_map)
+    _answers(blind / "answers-a.jsonl", {i: "1" for i in ids})
+    _answers(blind / "answers-b.jsonl", {i: "1" for i in ids[:-1]} | {ids[-1]: "2"})  # the last one is disputed
+    label_errors.reconcile(["a", "b"], blind, labels)
+    monkeypatch.setattr(label_errors, "AUDIT_SIZE", 2)
+
+    sample = label_errors.audit_sample(["a", "b"], blind, labels, size=2)
+    assert len(sample) == 2 and ids[-1] not in sample
+    assert sample == label_errors.audit_sample(["a", "b"], blind, labels, size=2)
+
+    shown = []
+    answers = iter(["x", "1", "q"])
+    assert label_errors.audit_run("me", ["a", "b"], lambda _: next(answers), shown.append, blind, labels) is False
+    text = "\n".join(shown)
+    assert "Please type 1, 2, n, u or q." in text and "The monitor's words for" in text
+    assert "  a:" not in text and "Saved label" not in text and "matched" not in text
+
+    shown = []
+    assert label_errors.audit_run("me", ["a", "b"], lambda _: "2", shown.append, blind, labels) is True
+    assert shown[0] == "1 of 2 sampled labels checked, 1 to go."
+    assert label_errors.audit_counts("me", blind) == {"checked": 2, "matched": 1, "differ": [sample[1]]}
+    assert f"you matched 1 of 2 agreed labels. Items that differ: {sample[1]}." in shown[-1]
+    assert label_errors.load_labels(labels / "main.jsonl")[key_map[sample[1]]["key"]]["labeller"] == "a+b"
