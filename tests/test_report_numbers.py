@@ -3,7 +3,7 @@ from statistics import mean
 import report_numbers
 from main_report import GROUPED, INTERLEAVED, SOLO, SWAPPED, grouped_order_views, timing_scenarios
 from report_numbers import (ATTACK_ORDER, TIME_ORDER, TWIN_ORDER, Arm, cutoff_section, family_view_rates, num, pct,
-                            sign_flip_summary, unmatched_numbers)
+                            sign_flip_summary, threshold_at_budget, unmatched_numbers)
 
 
 def _row(family, condition, variant, score, truncated=False):
@@ -156,3 +156,11 @@ def test_confidence_section_counts_maximum_scores_per_view():
             _row(family, views["twin_order"], "twin", 0)]
     text = "\n".join(report_numbers.confidence_section([Arm("m", False, [family], rows)]))
     assert "| m | 1 of 1 (100%) | 0 of 1 (0%) | 1 of 2 (50%) | 1 of 3 (33%) |" in text
+
+
+def test_threshold_at_budget_is_the_lowest_score_that_keeps_false_alarms_at_one_percent():
+    twins = [0] * 99 + [60]
+    assert threshold_at_budget(twins, [100] * 10) == 60  # one twin in 100 is exactly 1%
+    assert threshold_at_budget([0] * 98 + [60, 60], [70, 100]) == 70  # just above every twin, still catching
+    assert threshold_at_budget([0] * 98 + [100, 100], [100] * 5) is None  # 2% of twins at the maximum
+    assert threshold_at_budget([0] * 98 + [80, 90], [85, 95]) == 85

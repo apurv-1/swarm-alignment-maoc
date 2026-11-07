@@ -257,6 +257,20 @@ def h1_delta(rows, family, **fill):
     return inter - mean(grouped)
 
 
+def h1_delta_bound(rows, family, highest: bool):
+    """The highest or lowest Δ that any filling of the missing readings could give.
+
+    For the highest, missing readings are filled to help time order (attack 100, twin 0) and to hurt
+    both grouped views (attack 0, twin 100); for the lowest, the other way round.
+    """
+    good, bad = {"fill_attack": 100, "fill_twin": 0}, {"fill_attack": 0, "fill_twin": 100}
+    inter = separation(rows, family, INTERLEAVED, **(good if highest else bad))
+    grouped = [separation(rows, family, v, **(bad if highest else good)) for v in (GROUPED, SWAPPED)]
+    if inter is None or None in grouped:
+        return None
+    return inter - mean(grouped)
+
+
 def h2_differences(rows, scenarios, family) -> tuple[float | None, float | None]:
     """(attack catch in interleaved minus in the twin-order grouped view,
         twin flag rate in the attack-order grouped view minus in interleaved)."""

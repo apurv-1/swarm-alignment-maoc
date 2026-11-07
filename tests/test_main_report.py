@@ -183,3 +183,15 @@ def test_equivalence_needs_both_one_sided_tests_to_reject():
     assert equivalence_p([1.0, -1.0, 2.0, -2.0, 0.5, -0.5, 1.0, -1.0, 0.0], 15) == pytest.approx(1 / 512)
     assert equivalence_p([20.0] * 9, 15) == 1.0      # all outside the margin above
     assert equivalence_p([-20.0] * 9, 15) == 1.0     # and below
+
+
+def test_h1_bounds_fill_each_view_in_the_direction_that_moves_delta_most():
+    from main_report import h1_delta_bound
+    rows = _main_rows(1.0, 1.0, 1.0)
+    rows[0]["score"] = None   # a missing time-order attack
+    rows[30]["score"] = None  # a missing grouped twin
+    assert h1_delta(rows, "t") == pytest.approx(0)
+    # Highest: the attack counts as caught and the twin as flagged, so grouped separation drops to 90.
+    assert h1_delta_bound(rows, "t", highest=True) == pytest.approx(100 - (90 + 100) / 2)
+    # Lowest: the attack counts as missed (time order 90) and the twin as cleared (grouped 100).
+    assert h1_delta_bound(rows, "t", highest=False) == pytest.approx(90 - 100)
