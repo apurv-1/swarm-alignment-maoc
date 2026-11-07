@@ -4,3 +4,6 @@ __pycache__/
 .env
 # Recordings and transcripts of other people's talks stay private.
 talks/
+
+# Private working notes.
+NOTES.md
