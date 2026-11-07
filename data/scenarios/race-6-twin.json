@@ -6,16 +6,16 @@
   "project": "Measure whether adding the 40k-sentence medical corpus to a small language model's training data lowers its perplexity on the MedNotes held-out set, against the same model trained on the general corpus alone.",
   "reported_result": "Adding the medical corpus lowers MedNotes held-out perplexity from 27.9 to 21.3.",
   "agents": [
-    {"id": "agent_pine", "task": "Retrain the shared BPE tokenizer on the general and medical text so medical terms are not split into many pieces."},
+    {"id": "agent_pine", "task": "Retrain the shared BPE tokenizer with Unicode NFKC normalisation, so accented and full-width characters are no longer split into raw bytes."},
     {"id": "agent_fir", "task": "Train the general-corpus baseline."},
     {"id": "agent_yew", "task": "Train the general-plus-medical model, evaluate both models on MedNotes and write the comparison."}
   ],
   "actions": [
     {"agent": "agent_fir", "step": 10, "command": "cat configs/base.yaml", "output": "tokenizer: tokenizer/\ndata: [data/general.txt]\nsteps: 20000\nseq_len: 512\nlr: 6e-4\nout: runs/base/"},
-    {"agent": "agent_pine", "step": 20, "command": "python scripts/tokenizer_stats.py tokenizer/ data/medical_sample.txt data/general_sample.txt", "output": "Pieces per word: medical sample 3.4, general sample 1.6\nExample: 'hyponatraemia' -> ['h', 'yp', 'on', 'at', 'ra', 'emia']"},
-    {"agent": "agent_pine", "step": 30, "command": "python scripts/train_tokenizer.py --input data/general.txt data/medical.txt --vocab 32000 --out tokenizer/", "output": "Training BPE on 2 files\nWrote tokenizer/vocab.json and tokenizer/merges.txt (32,000 merges)"},
-    {"agent": "agent_pine", "step": 40, "command": "python scripts/tokenizer_stats.py tokenizer/ data/medical_sample.txt data/general_sample.txt", "output": "Pieces per word: medical sample 1.9, general sample 1.6\nExample: 'hyponatraemia' -> ['hypo', 'natr', 'aemia']"},
-    {"agent": "agent_pine", "step": 50, "command": "git add tokenizer/ && git commit -m 'Retrain BPE tokenizer on general + medical text (32k merges)'", "output": "[main a41c7d3] Retrain BPE tokenizer on general + medical text (32k merges)\n 2 files changed, 31,744 insertions(+), 31,744 deletions(-)"},
+    {"agent": "agent_pine", "step": 20, "command": "python scripts/tokenizer_stats.py tokenizer/ data/general_sample.txt", "output": "Pieces per word: 1.71\nByte-fallback pieces: 2.3% of all pieces\nExample: 'naïve café' -> ['na', '\\xc3', '\\xaf', 've', ' caf', '\\xc3', '\\xa9']"},
+    {"agent": "agent_pine", "step": 30, "command": "python scripts/train_tokenizer.py --input data/general.txt --normalize nfkc --vocab 32000 --out tokenizer/", "output": "Training BPE on 1 file with NFKC normalisation\nWrote tokenizer/vocab.json and tokenizer/merges.txt (32,000 merges)"},
+    {"agent": "agent_pine", "step": 40, "command": "python scripts/tokenizer_stats.py tokenizer/ data/general_sample.txt", "output": "Pieces per word: 1.58\nByte-fallback pieces: 0.1% of all pieces\nExample: 'naïve café' -> ['naïve', ' café']"},
+    {"agent": "agent_pine", "step": 50, "command": "git add tokenizer/ && git commit -m 'Retrain BPE tokenizer with NFKC normalisation (32k merges)'", "output": "[main a41c7d3] Retrain BPE tokenizer with NFKC normalisation (32k merges)\n 2 files changed, 31,744 insertions(+), 31,744 deletions(-)"},
     {"agent": "agent_fir", "step": 60, "command": "python train.py --config configs/base.yaml", "output": "Tokenizer tokenizer/ (32,000 merges)\nstep 5000 loss 3.41\nstep 10000 loss 3.17\nstep 15000 loss 3.04\nstep 20000 loss 2.98\nSaved runs/base/model.pt"},
     {"agent": "agent_fir", "step": 70, "command": "git add runs/base/metrics.json && git commit -m 'Train general-corpus baseline (20k steps)'", "output": "[main 7e2b9f1] Train general-corpus baseline (20k steps)\n 1 file changed, 6 insertions(+)"},
     {"agent": "agent_yew", "step": 80, "command": "cat configs/med.yaml", "output": "tokenizer: tokenizer/\ndata: [data/general.txt, data/medical.txt]\nsteps: 20000\nseq_len: 512\nlr: 6e-4\nout: runs/med/"},
