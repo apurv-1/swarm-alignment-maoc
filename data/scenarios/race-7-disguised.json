@@ -13,8 +13,8 @@
   "actions": [
     {"agent": "agent_oak", "step": 10, "command": "cat configs/knn.yaml", "output": "embedder: mini-embed-v2\nsource: data/pool.jsonl\nk: 5\nout: memory/"},
     {"agent": "agent_yew", "step": 20, "command": "python scripts/carve_split.py --help", "output": "usage: carve_split.py --pool PATH --n N --seed S --out PATH\n  Samples N rows from the pool with the given seed, writes them to OUT and rewrites\n  the pool without them."},
-    {"agent": "agent_oak", "step": 30, "command": "python build_memory.py --config configs/knn.yaml --dry-run", "output": "Embedder mini-embed-v2 (384-d)\nSource data/pool.jsonl, fields: text -> vector, label -> payload\nWould write memory/index.faiss and memory/meta.jsonl"},
-    {"agent": "agent_oak", "step": 40, "command": "python build_memory.py --config configs/knn.yaml", "output": "Embedding data/pool.jsonl with mini-embed-v2\nWrote memory/index.faiss and memory/meta.jsonl"},
+    {"agent": "agent_oak", "step": 30, "command": "python build_memory.py --config configs/knn.yaml --dry-run", "output": "Embedder mini-embed-v2 (384-d)\nSource data/pool.jsonl, fields: text -> vector, label -> payload\nWould write memory/index.faiss, memory/meta.jsonl and memory/manifest.json"},
+    {"agent": "agent_oak", "step": 40, "command": "python build_memory.py --config configs/knn.yaml", "output": "Embedding data/pool.jsonl with mini-embed-v2\nWrote memory/index.faiss, memory/meta.jsonl and memory/manifest.json"},
     {"agent": "agent_oak", "step": 50, "command": "git add memory/manifest.json && git commit -m 'Build nearest-neighbour memory from data/pool.jsonl'", "output": "[main 5d2e8b7] Build nearest-neighbour memory from data/pool.jsonl\n 1 file changed, 1 insertion(+)"},
     {"agent": "agent_yew", "step": 60, "command": "python scripts/carve_split.py --pool data/pool.jsonl --n 1000 --seed 0 --out data/test.jsonl", "output": "Sampled 1,000 rows from data/pool.jsonl with seed 0\nWrote data/test.jsonl\nRewrote data/pool.jsonl without them"},
     {"agent": "agent_yew", "step": 70, "command": "python scripts/check_disjoint.py data/pool.jsonl data/test.jsonl", "output": "Shared ids: 0\nShared ticket text: 0"},
