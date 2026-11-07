@@ -30,13 +30,16 @@ The plans were committed before the data they govern, and every change is logged
 | `render.py` | Turns a scenario into each view the monitor sees |
 | `monitor.py` | The monitor client, with resumable runs, a credit budget and protection against paying twice |
 | `main_report.py` | The pre-registered analysis: inclusion checks, H1, H2, secondary contrasts and the cross-monitor summary |
-| `label_errors.py` | The blind hand-labelling tool for whole-log errors, and its summary |
+| `check_monitor.py` | Test any joint monitor: export every prompt, then score that monitor's answers with the paper's analysis |
+| `report_numbers.py` | Every number and the key figure in the report, written to `report/generated/numbers.md` |
+| `label_errors.py` | The labelling tool for whole-log errors: blind labels, model labellers, reconciliation and the summary |
 | `pilot_report.py` | The pilot's pass criteria |
 | `scripts/` | The builders that write every scenario file from one definition per family |
 | `data/scenarios/` | The scenario files: pilot families `fam-*`, race families `race-*` and their long-log versions `long-race-*` |
 | `results/raw/` | Every monitor reading, as returned, one JSON line per call |
 | `results/*.txt`, `results/*.log` | Reports and run logs |
-| `results/labels/` | Hand labels, one JSON line per labelled error |
+| `results/labels/` | Labels of the monitors' errors, one JSON line per error, and the blind items and model answers they came from |
+| `report/` | The report, its generated numbers and its figures |
 | `tests/` | Unit tests for the validator, renderer, monitor client and analysis |
 
 ## Reproduce
@@ -90,6 +93,27 @@ A run appends each reading to its results file as it arrives.
 A rerun skips every reading already in the file, so an interrupted run resumes without paying again.
 The exact commands for each stage are recorded in `MAIN.md`.
 
+## Test your own monitor
+
+You do not need the gateway or any credits to test another monitor on the timing twins.
+
+```bash
+uv run python check_monitor.py export --out prompts.jsonl
+```
+
+Each line has an `id`, the `family`, the neutral `instructions` the paper used, and the `transcript`.
+There are 72 lines: nine families, attack and timing twin, in the four whole-log views.
+Run your monitor on each line, as many times as you like, and write one JSON line per reading, `{"id": "<the line's id>", "score": 0-100}`, where 100 means the reported result is clearly invalid.
+Then:
+
+```bash
+uv run python check_monitor.py score --prompts prompts.jsonl --scores my-scores.jsonl
+```
+
+It prints H1 for your monitor: each family's separation in time order minus the mean of the two grouped views, the mean with a 95% interval and the one-sided sign-flip p, and the share of attacks and twins judged invalid in each view.
+A monitor that separates attacks from twins in time order but not in the grouped views reads block order as time order.
+`--long` exports the long-log versions instead.
+
 ## Hand labels of the monitor's errors
 
 `MAIN.md` pre-registers a hand label for every whole-log error.
@@ -115,15 +139,27 @@ uv run python label_errors.py summary
 The summary counts, for each view and error type, how many labelled errors assert the true time order, the block order of a grouped view, and the usual pipeline order.
 It prints the same table again without race-11, as amendment 4 requires.
 
+The labels in `results/labels/` were made by two model labellers instead of by hand, as `MAIN.md` records.
+`export` writes every error to label as blind items, mixed across monitors, to `results/labels/blind/items/`.
+Each model labeller answered independently into `results/labels/blind/answers-<name>.jsonl`.
+`reconcile` keeps the labels on which they agree and lists the rest, which a human then labels blind with `--disputed`.
+A human label always overrides a model label.
+
+```bash
+uv run python label_errors.py export
+uv run python label_errors.py reconcile --labellers fable-5.1 opus-5.5
+uv run python label_errors.py label --labeller <your-name> --disputed
+```
+
 ## Provenance
 
 No pre-existing code was used.
-All code, scenarios and analysis were written during the hackathon, from Nov 6 to Nov 9, 2026, with AI coding agents.
+All code, scenarios and analysis were written during the hackathon, from Nov 6 to the submission deadline of Nov 8, 2026 AoE (Nov 9 in India Standard Time), with AI coding agents.
 The first commit is `08d7518` on Nov 6, 2026, and the full history is in this repository.
-The only third-party code is the dependencies in `pyproject.toml`: the `adaption` gateway client, `python-dotenv` and `pytest`.
+The only third-party code is the dependencies in `pyproject.toml`: the `adaption` gateway client, `python-dotenv`, `pytest`, and `matplotlib` for the report figure.
 
 The monitor readings in `results/raw/` are the models' raw replies, unedited.
-The scenario logs are synthetic and hand-designed.
+The scenario logs are synthetic, written with AI coding agents to the author's recipe; a sub-agent wrote race-8 to race-13.
 No real agent runs, real datasets or real training jobs are involved.
 
 ## Limitations

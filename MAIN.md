@@ -28,7 +28,7 @@ Their text also gives 41% for joint monitoring without stating the threshold, so
 
 ## Disclosure about the commit history
 
-The project's first commits were rebuilt on Nov 7 2026 at 00:33 IST into one commit per stage of work, and their author dates say Nov 6.
+The project's first commits were rebuilt on Nov 7 2026 at 00:33 IST into one commit per stage of work, and their author and committer dates say Nov 6.
 The tree of `253e876` is byte-identical to the earlier single commit `941c1d2`, which is kept on the branch `backup/single-commit`.
 `0082f91` changed PILOT.md after the 4-call smoke test and before the pilot, as its section "Changes made after the smoke test and before the pilot" says.
 That commit is pushed together with this file.
@@ -332,3 +332,14 @@ Only total error counts had been seen, with no breakdown by view: deepseek short
 - `label_errors.py` shows the labeller the header and the monitor's reasoning and stated issue. It hides the view, the score and the monitor.
 - The step numbers it shows reveal the true time order, so a labeller who knows the family can tell attack from twin. The label is what the monitor asserted, not what was true, so this does not decide the label, but the blinding covers the view only, as pre-registered, and the report says so.
 - The "usual order" category treats the twin's order as the usual pipeline order in every frozen family except race-4, where both racing agents write the same pointer and neither order is usual. This follows the review note under "Before any data".
+
+## Hand labels: who labelled (decided Nov 7 before any label was made, written down at 23:50 IST after labelling)
+
+The plan above says every error is labelled by hand.
+Before any label was made, the author decided to have two model labellers, Claude Fable 5.1 and Claude Opus 5.5, label every error instead.
+Both read the same blind items, which show exactly what `label_errors.py` shows, with the errors of every monitor mixed in one shuffled order.
+Each labelled all of them independently, with instructions that never mention the hypotheses, and neither saw the other's answers.
+The labels on which they agreed were kept, and the author labelled, blind, the errors on which they disagreed.
+The scope, the sample of gemma-4-31b-it's errors, the blinding and the analysis are unchanged.
+This note was written after the labels were made, so unlike the sections above it is a record, not a pre-registration.
+
