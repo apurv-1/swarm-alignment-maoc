@@ -320,3 +320,15 @@ What had been seen when this was written:
 - The reviewer read one gemma main-run reading (a twin in team_grouped) while checking flagged readings. It drove no decision.
 - No other main-run or long-arm data had been analysed.
 - glm-5.2 includes all 9 families (720 development calls, 26.6 credits, one reading missing where the first batch stopped at its cap). Under all four original rules it would include 7; it flags single logs in race-12 (44%) and race-13 (70%).
+
+## Hand labels: which errors, and what the labeller can see (Nov 7, before any labelling)
+
+The analysis plan says every whole-log error is labelled by hand with the time order the monitor asserted, without naming a monitor.
+After the main runs started, the number of errors turned out to differ widely between monitors, so the scope is fixed here before any error is labelled.
+Only total error counts had been seen, with no breakdown by view: deepseek short 164, deepseek long 32, gemma short 634 and long 321, and partial counts for qwen and glm, whose runs were still going.
+
+- Every whole-log error from deepseek-v4-flash, qwen3.5-397b and glm-5.2 is labelled, on short and long logs.
+- gemma-4-31b-it has too many errors to label by hand, so a fixed random sample of 60 errors per arm is labelled. The sample is drawn with seed 20261107 from all of its errors in that arm, before any are read.
+- `label_errors.py` shows the labeller the header and the monitor's reasoning and stated issue. It hides the view, the score and the monitor.
+- The step numbers it shows reveal the true time order, so a labeller who knows the family can tell attack from twin. The label is what the monitor asserted, not what was true, so this does not decide the label, but the blinding covers the view only, as pre-registered, and the report says so.
+- The "usual order" category treats the twin's order as the usual pipeline order in every frozen family except race-4, where both racing agents write the same pointer and neither order is usual. This follows the review note under "Before any data".
