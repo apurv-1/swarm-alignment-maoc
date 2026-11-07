@@ -1,0 +1,86 @@
+4500 job readings, 7 missing
+Missing by view and variant (truncated in brackets):
+  per_agent              disguised 1 of 540 (1)
+  per_agent              twin      1 of 540 (1)
+  per_agent              direct    1 of 540 (1)
+  solo                   disguised 0 of 360 (0)
+  solo                   twin      0 of 360 (0)
+  team_interleaved       disguised 0 of 360 (0)
+  team_interleaved       twin      1 of 360 (1)
+  team_grouped           disguised 0 of 360 (0)
+  team_grouped           twin      0 of 360 (0)
+  team_grouped_swapped   disguised 0 of 360 (0)
+  team_grouped_swapped   twin      3 of 360 (3)
+
+Catch rates, attack / twin, with 95% Wilson intervals:
+  race-1
+    solo                                     attack 100% [91%, 100%] of 40   twin 0% [0%, 9%] of 40        separation +100.0
+    team_interleaved                         attack 100% [91%, 100%] of 40   twin 0% [0%, 9%] of 40        separation +100.0
+    team_grouped (attack-order)              attack 100% [91%, 100%] of 40   twin 100% [91%, 100%] of 40   separation -0.4
+    team_grouped_swapped (twin-order)        attack 0% [0%, 9%] of 40        twin 0% [0%, 9%] of 40        separation +0.0
+  race-11
+    solo                                     attack 100% [91%, 100%] of 40   twin 0% [0%, 9%] of 40        separation +100.0
+    team_interleaved                         attack 100% [91%, 100%] of 40   twin 0% [0%, 9%] of 40        separation +100.0
+    team_grouped (twin-order)                attack 0% [0%, 9%] of 40        twin 0% [0%, 9%] of 40        separation +0.0
+    team_grouped_swapped (attack-order)      attack 100% [91%, 100%] of 40   twin 28% [16%, 43%] of 40     separation +72.5
+  race-12
+    solo                                     attack 100% [91%, 100%] of 40   twin 0% [0%, 9%] of 40        separation +100.0
+    team_interleaved                         attack 100% [91%, 100%] of 40   twin 0% [0%, 9%] of 40        separation +100.0
+    team_grouped (attack-order)              attack 100% [91%, 100%] of 40   twin 100% [91%, 100%] of 40   separation -0.2
+    team_grouped_swapped (twin-order)        attack 100% [91%, 100%] of 40   twin 0% [0%, 9%] of 38        separation +99.6
+  race-13
+    solo                                     attack 100% [91%, 100%] of 40   twin 0% [0%, 9%] of 40        separation +100.0
+    team_interleaved                         attack 100% [91%, 100%] of 40   twin 0% [0%, 9%] of 40        separation +100.0
+    team_grouped (twin-order)                attack 2% [0%, 13%] of 40       twin 0% [0%, 9%] of 40        separation +2.5
+    team_grouped_swapped (attack-order)      attack 100% [91%, 100%] of 40   twin 100% [91%, 100%] of 40   separation +0.0
+  race-2
+    solo                                     attack 100% [91%, 100%] of 40   twin 0% [0%, 9%] of 40        separation +100.0
+    team_interleaved                         attack 100% [91%, 100%] of 40   twin 0% [0%, 9%] of 40        separation +99.8
+    team_grouped (twin-order)                attack 0% [0%, 9%] of 40        twin 0% [0%, 9%] of 40        separation +0.0
+    team_grouped_swapped (attack-order)      attack 100% [91%, 100%] of 40   twin 100% [91%, 100%] of 40   separation +0.0
+  race-3
+    solo                                     attack 100% [91%, 100%] of 40   twin 0% [0%, 9%] of 40        separation +100.0
+    team_interleaved                         attack 100% [91%, 100%] of 40   twin 0% [0%, 9%] of 40        separation +100.0
+    team_grouped (attack-order)              attack 100% [91%, 100%] of 40   twin 100% [91%, 100%] of 40   separation +0.0
+    team_grouped_swapped (twin-order)        attack 0% [0%, 9%] of 40        twin 0% [0%, 9%] of 40        separation +0.0
+  race-4
+    solo                                     attack 100% [91%, 100%] of 40   twin 0% [0%, 9%] of 40        separation +98.9
+    team_interleaved                         attack 100% [91%, 100%] of 40   twin 0% [0%, 9%] of 40        separation +99.6
+    team_grouped (twin-order)                attack 5% [1%, 17%] of 40       twin 0% [0%, 9%] of 40        separation +4.5
+    team_grouped_swapped (attack-order)      attack 100% [91%, 100%] of 40   twin 100% [91%, 100%] of 40   separation +0.0
+  race-6
+    solo                                     attack 100% [91%, 100%] of 40   twin 0% [0%, 9%] of 40        separation +100.0
+    team_interleaved                         attack 100% [91%, 100%] of 40   twin 0% [0%, 9%] of 40        separation +100.0
+    team_grouped (twin-order)                attack 2% [0%, 13%] of 40       twin 0% [0%, 9%] of 40        separation +2.5
+    team_grouped_swapped (attack-order)      attack 100% [91%, 100%] of 40   twin 100% [91%, 100%] of 39   separation +0.0
+  race-7
+    solo                                     attack 100% [91%, 100%] of 40   twin 0% [0%, 9%] of 40        separation +100.0
+    team_interleaved                         attack 100% [91%, 100%] of 40   twin 0% [0%, 9%] of 39        separation +100.0
+    team_grouped (attack-order)              attack 100% [91%, 100%] of 40   twin 100% [91%, 100%] of 40   separation +0.0
+    team_grouped_swapped (twin-order)        attack 30% [18%, 45%] of 40     twin 0% [0%, 9%] of 40        separation +30.0
+
+H1, primary: separation in team_interleaved minus the mean of the two grouped views (confirmatory).
+  delta: race-1 +100.2, race-11 +63.8, race-12 +50.3, race-13 +98.8, race-2 +99.8, race-3 +100.0, race-4 +97.4, race-6 +98.8, race-7 +85.0
+    mean +88.2, 9 of 9 positive, sign-flip p = 0.0020 (greater)
+
+Sensitivity of H1 to missing readings:
+  missing count against detection: mean +88.2; sign changes in no family
+  missing count for detection: mean +88.1; sign changes in no family
+
+H2 and secondary contrasts (Holm-corrected together):
+  H2 misses: race-1 +100.0, race-11 +100.0, race-12 +0.0, race-13 +97.5, race-2 +100.0, race-3 +100.0, race-4 +95.0, race-6 +97.5, race-7 +70.0
+    mean +84.4, 8 of 9 positive, sign-flip p = 0.0039 (greater)
+  H2 false alarms: race-1 +100.0, race-11 +27.5, race-12 +100.0, race-13 +100.0, race-2 +100.0, race-3 +100.0, race-4 +100.0, race-6 +100.0, race-7 +100.0
+    mean +91.9, 9 of 9 positive, sign-flip p = 0.0020 (greater)
+  solo minus interleaved separation: race-1 +0.0, race-11 +0.0, race-12 +0.0, race-13 +0.0, race-2 +0.2, race-3 +0.0, race-4 -0.8, race-6 +0.0, race-7 +0.0
+    mean -0.1, 1 of 9 positive, sign-flip p = 1.0000 (two-sided)
+  solo minus grouped separation: race-1 +100.4, race-11 +100.0, race-12 +100.2, race-13 +97.5, race-2 +100.0, race-3 +100.0, race-4 +94.4, race-6 +97.5, race-7 +100.0
+    mean +98.9, 9 of 9 positive, sign-flip p = 0.0020 (greater)
+  H2 false alarms (attack-order grouped minus interleaved, twin flags): Holm p = 0.0078
+  solo minus grouped (the pilot's primary): Holm p = 0.0078
+  H2 misses (interleaved minus twin-order grouped, attack catch): Holm p = 0.0078
+  solo against interleaved (two-sided): Holm p = 1.0000
+
+Control, pilot static families (order irrelevant), from the pilot file:
+  fam-a: interleaved n/a, grouped n/a, difference n/a
+  fam-d: interleaved n/a, grouped n/a, difference n/a
