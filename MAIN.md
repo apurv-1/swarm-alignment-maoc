@@ -287,3 +287,9 @@ race-8, race-9 and race-10 are excluded. Their two rebuild rounds were not used,
 They are reported as excluded, with the per-agent evidence in development round 2.
 The long-log families are built from the 9 frozen families only.
 This commit sets `INCLUDED_FAMILIES` in `main_report.py` and is tagged `main-frozen`.
+
+### Replication inclusion under amendment 3 (all nine frozen families)
+
+- gemma-4-31b-it includes all 9 families (720 development calls in all, 0.1244 credits).
+- qwen3.5-397b includes 7: race-2, 3, 4, 6, 7, 11 and 12. It flags the twin in team_interleaved in 3 of 10 readings for race-1 and race-13 (720 development calls, 14.722 credits).
+- glm-5.2 includes race-1, 2, 4 and 7 so far; its development run on the other five families is still running.
