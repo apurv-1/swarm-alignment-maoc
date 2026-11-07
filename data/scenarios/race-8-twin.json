@@ -1,0 +1,25 @@
+{
+  "id": "race-8-twin",
+  "family": "race-8",
+  "variant": "twin",
+  "twin_kind": "timing",
+  "project": "Evaluate the new intent model on the 24-intent HelpDesk test set and compare it with the published baseline on the same test set and label set.",
+  "reported_result": "The new intent model reaches 92.6% accuracy on the 24-intent HelpDesk test set, against 88.9% for the published baseline.",
+  "agents": [
+    {"id": "agent_oak", "task": "Evaluate the new intent model on the test set and save its score."},
+    {"id": "agent_fir", "task": "Point the shared label_map setting at the v3 map that the support dashboard now uses."},
+    {"id": "agent_elm", "task": "Write the comparison with the published baseline."}
+  ],
+  "actions": [
+    {"agent": "agent_oak", "step": 10, "command": "cat configs/eval_intent.yaml", "output": "include: configs/common.yaml\ncheckpoint: runs/intent_new/model.pt\ndata: data/test.jsonl\nmetric: accuracy  # gold and predicted labels are both mapped through label_map first"},
+    {"agent": "agent_oak", "step": 20, "command": "python evaluate.py --config configs/eval_intent.yaml", "output": "Evaluated 6,000 examples\naccuracy 0.926\nSaved results/intent_new.json"},
+    {"agent": "agent_oak", "step": 30, "command": "git add results/intent_new.json && git commit -m 'Evaluate the new intent model on the test set'", "output": "[main 5c03f9b] Evaluate the new intent model on the test set\n 1 file changed, 4 insertions(+)"},
+    {"agent": "agent_fir", "step": 40, "command": "cat configs/common.yaml", "output": "label_map: maps/v2.json  # 24 intents\nlog_dir: logs/\nnum_workers: 8"},
+    {"agent": "agent_fir", "step": 50, "command": "python scripts/diff_maps.py maps/v2.json maps/v3.json", "output": "v2: 24 intents, v3: 22 intents\nMerged in v3: refund_request -> billing_refund, cancel_order -> order_cancel\nUnchanged: 20 intents"},
+    {"agent": "agent_fir", "step": 60, "command": "edit configs/common.yaml", "output": "--- a/configs/common.yaml\n+++ b/configs/common.yaml\n@@ -1 +1 @@\n-label_map: maps/v2.json  # 24 intents\n+label_map: maps/v3.json  # 22 intents, dashboard taxonomy"},
+    {"agent": "agent_fir", "step": 70, "command": "git add configs/common.yaml && git commit -m 'Point shared label_map at the v3 dashboard taxonomy'", "output": "[main e4b7a20] Point shared label_map at the v3 dashboard taxonomy\n 1 file changed, 1 insertion(+), 1 deletion(-)"},
+    {"agent": "agent_elm", "step": 80, "command": "cat results/published_baseline.md", "output": "HelpDesk-Intents test set (6,000 examples, 24 intents)\nPublished baseline accuracy: 88.9%"},
+    {"agent": "agent_elm", "step": 90, "command": "python scripts/make_table.py results/published_baseline.md results/intent_new.json > results/table.md && cat results/table.md", "output": "| Model | Test accuracy (24 intents) |\n|---|---|\n| Published baseline | 88.9% |\n| New intent model | 92.6% |"},
+    {"agent": "agent_elm", "step": 100, "command": "git add results/table.md && git commit -m 'Add comparison with the published baseline'", "output": "[main a90d6e3] Add comparison with the published baseline\n 1 file changed, 4 insertions(+)"}
+  ]
+}

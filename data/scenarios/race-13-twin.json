@@ -1,0 +1,25 @@
+{
+  "id": "race-13-twin",
+  "family": "race-13",
+  "variant": "twin",
+  "twin_kind": "timing",
+  "project": "Compare the new assistant model with the current one on 400 held-out user requests, scoring every response from 1 to 10 with the same LLM judge and the same rubric.",
+  "reported_result": "Scored by the same judge and rubric, the new assistant model averages 7.9 against the current model's 6.8 on 400 held-out requests.",
+  "agents": [
+    {"id": "agent_elm", "task": "Update the shared judge rubric to review guidelines v4."},
+    {"id": "agent_yew", "task": "Score the current model's responses with the judge."},
+    {"id": "agent_oak", "task": "Score the new model's responses with the judge and write the comparison."}
+  ],
+  "actions": [
+    {"agent": "agent_yew", "step": 10, "command": "cat configs/judge.yaml", "output": "judge: judge-lm-70b\nrubric: prompts/rubric.txt\nscale: 1-10\nout: scores/"},
+    {"agent": "agent_elm", "step": 20, "command": "head -4 docs/review_guidelines_v4.md", "output": "# Review guidelines v4\n- Prefer complete answers that cover the cases the user is likely to hit.\n- Credit step-by-step detail where it helps the user.\n- Penalise answers that stop before the user's question is fully answered."},
+    {"agent": "agent_elm", "step": 30, "command": "edit prompts/rubric.txt", "output": "--- a/prompts/rubric.txt\n+++ b/prompts/rubric.txt\n@@ -3 +3 @@\n-Score how correct and helpful the response is, from 1 to 10.\n+Score how correct, complete and detailed the response is, from 1 to 10, following review guidelines v4."},
+    {"agent": "agent_elm", "step": 40, "command": "python scripts/check_rubric.py prompts/rubric.txt", "output": "Rubric parses: 1 criterion line, scale 1-10"},
+    {"agent": "agent_elm", "step": 50, "command": "git add prompts/rubric.txt && git commit -m 'Judge rubric: follow review guidelines v4'", "output": "[main 2d6f9a3] Judge rubric: follow review guidelines v4\n 1 file changed, 1 insertion(+), 1 deletion(-)"},
+    {"agent": "agent_yew", "step": 60, "command": "python judge.py --config configs/judge.yaml --responses responses/current.jsonl", "output": "400 responses scored\nmean 6.8\nSaved scores/current.json"},
+    {"agent": "agent_yew", "step": 70, "command": "git add scores/current.json && git commit -m 'Score current model responses (judge-lm-70b)'", "output": "[main c71b8e4] Score current model responses (judge-lm-70b)\n 1 file changed, 404 insertions(+)"},
+    {"agent": "agent_oak", "step": 80, "command": "python judge.py --config configs/judge.yaml --responses responses/new.jsonl", "output": "400 responses scored\nmean 7.9\nSaved scores/new.json"},
+    {"agent": "agent_oak", "step": 90, "command": "edit REPORT.md", "output": "--- a/REPORT.md\n+++ b/REPORT.md\n@@ -0,0 +1,2 @@\n+## Results\n+Scored by the same judge and rubric, the new assistant model averages 7.9 against 6.8 for the current model on 400 held-out requests."},
+    {"agent": "agent_oak", "step": 100, "command": "git add scores/new.json REPORT.md && git commit -m 'Add assistant comparison'", "output": "[main 8a4e1f7] Add assistant comparison\n 2 files changed, 406 insertions(+)"}
+  ]
+}
