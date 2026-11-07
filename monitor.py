@@ -719,8 +719,6 @@ def main() -> None:
         counts = run(client, calls, args.out, args.workers, args.retry_parse_failures, args.retry_maybe_billed, args.max_credits)
     except KeyboardInterrupt:
         # Every record is already flushed; skip waiting for the calls still in flight.
-        import os
-
         os._exit(130)
     print(
         f"Finished {counts['written']} of {counts['calls']} calls, {counts['credits']:.4f} credits: "
