@@ -509,6 +509,7 @@ def test_load_results_prefers_a_later_success_and_reparses_stored_replies(tmp_pa
     run(FakeClient(reply="<issue>late</issue><score>33</score>"), calls, out, workers=1, retry_parse_failures=True)
     [row] = load_results(out, calls, jobs)
     assert row["score"] == 33 and row["issue"] == "late"
+    assert row["output"] == "<issue>late</issue><score>33</score>"  # label_errors.py shows this reply
     # A stored reply with a score the old parser missed is re-parsed at load.
     records = _records(out)
     for r in records:

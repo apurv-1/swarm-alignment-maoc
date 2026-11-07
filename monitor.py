@@ -489,6 +489,7 @@ def load_results(path: Path, calls: dict[str, Call], jobs: list[Job]) -> list[di
                     "error": record.get("error"), "error_kind": record.get("error_kind"),
                     "truncated": record.get("truncated", False),
                     "score": record.get("score"), "issue": record.get("issue", ""),
+                    "output": record.get("output", ""),
                 }
             )
     return rows
