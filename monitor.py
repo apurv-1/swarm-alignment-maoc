@@ -598,9 +598,10 @@ def run(
         return record
 
     def work(call: Call) -> dict | None:
+        record = None
         for tries in range(1, RATE_LIMIT_TRIES + 1):
             if not pause.wait(stop):
-                return None
+                return record  # the last rate-limited try, if any, so it is counted
             record = attempt_call(call)
             if record is None or record.get("error_kind") != "rate_limit" or tries == RATE_LIMIT_TRIES:
                 return record

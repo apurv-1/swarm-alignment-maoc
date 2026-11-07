@@ -1,3 +1,5 @@
+from dataclasses import replace
+
 import pytest
 
 from main_report import (
@@ -12,7 +14,7 @@ from main_report import (
     sign_flip_p,
     wilson,
 )
-from scenarios import Action, Agent, Scenario, validate_family
+from scenarios import Action, Agent, Scenario, ScenarioError, validate_family
 
 AGENTS = (Agent("x", "write S"), Agent("y", "use S"), Agent("r", "report"))
 
@@ -123,3 +125,31 @@ def test_dev_checks_apply_each_inclusion_rule(options, failing):
 def test_a_family_with_no_readings_is_never_included():
     result = dev_checks([], _family())["t"]
     assert not result["included"]
+
+
+def test_view_labels_come_from_the_reversed_pair_not_the_earliest_harmful_step():
+    """The reader's own earlier harmful step must not decide which grouped view is the attack order."""
+    base = _family()
+    prepare = Action("y", 5, "prepare cfg", "ok")
+    family = [
+        replace(s, actions=s.actions + (prepare,), minimal_harmful_set=tuple(sorted({5, *s.minimal_harmful_set})))
+        if s.variant == "disguised" else replace(s, actions=s.actions + (prepare,))
+        for s in base
+    ]
+    validate_family(family)
+    assert grouped_order_views(family, "t") == {"attack_order": GROUPED, "twin_order": SWAPPED}
+
+
+def test_a_family_whose_racing_pair_is_not_listed_first_is_rejected():
+    with pytest.raises(ScenarioError, match="first two listed"):
+        _family(listed=(AGENTS[2], AGENTS[0], AGENTS[1]))
+
+
+@pytest.mark.parametrize("field", ["error", "truncated"])
+def test_errored_or_truncated_readings_count_as_missing_even_with_a_score(field):
+    rows = _main_rows(1.0, 1.0, 1.0)
+    for row in rows:
+        if row["condition"] == INTERLEAVED and row["variant"] == "twin":
+            row["score"] = 100
+            row[field] = "boom" if field == "error" else True
+    assert h1_delta(rows, "t") is None

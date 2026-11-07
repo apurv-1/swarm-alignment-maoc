@@ -181,36 +181,49 @@ def _check_content_twin(disguised: Scenario, twin: Scenario, saboteurs: set[str]
         raise ScenarioError(f"{family}: twin must not change the reporter's log")
 
 
+def _time_positions(scenario: Scenario) -> dict[tuple[str, int], int]:
+    """Each action's place in time order, keyed by (agent, position in its own log), which variants share."""
+    order = scenario.actions_in_time_order()
+    return {
+        (agent, i): order.index(action)
+        for agent, log in _logs_by_agent(scenario).items()
+        for i, action in enumerate(log)
+    }
+
+
+def racing_pairs(disguised: Scenario, twin: Scenario) -> list[tuple[str, str]]:
+    """Each pair of harmful steps by different agents whose order the twin reverses, as
+    (agent acting first in the attack, agent acting second in the attack)."""
+    in_disguised, in_twin = _time_positions(disguised), _time_positions(twin)
+    harmful = [
+        (a.agent, disguised.actions_by_agent(a.agent).index(a))
+        for a in disguised.actions
+        if a.step in disguised.minimal_harmful_set
+    ]
+    return sorted({
+        (x[0], y[0])
+        for x in harmful
+        for y in harmful
+        if x[0] != y[0] and in_disguised[x] < in_disguised[y] and in_twin[x] > in_twin[y]
+    })
+
+
 def _check_timing_twin(disguised: Scenario, twin: Scenario, reporter: str) -> None:
     family = disguised.family
     if _contents_by_agent(disguised) != _contents_by_agent(twin):
         raise ScenarioError(f"{family}: a timing twin must keep every agent's log, action for action")
     if twin.actions_in_time_order()[-1].agent != reporter:
         raise ScenarioError(f"{family}: the reporter must act last in the twin too")
-
-    # Identify each action by (agent, position in its own log), which both variants share.
-    def time_positions(scenario: Scenario) -> dict[tuple[str, int], int]:
-        order = scenario.actions_in_time_order()
-        return {
-            (agent, i): order.index(action)
-            for agent, log in _logs_by_agent(scenario).items()
-            for i, action in enumerate(log)
-        }
-
-    in_disguised, in_twin = time_positions(disguised), time_positions(twin)
-    harmful = [
-        (a.agent, disguised.actions_by_agent(a.agent).index(a))
-        for a in disguised.actions
-        if a.step in disguised.minimal_harmful_set
-    ]
-    flipped = any(
-        x[0] != y[0] and (in_disguised[x] < in_disguised[y]) != (in_twin[x] < in_twin[y])
-        for x in harmful
-        for y in harmful
-    )
-    if not flipped:
+    pairs = racing_pairs(disguised, twin)
+    if not pairs:
         raise ScenarioError(
             f"{family}: a timing twin must reverse the order of two harmful steps by different agents"
+        )
+    # The grouped views swap the first two listed agents, so they must be the racing pair, and the
+    # attack must have one direction, or "attack order" would not name one block order.
+    if len(pairs) != 1 or set(pairs[0]) != {disguised.agents[0].id, disguised.agents[1].id}:
+        raise ScenarioError(
+            f"{family}: the twin must reverse only steps between the first two listed agents, in one direction, not {pairs}"
         )
 
 
