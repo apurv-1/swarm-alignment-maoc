@@ -1,0 +1,37 @@
+12 scenarios, 52 transcripts, 320 distinct calls, 320 still to run
+  glm-5.2: 320 calls, about 5.9495 credits, at most 91.3821
+  0.0000 credits already charged to results/raw/dev-glm-5.2.jsonl; the budget for this file is 15.0
+25/320 calls done, 0.4327 credits
+50/320 calls done, 1.0519 credits
+75/320 calls done, 1.9269 credits
+100/320 calls done, 2.8273 credits
+125/320 calls done, 3.6639 credits
+150/320 calls done, 4.6137 credits
+175/320 calls done, 5.5816 credits
+200/320 calls done, 6.1694 credits
+225/320 calls done, 7.1599 credits
+250/320 calls done, 7.8497 credits
+275/320 calls done, 8.9510 credits
+300/320 calls done, 10.3839 credits
+Finished 319 of 320 calls, 12.2333 credits: 0 API errors, 8 replies without a valid score, 0 rate limits waited out.
+Stopped early (max_credits). Rerun the same command to continue, or raise --max-credits.
+15 scenarios, 65 transcripts, 400 distinct calls, 400 still to run
+  glm-5.2: 400 calls, about 7.4265 credits, at most 114.186
+  12.2333 credits already charged to results/raw/dev-glm-5.2.jsonl; the budget for this file is 30.0
+25/400 calls done, 0.3062 credits
+50/400 calls done, 0.9172 credits
+75/400 calls done, 1.8918 credits
+100/400 calls done, 2.6208 credits
+125/400 calls done, 3.4618 credits
+150/400 calls done, 5.0779 credits
+175/400 calls done, 5.8091 credits
+200/400 calls done, 6.6036 credits
+225/400 calls done, 7.5650 credits
+250/400 calls done, 7.9725 credits
+275/400 calls done, 8.8273 credits
+300/400 calls done, 9.8618 credits
+325/400 calls done, 10.7876 credits
+350/400 calls done, 11.9471 credits
+375/400 calls done, 12.5205 credits
+400/400 calls done, 15.1752 credits
+Finished 400 of 400 calls, 15.1752 credits: 0 API errors, 16 replies without a valid score, 0 rate limits waited out.

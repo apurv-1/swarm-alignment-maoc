@@ -319,3 +319,4 @@ What had been seen when this was written:
 - The deepseek short-log main run had been summarised once, a few minutes after it started, with partial data: every family with data had a delta of +0.0.
 - The reviewer read one gemma main-run reading (a twin in team_grouped) while checking flagged readings. It drove no decision.
 - No other main-run or long-arm data had been analysed.
+- glm-5.2 includes all 9 families (720 development calls, 26.6 credits, one reading missing where the first batch stopped at its cap). Under all four original rules it would include 7; it flags single logs in race-12 (44%) and race-13 (70%).
