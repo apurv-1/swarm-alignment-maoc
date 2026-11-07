@@ -7,3 +7,6 @@ talks/
 
 # Private working notes.
 NOTES.md
+
+# Prompts and scores written by check_monitor.py.
+prompts*.jsonl
