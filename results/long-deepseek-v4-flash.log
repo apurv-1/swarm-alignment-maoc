@@ -1,0 +1,84 @@
+27 scenarios, 72 transcripts, 1440 distinct calls, 1440 still to run
+  deepseek-v4-flash: 1440 calls, about 0.8759 credits, at most 12.7186
+  0.0000 credits already charged to results/raw/long-deepseek-v4-flash.jsonl; the budget for this file is 3.0
+25/1440 calls done, 0.0093 credits
+50/1440 calls done, 0.0288 credits
+75/1440 calls done, 0.0488 credits
+100/1440 calls done, 0.0690 credits
+125/1440 calls done, 0.0863 credits
+150/1440 calls done, 0.1045 credits
+175/1440 calls done, 0.1185 credits
+200/1440 calls done, 0.1416 credits
+225/1440 calls done, 0.1597 credits
+250/1440 calls done, 0.1739 credits
+275/1440 calls done, 0.1978 credits
+300/1440 calls done, 0.2181 credits
+325/1440 calls done, 0.2351 credits
+Warning: reading deepseek-v4-flash|t=1.0|max=64000|e38179e20da14c44|4 cost 8.7198552e-05 credits, outside its expected range (worst case 0.008824); check the cost units.
+350/1440 calls done, 0.2673 credits
+Warning: reading deepseek-v4-flash|t=1.0|max=64000|3674440d99cb3831|5 cost 7.6793128e-05 credits, outside its expected range (worst case 0.008788); check the cost units.
+375/1440 calls done, 0.2863 credits
+Warning: reading deepseek-v4-flash|t=1.0|max=64000|ec794af5ecd8e9d3|5 cost 7.7961496e-05 credits, outside its expected range (worst case 0.008868); check the cost units.
+400/1440 calls done, 0.3004 credits
+Warning: reading deepseek-v4-flash|t=1.0|max=64000|e38179e20da14c44|5 cost 8.2798992e-05 credits, outside its expected range (worst case 0.008824); check the cost units.
+425/1440 calls done, 0.3251 credits
+Warning: reading deepseek-v4-flash|t=1.0|max=64000|3674440d99cb3831|6 cost 5.8261647999999996e-05 credits, outside its expected range (worst case 0.008788); check the cost units.
+450/1440 calls done, 0.3373 credits
+475/1440 calls done, 0.3514 credits
+500/1440 calls done, 0.3763 credits
+Warning: reading deepseek-v4-flash|t=1.0|max=64000|3674440d99cb3831|7 cost 7.1860288e-05 credits, outside its expected range (worst case 0.008788); check the cost units.
+525/1440 calls done, 0.3948 credits
+550/1440 calls done, 0.4174 credits
+Warning: reading deepseek-v4-flash|t=1.0|max=64000|b7062b3d3df6d127|7 cost 7.3422152e-05 credits, outside its expected range (worst case 0.008828); check the cost units.
+575/1440 calls done, 0.4374 credits
+Warning: reading deepseek-v4-flash|t=1.0|max=64000|7f6ea64bd9abe54a|8 cost 7.742175199999999e-05 credits, outside its expected range (worst case 0.008844); check the cost units.
+Warning: reading deepseek-v4-flash|t=1.0|max=64000|ec794af5ecd8e9d3|8 cost 7.5828376e-05 credits, outside its expected range (worst case 0.008868); check the cost units.
+600/1440 calls done, 0.4539 credits
+625/1440 calls done, 0.4728 credits
+Warning: reading deepseek-v4-flash|t=1.0|max=64000|b8333f4fc808f34a|8 cost 8.8804856e-05 credits, outside its expected range (worst case 0.008847); check the cost units.
+650/1440 calls done, 0.4926 credits
+675/1440 calls done, 0.5076 credits
+700/1440 calls done, 0.5251 credits
+725/1440 calls done, 0.5452 credits
+Warning: reading deepseek-v4-flash|t=1.0|max=64000|41c73d4e823ca760|10 cost 8.147225600000002e-05 credits, outside its expected range (worst case 0.008871); check the cost units.
+750/1440 calls done, 0.5670 credits
+775/1440 calls done, 0.5871 credits
+800/1440 calls done, 0.6100 credits
+Warning: reading deepseek-v4-flash|t=1.0|max=64000|3674440d99cb3831|11 cost 5.6528488000000007e-05 credits, outside its expected range (worst case 0.008788); check the cost units.
+825/1440 calls done, 0.6269 credits
+850/1440 calls done, 0.6444 credits
+875/1440 calls done, 0.6624 credits
+Warning: reading deepseek-v4-flash|t=1.0|max=64000|7f6ea64bd9abe54a|12 cost 8.0088152e-05 credits, outside its expected range (worst case 0.008844); check the cost units.
+Warning: reading deepseek-v4-flash|t=1.0|max=64000|ec794af5ecd8e9d3|12 cost 9.3959896e-05 credits, outside its expected range (worst case 0.008868); check the cost units.
+Warning: reading deepseek-v4-flash|t=1.0|max=64000|85a7ffe7b73f30e1|12 cost 7.9110472e-05 credits, outside its expected range (worst case 0.008848); check the cost units.
+900/1440 calls done, 0.6784 credits
+925/1440 calls done, 0.6975 credits
+950/1440 calls done, 0.7152 credits
+Warning: reading deepseek-v4-flash|t=1.0|max=64000|7f6ea64bd9abe54a|13 cost 7.542195200000001e-05 credits, outside its expected range (worst case 0.008844); check the cost units.
+975/1440 calls done, 0.7362 credits
+1000/1440 calls done, 0.7545 credits
+Warning: reading deepseek-v4-flash|t=1.0|max=64000|3674440d99cb3831|14 cost 7.639316799999999e-05 credits, outside its expected range (worst case 0.008788); check the cost units.
+1025/1440 calls done, 0.7791 credits
+1050/1440 calls done, 0.8039 credits
+1075/1440 calls done, 0.8245 credits
+1100/1440 calls done, 0.8394 credits
+1125/1440 calls done, 0.8610 credits
+1150/1440 calls done, 0.8840 credits
+1175/1440 calls done, 0.9023 credits
+Warning: reading deepseek-v4-flash|t=1.0|max=64000|923dbfa9f50d237a|16 cost 0.00010760944 credits, outside its expected range (worst case 0.008895); check the cost units.
+1200/1440 calls done, 0.9212 credits
+1225/1440 calls done, 0.9428 credits
+1250/1440 calls done, 0.9608 credits
+1275/1440 calls done, 0.9800 credits
+1300/1440 calls done, 0.9949 credits
+Warning: reading deepseek-v4-flash|t=1.0|max=64000|f99988f127ddd5ed|18 cost 7.8666072e-05 credits, outside its expected range (worst case 0.008828); check the cost units.
+1325/1440 calls done, 1.0148 credits
+1350/1440 calls done, 1.0329 credits
+1375/1440 calls done, 1.0475 credits
+Warning: reading deepseek-v4-flash|t=1.0|max=64000|6049db9febf106f9|19 cost 6.0712312000000004e-05 credits, outside its expected range (worst case 0.008848); check the cost units.
+1400/1440 calls done, 1.0635 credits
+Warning: reading deepseek-v4-flash|t=1.0|max=64000|e38179e20da14c44|19 cost 8.7731832e-05 credits, outside its expected range (worst case 0.008824); check the cost units.
+1425/1440 calls done, 1.0839 credits
+Warning: reading deepseek-v4-flash|t=1.0|max=64000|36abf4c0444be171|19 cost 7.7288432e-05 credits, outside its expected range (worst case 0.008828); check the cost units.
+Finished 1440 of 1440 calls, 1.1042 credits: 0 API errors, 2 replies without a valid score, 30 rate limits waited out.
+Warning: 22 replies cost more than expected, so the budget may not be reliable.
