@@ -1,0 +1,8 @@
+6 scenarios, 26 transcripts, 160 distinct calls, 120 still to run
+  deepseek-v4-flash: 120 calls, about 0.0688 credits, at most 1.0429
+  0.3232 credits already charged to results/raw/dev.jsonl; the budget for this file is 1.5
+25/120 calls done, 0.0152 credits
+50/120 calls done, 0.0356 credits
+75/120 calls done, 0.0541 credits
+100/120 calls done, 0.0768 credits
+Finished 120 of 120 calls, 0.0896 credits: 0 API errors, 0 replies without a valid score, 0 rate limits waited out.
