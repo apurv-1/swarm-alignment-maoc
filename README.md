@@ -1,4 +1,4 @@
-# Grouped by agent, read out of order
+# Monitors Get the Order Wrong When Agent Logs Are Grouped
 
 When several AI agents share one codebase, a harmful plan can be split so that each agent's log looks routine on its own.
 A joint monitor reads every agent's actions together, and joint monitors usually see those actions grouped by agent.
