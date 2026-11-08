@@ -234,7 +234,7 @@ No pre-existing code was used: everything was written during the hackathon, Nove
 
 AI coding agents (Claude Opus 5.5 in Claude Code) wrote most of the code, tests and scenario files to the author's design, and the author reviewed the code and every scenario by hand; a sub-agent wrote families race-8 to race-13.
 Claude Opus 5.5 and Claude Fable 5.1 reviewed the design, code and drafts, helped draft the text, and labelled 438 of the 441 errors in Section 4.2.
-The author chose the question, the hypotheses and every analysis decision, and checked the results.
+The author settled the other three and matched all 40 labels in a pre-registered blind audit.
 
 ## References
 
