@@ -164,3 +164,36 @@ def test_threshold_at_budget_is_the_lowest_score_that_keeps_false_alarms_at_one_
     assert threshold_at_budget([0] * 98 + [60, 60], [70, 100]) == 70  # just above every twin, still catching
     assert threshold_at_budget([0] * 98 + [100, 100], [100] * 5) is None  # 2% of twins at the maximum
     assert threshold_at_budget([0] * 98 + [80, 90], [85, 95]) == 85
+
+
+def test_order_cue_section_drops_race_4_then_both_cued_families():
+    from report_numbers import Arm, order_cue_section
+    families = ["race-1", "race-2", "race-4", "race-11"]
+    arms = [Arm("deepseek-v4-flash", False, families, []), Arm("glm-5.2", False, families, [])]
+    deltas = {"deepseek-v4-flash": {"race-1": 10.0, "race-2": 20.0, "race-4": 90.0, "race-11": -60.0},
+              "glm-5.2": {"race-1": 1.0, "race-2": -1.0, "race-4": None, "race-11": 3.0}}
+    text = "\n".join(order_cue_section(arms, deltas))
+    assert "| deepseek-v4-flash | -10.0 | 2 of 3 | 0.6250 | +15.0 | 2 of 2 | 0.2500 |" in text
+    assert "| glm-5.2 | +1.0 | 2 of 3 |" in text
+
+
+def test_long_log_section_tests_the_per_family_drop_two_sided():
+    from report_numbers import Arm, long_log_section
+    arms = [Arm("deepseek-v4-flash", False, ["race-1", "race-2"], []), Arm("deepseek-v4-flash", True, ["long-race-1", "long-race-2"], [])]
+    deltas = {"deepseek-v4-flash": {"race-1": 20.0, "race-2": 10.0},
+              "deepseek-v4-flash (long logs)": {"race-1": 5.0, "race-2": 6.0}}
+    text = "\n".join(long_log_section(arms, deltas))
+    assert "| deepseek-v4-flash | 2 | +9.5 | 2 of 2 | 0.5000 |" in text
+
+
+def test_labels_section_reports_the_human_audit_with_an_interval(tmp_path, monkeypatch):
+    import json
+    import label_errors
+    family = "race-4"
+    views = grouped_order_views(timing_scenarios([family]), family)
+    rows = [{**_row(family, views["twin_order"], "disguised", 0), "key": "miss", "is_attack": True}]
+    (tmp_path / "main.jsonl").write_text(json.dumps({"key": "miss", "asserted": "twin_order"}) + "\n")
+    monkeypatch.setattr(label_errors, "agreement", lambda labellers: {"items": 10, "agreed": 9, "kappa": 0.9})
+    monkeypatch.setattr(label_errors, "audit_counts", lambda labeller: {"checked": 40, "matched": 39, "differ": ["0007"]})
+    text = "\n".join(report_numbers.labels_section([Arm("deepseek-v4-flash", False, [family], rows)], tmp_path))
+    assert "matched 39 of 40 (95% Wilson interval [87%, 100%]); differing ids: 0007." in text

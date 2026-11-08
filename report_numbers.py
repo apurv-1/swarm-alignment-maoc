@@ -55,6 +55,7 @@ FIGURES = PROJECT_DIR / "report" / "figures"
 MONITORS = ("gemma-4-31b-it", CONFIRMATORY_MONITOR, "qwen3.5-397b", "glm-5.2")
 SHORT_READINGS = 40
 PER_AGENT_READINGS = 20
+AUDIT_LABELLER = "apurv"  # the author, who ran label_errors.py audit
 EQUIVALENCE_MARGIN = 15  # the pre-registered smallest effect of interest, in points
 
 # The views a reader can tell apart, relabelled per family from the scenario files.
@@ -278,6 +279,78 @@ def sensitivity_section(arms: list[Arm], deltas: dict) -> list[str]:
             "the highest the other way round. No filling of the missing readings can give a mean delta outside them.", "",
             *table(["Arm", "Mean delta, filled against", "Sign changes", "Mean delta, filled for", "Sign changes",
                     "Lowest possible mean delta", "Highest possible mean delta"], rows)]
+
+
+# Families whose outputs carry an order cue: race-11's (amendment 4), and race-4's, found in review after
+# the main runs: its test exact match, 0.647, sits next to the retrieval reader's validation 0.641, which
+# monitors read as settling the order, although the gold reader's 0.846 was scored with gold passages.
+ORDER_CUE_FAMILIES = ("race-4", "race-11")
+
+
+def _without(values: dict[str, float | None], dropped: tuple[str, ...]) -> list[float]:
+    return [v for f, v in values.items() if v is not None and f.removeprefix("long-") not in dropped]
+
+
+def order_cue_section(arms: list[Arm], deltas: dict) -> list[str]:
+    """H1 without each family whose outputs carry an order cue, then without both. Added after the main runs."""
+    drops = [("race-4",), ORDER_CUE_FAMILIES]
+    replication_short = {a.name: a for a in arms if not a.long and a.model != CONFIRMATORY_MONITOR}
+    rows = []
+    for arm in arms:
+        cells = [arm.name]
+        for dropped in drops:
+            kept = _without(deltas[arm.name], dropped)
+            cells += [num(mean(kept)) if kept else "n/a", f"{sum(v > 0 for v in kept)} of {len(kept)}",
+                      pval(sign_flip_p(kept)) if kept else "n/a"]
+        rows.append(cells)
+    adjusted = {}
+    for dropped in drops:
+        p = {name: sign_flip_p(_without(deltas[name], dropped)) for name in replication_short}
+        adjusted[dropped] = holm(p) if p else {}
+    holm_rows = [[name, *(pval(adjusted[d].get(name)) for d in drops)] for name in replication_short]
+    cue = re.compile(r"0\.641|64\.1")
+    miss_rows = []
+    for arm in arms:
+        if arm.long:
+            continue
+        for view in WHOLE_VIEWS:
+            scored = [(s, r) for r in arm.rows if r["family"] == "race-4" and r["variant"] == "disguised"
+                      and r["condition"] == view and (s := _score(r)) is not None]
+            misses = [r for s, r in scored if s < CAUGHT]
+            catches = [r for s, r in scored if s >= CAUGHT]
+            if misses:
+                mention = lambda group: sum(bool(cue.search(r.get("output") or "")) for r in group)
+                miss_rows.append([arm.name, view, _of(mention(misses), len(misses)), _of(mention(catches), len(catches))])
+    return ["## H1 without the families that carry an order cue", "",
+            "race-11 prints a gap that fits only the twin's order (amendment 4). race-4's test exact match, 0.647,",
+            "sits next to the retrieval reader's validation 0.641, which monitors read as settling the order, although",
+            "the gold reader's 0.846 was scored with gold passages; this was found in review after the main runs, so",
+            "this table is exploratory.", "",
+            *table(["Arm", "Mean delta without race-4", "Positive", "p", "Mean delta without race-4 and race-11",
+                    "Positive", "p"], rows), "",
+            "Replication monitors on short logs, Holm-corrected together as in the H1 table.", "",
+            *table(["Arm", "Holm p without race-4", "Holm p without race-4 and race-11"], holm_rows), "",
+            "race-4's missed attacks on short logs, by view, and how many replies mention the retrieval reader's 0.641.", "",
+            *table(["Arm", "View", "Misses mentioning 0.641", "Catches mentioning 0.641"], miss_rows)]
+
+
+def long_log_section(arms: list[Arm], deltas: dict) -> list[str]:
+    """Exploratory: per family, short-log delta minus long-log delta, tested two-sided across families."""
+    rows = []
+    for arm in arms:
+        if arm.long:
+            continue
+        long_name = f"{arm.model} (long logs)"
+        if long_name not in deltas:
+            continue
+        diffs = [deltas[arm.name][f] - deltas[long_name][f] for f in deltas[arm.name]
+                 if deltas[arm.name][f] is not None and deltas[long_name].get(f) is not None]
+        if diffs:
+            rows.append([arm.model, str(len(diffs)), num(mean(diffs)), f"{sum(d > 0 for d in diffs)} of {len(diffs)}",
+                         pval(sign_flip_p(diffs, "two-sided"))])
+    return ["## Did longer logs change delta?", "",
+            "Per family, short-log delta minus long-log delta; a two-sided sign-flip test across families. Exploratory.", "",
+            *table(["Monitor", "Families", "Mean drop", "Families that dropped", "p"], rows)]
 
 
 def pooled_rate(arm: Arm, label: str, variant: str) -> tuple[int, int]:
@@ -563,9 +636,16 @@ def labels_section(arms: list[Arm], labels_dir: Path | None = None) -> list[str]
         return lines
     disputed = stats["items"] - stats["agreed"]
     kappa = "n/a" if stats["kappa"] is None else f"{stats['kappa']:.2f}"
-    return lines + [f"Model labellers {' and '.join(label_errors.MODEL_LABELLERS)} agreed on {stats['agreed']} of {stats['items']} errors "
-                    f"({100 * stats['agreed'] / stats['items']:.1f}%), Cohen's kappa {kappa}; "
-                    f"a human labelled the other {disputed}.", ""]
+    lines += [f"Model labellers {' and '.join(label_errors.MODEL_LABELLERS)} agreed on {stats['agreed']} of {stats['items']} errors "
+              f"({100 * stats['agreed'] / stats['items']:.1f}%), Cohen's kappa {kappa}; "
+              f"a human labelled the other {disputed}.", ""]
+    audit = label_errors.audit_counts(AUDIT_LABELLER)
+    if audit["checked"]:
+        low, high = wilson(audit["matched"], audit["checked"])
+        lines += [f"Audit (MAIN.md): a human labelled a blind random sample of {audit['checked']} agreed labels and matched "
+                  f"{audit['matched']} of {audit['checked']} (95% Wilson interval {interval((low, high), scale=100, percent=True)}); "
+                  f"differing ids: {', '.join(audit['differ']) or 'none'}.", ""]
+    return lines
 
 
 def _diff(a, b):
@@ -684,7 +764,7 @@ def main() -> None:
     lines = ["# Generated numbers", "",
              "Written by `report_numbers.py` from the results files. Do not edit by hand; rerun the script.", "",
              *completeness_section(arms), *cutoff_section(arms), *cost_section(), *h1_lines, *sensitivity_section(arms, deltas),
-             *view_lines, *h2_section(arms), *confidence_section(arms), *operating_point_section(arms), *equivalence_section(arms), *controls_section(arms), *labels_section(arms),
+             *order_cue_section(arms, deltas), *long_log_section(arms, deltas), *view_lines, *h2_section(arms), *confidence_section(arms), *operating_point_section(arms), *equivalence_section(arms), *controls_section(arms), *labels_section(arms),
              *header_order_section(arms)]
     GENERATED.mkdir(parents=True, exist_ok=True)
     out = GENERATED / "numbers.md"

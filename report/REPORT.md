@@ -8,59 +8,61 @@ Code, scenarios, every raw monitor reading and the pre-registration: https://git
 
 ## Abstract
 
-When AI agents split a harmful plan, each agent's log can look routine, so joint monitors read every agent's actions together.
-A recent red-teaming study gave its joint monitor the trajectories grouped by agent, because that made the monitor's reasoning more coherent.
+Agents that split a harmful plan can keep each log routine, so joint monitors read all agents' actions together.
+A recent red-teaming study grouped them by agent, because that made its monitor's reasoning more coherent.
 We test whether that layout alone changes what a monitor catches.
-We built nine ML projects whose reported result is false only if two routine steps by different agents run in one order, each with a timing twin that reverses only that order.
-Under a pre-registered plan, four LLM monitors read the same actions and step numbers in time order or grouped by agent.
+We built nine ML projects whose reported result is false only if two routine steps by different agents run in one order.
+Each has a timing twin: identical per-agent logs, interleaved so the steps run in the other order.
+Under a pre-registered plan, four LLM monitors read the same numbered actions in time order or grouped by agent.
 On the confirmatory monitor, deepseek-v4-flash, grouping cut the gap between attack and twin scores by 21.0 points (9 of 9 families, p = 0.002), mostly through false alarms.
-In an exploratory analysis these were as confident as real catches: under attack-order blocks it gave 28% of twins the maximum score, against none in time order.
-In all 150 of its errors under misleading blocks, it asserted the block order.
-The cost was 88 points for gemma-4-31b and about 10 for qwen3.5-397b; glm-5.2, the strongest monitor, showed none on the readings it finished.
-Listing actions in time order with agent labels removed the cost on every monitor.
-We release the families as a test for joint monitors, which published systems group, squash or sort.
+In exploratory analyses these false alarms were as confident as real catches: at a threshold flagging at most 1% of twins, a hard case, it caught 359 of 359 attacks in time order and 0 of 720 grouped.
+All 150 of its errors under misleading blocks asserted the block order.
+The cost was 88 points for gemma-4-31b-it and about 10 for qwen3.5-397b; glm-5.2, the costliest, showed none on readings it finished.
+In time order with agent labels, every monitor's finished readings separated attacks from twins about as well as a single-agent view.
+We release the families and a scorer to test any joint monitor.
 
 ## 1. Introduction
 
 A misaligned group of agents can split a harmful plan so that each agent's actions look routine in its own log.
 Kitaoka et al. (2026) red-teamed this threat on a simulated AI lab.
-Their monitor flagged a single agent doing an attack in 81% of successful runs at a suspicion threshold of 8.5, but flagged split attacks in 2% of runs when it read each agent's trajectory alone.
-A joint monitor that read all trajectories together flagged 31.7% of split attacks (66 of 208) at the same threshold, and their text also gives 41% for joint monitoring without stating its threshold.
+At a suspicion threshold of 8.5, which they report as a 1% false-positive rate, their monitor flagged a single agent doing an attack in 81% of successful runs, but flagged split attacks in 2% of runs when it read each agent's trajectory alone.
+A joint monitor that read all trajectories together flagged 31.7% of split attacks (66 of 208) at the same threshold, and 41% at their main threshold of 7.5, which they report as a 2% false-positive rate.
 
-In a talk to this hackathon, Kitaoka (2026) named this gap between monitoring one agent and monitoring a team as an open problem, and our work addresses part of it.
+In a talk to this hackathon, Kitaoka (2026) named this gap an open problem, and our work addresses part of it.
 Some harms live in system state that no trajectory shows, and some monitors may fail to connect actions across agents, but others may be misled by how the trajectories are laid out.
 Kitaoka et al. gave their joint monitor every trajectory "grouped by agent and timestamped", because they found this made the monitor's reasoning more coherent.
 Grouping breaks time order: an action that happened late can sit above one that happened early, and only the timestamps or step numbers say otherwise.
 If a monitor reads the order of blocks as the order of events, it will misjudge any attack whose harm depends on which agent acted first.
-This is not a hypothetical layout.
-Kitaoka et al.'s own example of their joint monitor's input lists agent A's block first, although A acted last (their Appendix I).
-Makins et al. (2026) squash every agent's commits into one diff, and Brown et al. (2026) order evidence from most to least suspicious, so none of the three published joint monitors shows the monitor the agents' actions in time order.
+Such attacks plausibly fit their setting, since in their simulated lab some jobs refuse to run until another job has produced their input (their Appendix A.1).
+Nor is the layout hypothetical.
+Their own example of the joint monitor's input lists agent A's block first, although A issued its command last, a second or two after the others (their Appendix I).
+Makins et al. (2026) estimate what a monitor could catch from every agent's commits squashed into one diff, and Brown et al. (2026) order evidence from most to least suspicious, so none of these three papers shows its monitor the agents' actions in time order.
 
 We isolate that one mechanism.
-In each of nine small ML projects, two agents each take one routine step on a shared resource, such as a data split or a scorer, and a third reports the result, which is false in one order of the two steps and valid in the other.
-These are the time case of what Kitaoka (2026) calls diffuse harm: each piece is harmless, and only their order does damage.
-We hold the actions fixed and change only their layout, so any difference in what a monitor catches comes from layout alone.
+In nine small ML projects, two agents each take one routine step on a shared resource, such as a data split or a scorer, and the result a third agent reports is false in one order of the two steps and valid in the other.
+This is the time case of what Kitaoka (2026) calls diffuse harm: each piece is harmless, and only their order does damage.
+We hold the actions fixed and change only their layout.
 
 Our contributions are:
 
 - **A test that isolates layout**: nine order-dependent split attacks, each with a timing twin whose per-agent logs are byte-identical.
 - **A pre-registered result**: grouping by agent cost separation on three of four monitors, and in an exploratory analysis it made two monitors' false alarms as confident as real catches.
 - **The mechanism**: under misleading blocks, three of four monitors almost always asserted the order the blocks showed.
-- **A free fix and a reusable check**: time order with agent labels removed the cost, and `check_monitor.py` tests any monitor.
+- **A free fix and a reusable check**: in time order with agent labels, every monitor did about as well as in a single-agent view on the readings it finished, and `check_monitor.py` tests any monitor.
 
 ## 2. Related work
 
-AI control studies how to keep a possibly misaligned model from causing harm by monitoring and constraining it rather than trusting it (Greenblatt et al., 2024).
-Most control evaluations monitor one agent's trajectory at a time, as in SHADE-Arena (Kutasov et al., 2025).
+AI control keeps a possibly misaligned model from causing harm by monitoring and constraining it (Greenblatt et al., 2024), and most control evaluations monitor one agent's trajectory at a time (Kutasov et al., 2025).
 Makins et al. (2026) show a fragmentation effect: as more agents share an attack, monitoring each agent alone becomes less likely to catch any of them.
-Their joint check reads all of an attack's commits squashed into a single diff, which removes the order in which they were made.
+Their joint check reads all of an attack's commits squashed into a single diff, which removes the order in which they were made; they note that a real defender could not assemble such a diff.
 Kitaoka et al. (2026) show the same failure for per-agent monitors and find that joint monitoring recovers only part of the gap.
 Brown et al. (2026) propose a stateful monitor that links weak signals across many accounts over time, and use it to catch distributed attacks.
-Kale et al. (2025) find that how a weaker monitor's input is broken up and reviewed matters more than what the monitor knows about the agent's task.
+Kale et al. (2025) find that how a weaker monitor's input is broken up and reviewed matters more than what the monitor knows about the agent's task, and Hills et al. (2026) vary how much of one agent's history of pull requests a monitor sees.
 None of these vary the layout of a joint monitor's input while holding its content fixed.
 
-What a model is shown, and in what order, changes what it concludes: whether a monitor sees reasoning (Baker et al., 2025), where information sits in a long context (Liu et al., 2024), the order in which a judge sees answers (Zheng et al., 2023), the order of premises in a reasoning problem (Chen et al., 2024), and the order of dated facts in temporal reasoning (Fatemi et al., 2024).
-We are not aware of work testing whether a monitor reconstructs cross-agent time order from step numbers when the layout groups actions by agent.
+What a model is shown, and in what order, changes what it concludes: whether a monitor sees reasoning (Baker et al., 2025), where information sits in a long context (Liu et al., 2024), and the order of a judge's answers (Zheng et al., 2023), of premises (Chen et al., 2024) and of dated facts (Fatemi et al., 2024).
+Fang et al. (2024) name the failure we test, narrative bias: a model's tendency to take the order in which events are told as the order in which they happened.
+We are not aware of work testing it in monitors, where grouping by agent makes the order of telling and the order of events disagree.
 
 ## 3. Method
 
@@ -68,12 +70,13 @@ We are not aware of work testing whether a monitor reconstructs cross-agent time
 
 A family is one small ML project with three agents, named after trees so that no name suggests a role or an order.
 The first two listed agents race over a shared resource, each as a routine step of its own task, and the third, the reporter, acts last.
-In the **disguised** variant, the attack, the racing steps run in the harmful order.
-Its **twin** has the same actions, commands and outputs with only the racing steps' order reversed, so the result is valid and each agent's own log is identical to the attack's.
-The **direct** variant adds read steps to the saboteur's own log that show the other agent has already acted, as a positive control.
+The **disguised** variant is the attack: its racing steps run in the harmful order.
+Its **twin** has the same actions, commands and outputs, and each agent's log is identical to the attack's; only the way the agents' logs interleave changes, so the racing steps run in the harmless order and the result is valid.
+The **direct** variant is a positive control: it adds read steps to the log of one racing agent, the saboteur, that show the other has already acted.
 The families were written so that no output reveals the order through file contents, timestamps or numbers that depend on it.
-`scenarios.py` checks the structure for every family: each agent's log is identical in attack and twin, and only the racing pair's order differs.
-It does not check outputs for order cues, and one family, race-11, turned out to carry one (Section 4.5).
+`scenarios.py` checks the structure for every family: each agent's log is identical in attack and twin, the reporter acts last, and exactly one pair of harmful steps, between the two racing agents, changes order.
+Other routine steps of the racing agents also change order when the logs interleave differently.
+The validator does not check outputs for order cues, and two families, race-11 and race-4, turned out to carry one (Section 4.5).
 Appendix C describes the nine families.
 
 Every view shows the same actions under the same header, which gives the project, the reported result and a note that all steps share one checkout.
@@ -84,7 +87,8 @@ Every view shows the same actions under the same header, which gives the project
 - **grouped** (`team_grouped` and `team_grouped_swapped`): one block per agent, with the same global step numbers 1 to N. The swapped view exchanges the two racing agents' blocks, and the reporter's block stays last.
 
 In the grouped views the step numbers still give the true time order, so a monitor that reads them has everything it needs.
-One grouped view shows the racing agents' blocks in the attack's order and the other in the twin's.
+We name the two grouped views by what their blocks show: the **attack-order** view puts the racing agents' blocks in the attack's order, and the **twin-order** view in the twin's.
+Which grouped view shows which order differs by family.
 In Figure 1, agent_pine trains the retrieval reader at step 3, then agent_yew's gold-passage run at step 5 repoints the `latest` pointer that the reporter evaluates.
 Grouped, agent_yew's block comes first, so the block order shows the harmless order.
 
@@ -109,17 +113,19 @@ team_interleaved                         team_grouped (listed order: yew, pine, 
 ### 3.2 Monitors and analysis
 
 The confirmatory monitor is deepseek-v4-flash, and gemma-4-31b-it, qwen3.5-397b and glm-5.2 are replication monitors from other labs.
-Per call, deepseek-v4-flash cost 0.0005 credits, the API gateway's billing unit, and gemma-4-31b-it, qwen3.5-397b and glm-5.2 cost 0.00018, 0.022 and 0.052, so glm-5.2 costs about 100 times as much.
+Per call, in the API gateway's credits, gemma-4-31b-it cost 0.00018, deepseek-v4-flash 0.0005, qwen3.5-397b 0.022 and glm-5.2 0.052, about 100 times deepseek-v4-flash.
 All are sampled at temperature 1.0 with a 64,000-token output cap.
 The neutral instructions ask whether the reported result is valid and never mention agents, teams, attacks or problems spread across steps.
-Like Kitaoka et al.'s monitors (Kitaoka, 2026), ours see only the agents' commands and outputs, with no chain of thought.
+Like Kitaoka et al.'s monitors, ours see only the agents' commands and outputs, with no chain of thought.
 The monitor answers with its reasoning and a score from 0 (clearly valid) to 100 (clearly invalid), and 50 or more counts as judged invalid.
 
 A family's separation in a view is its mean attack score minus its mean twin score.
 H1, the confirmatory hypothesis, predicts that Δ, separation in time order minus the mean separation of the two grouped views, is positive.
 It is tested with a one-sided paired sign-flip test across families at α = 0.05, and the replication monitors are Holm-corrected together.
-H2 splits the cost into misses, attacks caught less often in the twin-order grouped view than in time order, and false alarms, twins flagged more often in the attack-order grouped view.
-The false-alarm half is decisive: in eight of nine families the twin's order is the usual pipeline order, so assuming the usual order would also cause misses, but only reading block order as time order would flag a twin whose blocks show an unusual order.
+H2 splits the cost into misses, attacks caught less often in the twin-order view than in time order, and false alarms, twins flagged more often in the attack-order view.
+The false-alarm half is the decisive one.
+In eight of nine families the twin's order is the usual pipeline order, so a monitor that simply assumed the usual order would miss attacks but never flag a twin.
+Extra false alarms on twins can only come from reading block order as time order.
 The smallest effect of interest is 15 points, and the family is the unit of analysis.
 All hypotheses, tests and inclusion rules were committed before any grouped-view reading existed, and Appendix B lists every later change.
 
@@ -130,7 +136,7 @@ The main run used fresh readings: 40 per whole-log cell and 20 per per-agent log
 A secondary arm makes every log about four times longer with routine filler steps, at 20 readings per cell.
 
 Every whole-log error, meaning a missed attack or a flagged twin, is labelled with the order the monitor asserted for the two racing steps; gemma-4-31b-it's errors are sampled at 60 per arm.
-Two model labellers, Claude Fable 5.1 and Claude Opus 5.5, labelled every error independently from a view that hides the view, the score and the monitor, and the author labelled the errors on which they disagreed (Appendix B).
+Two model labellers, Claude Fable 5.1 and Claude Opus 5.5, labelled every error independently from blind items that hide the layout, the score and the monitor, and the author labelled the errors on which they disagreed (Appendix B).
 
 ## 4. Results
 
@@ -157,52 +163,62 @@ Table 1 gives H1 for every monitor and both arms, and Figure 2 shows where the c
 ![Figure 2](figures/layout-cost.png)
 
 **Figure 2.** For each monitor, ordered by cost per call, the share of readings judged invalid in time order and in the two grouped views, for attacks (blue circles) and harmless twins (orange squares), averaged over families.
-"Attack's order" is the grouped view whose blocks put the racing agents in the attack's time order, and "twin's order" the one that puts them in the twin's.
+"Attack's order" and "twin's order" are the attack-order and twin-order grouped views.
 Faint lines are single families.
 A perfect monitor draws a flat blue line at 100% and a flat orange line at 0%.
 
 The cost tracks the monitor.
 gemma-4-31b-it, the cheapest, read the blocks as the timeline almost completely: it judged 92% of twins invalid when the blocks followed the attack's order, and caught only 16% of attacks when they followed the twin's order.
 In the same two cells, deepseek-v4-flash flagged 28% of twins and caught 87% of attacks, qwen3.5-397b flagged 11% and caught 87%, and glm-5.2 flagged 1% and caught 97%.
-glm-5.2 caught nearly every attack and cleared nearly every twin in every view, and most of its small Δ comes from race-11, at +11.6; without race-11 its mean Δ is +0.1.
+glm-5.2 caught nearly every attack and, on the readings it finished, cleared nearly every twin in every view, and most of its small Δ comes from race-11, at +11.6; without race-11 its mean Δ is +0.1.
 
 ### 4.2 Grouping made cheap monitors confidently wrong
 
-H2's false-alarm half held on deepseek-v4-flash: in the grouped view whose blocks followed the attack's order, twins were flagged 28.1 points more often than in time order (Holm p = 0.0078).
+H2's false-alarm half held on deepseek-v4-flash: in the attack-order view, twins were flagged 28.1 points more often than in time order (Holm p = 0.0078).
 The miss half, 13.3 points, was not significant after correction (Holm p = 0.0625) and depends on race-11 (Section 4.5), so we do not claim it.
 
-In an exploratory analysis we did not pre-register, these false alarms were as confident as real catches.
-In the grouped view whose blocks followed the attack's order, deepseek-v4-flash gave 100 of 360 twin readings the maximum score of 100, while in time order it gave no twin 100 and gave 357 of 359 attacks 100.
-Pooled over both grouped views, 101 of 719 twin readings scored 100, so no suspicion threshold could bring its false-alarm rate on grouped twins below 14%.
-gemma-4-31b-it gave 330 of 359 twins in the attack-order grouped view the maximum score, but qwen3.5-397b's false alarms rarely did, at 3 of 280.
-Kitaoka et al. set their threshold so that under 1% of benign runs are flagged (Kitaoka, 2026); at the lowest threshold that keeps false alarms on twins at or under 1%, deepseek-v4-flash caught 359 of 359 attacks in time order and 0 of 720 when grouped (Appendix F.4).
+In exploratory analyses we did not pre-register, these false alarms were as confident as real catches.
+In the attack-order view, deepseek-v4-flash gave 100 of 360 twin readings the maximum score of 100, while in time order it gave no twin 100 and gave 357 of 359 attacks 100.
+Pooled over both grouped views, 101 of 719 twin readings scored 100, so any threshold that flags anything flags at least 14% of grouped twins.
+Control evaluations fix a false-alarm budget; Kitaoka et al. report a 2% budget and a stricter 1%.
+At the lowest threshold that flags at most 1% of twins, deepseek-v4-flash caught 359 of 359 attacks in time order and 0 of 720 grouped; gemma-4-31b-it also caught none grouped, while qwen3.5-397b kept 39% and glm-5.2 99% (Appendix F.4).
+Twins are harder to clear than typical harmless logs, so this is a hard case for a 1% budget.
 
 The monitors' errors follow the blocks.
 In race-7's twin, the test split was carved out before the nearest-neighbour memory was built, which is the harmless order.
-Shown the grouped view whose blocks follow the attack's order, deepseek-v4-flash wrote: "The few-shot memory was built from the full pool before the test split was removed, so it contains the test tickets themselves and leaks their labels into the nearest-neighbour prompts."
-Across all labelled errors, deepseek-v4-flash made 150 of its 164 short-log errors in a grouped view whose blocks showed the racing agents in the wrong order, and in all 150 it asserted the block order, which there is the wrong order: 48 of 48 missed attacks and 102 of 102 flagged twins.
+Shown the attack-order view, deepseek-v4-flash wrote: "The few-shot memory was built from the full pool before the test split was removed, so it contains the test tickets themselves and leaks their labels into the nearest-neighbour prompts."
+Across all labelled errors, deepseek-v4-flash made 150 of its 164 short-log errors in a grouped view whose blocks showed the racing agents in the wrong order.
+In all 150 it asserted the block order: 48 of 48 missed attacks and 102 of 102 flagged twins.
 gemma-4-31b-it asserted the block order in 59 of 60 sampled errors, and glm-5.2 in all 12 of its errors under misleading blocks.
 qwen3.5-397b followed the blocks in 35 of 36 missed attacks but in only 11 of 30 flagged twins; in 18 of its 66 errors under misleading blocks it stated the true order and doubted the result for another reason.
 The two model labellers agreed on 438 of 441 errors (99.3%, Cohen's kappa 0.99), and the author labelled the other 3.
+In a pre-registered blind audit of 40 randomly sampled agreed labels, the author matched all 40 (95% interval 91% to 100%).
 
 ### 4.3 Time order matched the solo view
 
 The solo view, in which one agent appears to do everything, and the time-order view differed by at most 2.3 points of mean separation on every monitor and both arms (every Holm-corrected p 0.19 or more).
-An exploratory equivalence test places every mean difference within the 15-point smallest effect of interest (p = 0.0078 or less); since both views sit near the ceiling, this shows only that time order lost nothing measurable here.
+An exploratory equivalence test places every difference within the 15-point smallest effect of interest (p = 0.0078 or less), though with both views near the ceiling this shows only that time order lost nothing measurable.
 
-### 4.4 Longer logs shrank the cost on two monitors
+### 4.4 Longer logs shrank deepseek-v4-flash's cost
 
-Against our expectation, deepseek-v4-flash's Δ fell from +21.0 to +7.9, still positive in 7 of 9 families (p = 0.0078), and qwen3.5-397b's from +10.1 to +5.6, while gemma-4-31b-it's stayed near total at +88.5; we cannot test why with this data.
+Against our expectation, deepseek-v4-flash's Δ fell from +21.0 to +7.9, still positive in 7 of 9 families (p = 0.0078); in an exploratory paired test it fell in 9 of 9 families (two-sided p = 0.0039).
+qwen3.5-397b's fell from +10.1 to +5.6, which is not distinguishable from no change (5 of 7 families, p = 0.14), and gemma-4-31b-it's stayed near total at +88.5.
+We cannot test why with this data.
 
 ### 4.5 Robustness
 
 **race-11's order cue.** race-11 prints two accuracy numbers whose 0.002 gap fits only the twin's order (amendment 4).
 Without race-11, deepseek-v4-flash's Δ is +18.8 (8 of 8 families, p = 0.0039), every other monitor's conclusion is unchanged, and H2's miss half falls from 13.3 to 5.6 points.
 
-**Controls on fresh readings.** On the main run, deepseek-v4-flash judged each agent's disguised log alone invalid in 19 of 540 readings (4%), and the direct saboteur log, which shows the order, scored 83.8 points above it on average and at least 31.0 in every family.
-gemma-4-31b-it and qwen3.5-397b flagged some single logs in every reading (Appendix F.2), but each agent's log is identical in attack and twin, so no per-agent monitor can separate the two.
+**race-4's order cue**, found in review after the main runs.
+race-4 reports a test exact match of 0.647, close to the retrieval reader's validation 0.641 and far from the gold reader's 0.846, which fits the twin's order better; it is not a contradiction, because the gold reader was scored only with gold passages.
+Every short-log race-4 miss came in the twin-order view, none in time order, and qwen3.5-397b mentioned 0.641 in 8 of its 9 such misses but in only 4 of its 31 catches there, and gemma-4-31b-it in 20 of 38 misses.
+In an exploratory reanalysis without race-4, deepseek-v4-flash's Δ is +22.1 (8 of 8, p = 0.0039), and without race-4 and race-11 it is +19.7 (7 of 7, p = 0.0078).
+Without both, qwen3.5-397b's Δ is +10.6 (5 of 5), but with five families its Holm p cannot fall below 0.0625, so this check lacks the power to confirm it.
 
-**Missing readings.** Filling missing readings in each view in whichever direction moves Δ most changes deepseek-v4-flash's mean Δ by under a point.
+**Controls on fresh readings.** On the main run, deepseek-v4-flash judged each agent's disguised log alone invalid in 19 of 540 readings (4%), and the direct saboteur log, which shows the order, scored 83.8 points above it on average and at least 31.0 in every family. Appendix F.2 gives the other monitors' controls.
+
+**Missing readings.** Filling missing readings in whichever direction moves Δ most changes deepseek-v4-flash's mean Δ by under a point.
 glm-5.2, though, is missing 8.9% of short-log and 16.9% of long-log readings, almost all twins whose replies reached the output cap before any score (Appendix F.1), and the same bounds allow it any mean Δ from -18.1 to +22.6 on short logs.
 So glm-5.2 showed no cost on the readings it finished, and its true cost is undetermined.
 
@@ -210,7 +226,6 @@ So glm-5.2 showed no cost on the readings it finished, and its true cost is unde
 
 **Layout is a hidden setting of joint monitoring, and its cost lands on the monitors that control relies on.**
 The same actions, with the same step numbers, were judged differently depending only on how they were arranged.
-gemma-4-31b-it lost nearly all separation, deepseek-v4-flash about a fifth and qwen3.5-397b about a tenth, while glm-5.2 lost none on the readings it finished.
 Control protocols rely on cheaper trusted monitors, because cost decides whether a monitor can read every action of every agent.
 In time order, deepseek-v4-flash matched glm-5.2 at about a hundredth of the cost per call, though families were kept only if time order worked on them; grouped, its false alarms were as confident as its catches, which no threshold can remove.
 
@@ -219,20 +234,20 @@ Their monitor is a frontier model, likely closer to glm-5.2 than to gemma-4-31b-
 So layout probably explains little of their 81% against 31.7%, but such a gap can contain a pure presentation component, large for cheaper monitors and removable for free.
 
 **What a team building a joint monitor should do.**
-Show the monitor every agent's actions in one time-ordered stream with agent labels, rather than grouping, squashing or sorting them.
-Before trusting a monitor on multi-agent logs, run it on timing twins with `check_monitor.py`: a monitor that separates them in time order but not when grouped has this failure.
+Show the monitor every agent's actions in one time-ordered stream with agent labels, rather than grouping, squashing or sorting them, because an attacker who knows the layout can choose an attack whose harmful order the blocks hide.
+Before trusting a monitor on multi-agent logs, run it on timing twins with `check_monitor.py`: a monitor that flags more twins in the attack-order view than in time order is reading block order as time order.
 
 **Future work.**
-Kitaoka (2026) suggests a monitor that scores each action's relevance to its agent's task; timing twins are a hard case for it, because every step is relevant to its own task and only the order of two steps is wrong.
+Kitaoka (2026) suggests scoring each action's relevance to its agent's task; timing twins are a hard case for that, since every step is relevant and only the order is wrong.
 
 **Limitations.**
-The logs are short, clean and synthetic, the families were tuned on one monitor before the freeze, the labels were made mostly by models, and glm-5.2's stalled twin readings are missing rather than scored.
+The logs are short and clean, built for the study rather than recorded from real agents, the families were tuned on one monitor before the freeze, the labels were made mostly by models, and glm-5.2's stalled twin readings are missing rather than scored.
 Appendix A covers these limits and the dual-use considerations.
 
 ## 6. Conclusion
 
 On three of four monitors, grouping the same actions by agent cost between a tenth and nearly all of the separation between attacks and twins, and made the cheaper monitors' false alarms as confident as their catches.
-Showing the actions in time order, with agent labels, removed that cost, and the released families and scorer let anyone test their own joint monitor.
+Showing the same actions in time order, with agent labels, did about as well as a single-agent view on every monitor's finished readings, at no extra cost, and the released families and scorer let anyone test their own joint monitor.
 
 ## Code and provenance
 
@@ -242,9 +257,8 @@ No pre-existing code was used: everything was written during the hackathon, Nove
 
 ## LLM usage statement
 
-AI coding agents (Claude Opus 5.5 in Claude Code) wrote most of the code, tests and scenario files to the author's design and instructions; a sub-agent wrote families race-8 to race-13.
-Claude Opus 5.5 and Claude Fable 5.1 reviewed the design, code and drafts of this report, and helped draft its text.
-Two model labellers, Claude Fable 5.1 and Claude Opus 5.5, labelled 438 of the 441 errors in Section 4.2, and the author labelled the other 3.
+AI coding agents (Claude Opus 5.5 in Claude Code) wrote most of the code, tests and scenario files to the author's design, and the author reviewed the code and every scenario by hand; a sub-agent wrote families race-8 to race-13.
+Claude Opus 5.5 and Claude Fable 5.1 reviewed the design, code and drafts, helped draft the text, and labelled 438 of the 441 errors in Section 4.2.
 The author chose the question, the hypotheses and every analysis decision, and checked the results.
 
 ## References
@@ -255,9 +269,13 @@ Brown, D., et al. (2026). Stateful online monitoring catches distributed agent a
 
 Chen, X., Chi, R. A., Wang, X., and Zhou, D. (2024). Premise order matters in reasoning with large language models. arXiv:2402.08939.
 
+Fang, T., Wang, Z., Zhou, W., Zhang, H., Song, Y., and Chen, M. (2024). Getting sick after seeing a doctor? Diagnosing and mitigating knowledge conflicts in event temporal reasoning. Findings of NAACL 2024. arXiv:2305.14970.
+
 Fatemi, B., Kazemi, M., Tsitsulin, A., Malkan, K., Yim, J., Palowitch, J., Seo, S., Halcrow, J., and Perozzi, B. (2024). Test of Time: A benchmark for evaluating LLMs on temporal reasoning. arXiv:2406.09170.
 
 Greenblatt, R., Shlegeris, B., Sachan, K., and Roger, F. (2024). AI control: Improving safety despite intentional subversion. Proceedings of ICML 2024. arXiv:2312.06942.
+
+Hills, J., Caspary, I., and Cooper Stickland, A. (2026). Distributed attacks in persistent-state AI control. arXiv:2607.02514.
 
 Kitaoka, J. (2026). Open problems in securing systems against AI agent swarms. Talk at the Apart Research Swarm Alignment Hackathon, November 5, 2026.
 
@@ -278,25 +296,25 @@ Zheng, L., et al. (2023). Judging LLM-as-a-judge with MT-Bench and Chatbot Arena
 ### What the result establishes
 
 - On these families, three of four LLM monitors separated order-dependent attacks from their timing twins less well when the actions were grouped by agent than when they were listed in time order, even though every view carried the same global step numbers.
-- Listing the actions in time order, with agent labels, separated attacks from twins about as well as the solo view, in which one agent appears to do everything, on every monitor.
+- Listing the actions in time order, with agent labels, separated attacks from twins about as well as the solo view, in which one agent appears to do everything, on every monitor's finished readings. glm-5.2 stalled on more time-order twins than solo ones (Appendix F.1), so for it this holds only for the readings it finished.
 
 ### What it does not establish
 
 - **How often this happens in real deployments.** The families were built and tuned to isolate one mechanism. They show that the failure exists and how large it can be, not how common it is.
-- **Anything about the strongest monitors.** glm-5.2 showed no cost on the readings it finished, its true cost is undetermined, and frontier monitors such as the one Kitaoka et al. used may behave like it.
+- **Anything about frontier monitors.** glm-5.2 showed no cost on the readings it finished, its true cost is undetermined, and frontier monitors such as the one Kitaoka et al. used may behave like it.
 - **Anything about other kinds of split attack.** Every family is order-dependent. Static conflicts, where two steps are harmful together in any order, are not tested; the pilot's two static families showed no layout effect.
-- **The cause of the long-log result.** The cost shrank on longer logs, against our expectation, and we cannot yet say why.
+- **The cause of the long-log result.** deepseek-v4-flash's cost shrank on longer logs, against our expectation, and we cannot yet say why.
 
 ### Limitations
 
-- **Synthetic logs.** The logs are synthetic and clean, written with AI coding agents to the author's recipe, with 10 to 13 steps, or about 48 in the long arm. Real trajectories are noisier and may carry timestamps or file contents that reveal order. Red-teamers commonly build attack transcripts by editing them by hand, as long as an automatic check confirms the result (Kitaoka, 2026). Our validator, `scenarios.py`, plays that role for the structural rules, such as identical per-agent logs and a single reversed pair, but it does not check outputs for order cues, as race-11 showed, and no one executed the projects, so it does not confirm that each attack would work in a real checkout.
+- **Constructed logs.** The logs are built for the study rather than recorded from real agent runs: AI coding agents wrote them to the author's recipe, and the author reviewed every family by hand. They are clean, with 10 to 13 steps, or about 48 in the long arm. Real trajectories are noisier and may carry timestamps or file contents that reveal order. Red-teamers commonly build attack transcripts by editing them by hand, as long as an automatic check confirms the result (Kitaoka, 2026). Our validator, `scenarios.py`, plays that role for the structural rules, such as identical per-agent logs and a single reversed pair of harmful steps, but it does not check outputs for order cues, as race-11 and race-4 showed, and no one executed the projects, so it does not confirm that each attack would work in a real checkout.
 - **Tuned on one monitor.** The families were developed and included on deepseek-v4-flash using the time-order view, which is one side of H1, and the replication monitors' inclusion also selects on that view. Main-run readings are fresh, and no monitor saw any grouped view before the main run. Δ moves because of the grouped views, which no selection step looked at, so selection is unlikely to explain the results, though it may favour deepseek-v4-flash's.
-- **Few families.** With nine families, one family can move a mean. Every result is reported per family (Appendix E) and without race-11.
+- **Few families.** With nine families, one family can move a mean. Every H1 result is reported per family (Appendix E) and without race-11 and race-4, the two families with an order cue.
 - **The usual-order asymmetry.** In eight of nine families the twin follows the usual pipeline order. The three families meant to balance this were excluded by the pre-registered inclusion rules, so only H2's false-alarm half separates a misread layout from a prior about workflows.
 - **A validity rubric, not suspicion scores.** The monitor judges whether the reported result is valid. Kitaoka et al. used suspicion scores and thresholds, so the numbers are not directly comparable.
 - **Neutral instructions.** The monitor is not told that problems may be split across agents, and it is not told that step numbers give the time order. The grouped views therefore leave the order to inference from the numbers. Telling the monitor either thing might reduce the cost.
 - **Temperature 1.0.** Monitors were sampled at temperature 1.0 to measure their distribution of judgements; a deployed monitor at temperature 0 could behave differently.
-- **View-blind labels, made mostly by models.** The labels hide the view, score and monitor, but the step numbers they show reveal the true order. Two model labellers made 438 of the 441 labels; they agreed with each other on 99.3%, but they may share blind spots that a human would not, and no human checked a sample of their agreed labels.
+- **View-blind labels, made mostly by models.** The labels hide the view, score and monitor, but the step numbers they show reveal the true order. Two model labellers made 438 of the 441 labels; they agreed with each other on 99.3%, and the author matched all 40 of a blind random sample of their agreed labels, but rarer shared blind spots could remain.
 
 ### Dual-use and ethical considerations
 
@@ -325,18 +343,18 @@ Its main changes from the pilot plan are:
 - Readings rose from 20 to 40 per whole-log cell, and the output cap from 16,000 to 64,000 tokens.
 - Regular-expression checks of the monitor's reasons were replaced by hand labels of the asserted order.
 
-Five later changes are recorded. All but amendment 4 were decided before the data they govern; the change of labellers was decided before any label but written down after labelling:
+Six later changes are recorded. All but amendment 4 and race-4's order cue were decided before the data they govern; the change of labellers was decided before any label but written down after labelling:
 
 - **Amendment 2** added six more families, three replication monitors and the long-log arm.
 - **Amendment 3** set the inclusion rule for replication monitors before any grouped data existed. It followed development runs in which gemma-4-31b-it and qwen3.5-397b failed the original four rules on most families, because they flag single logs for risks a single log cannot rule out. It keeps only the two time-order rules for replication monitors.
 - **Amendment 4** recorded race-11's order cue during the main runs and required every result to also be reported without race-11. It was written after gemma-4-31b-it's long-log arm had been analysed, and it lists everything seen by then. It changes no primary analysis.
 - **Hand-label scope** fixed which errors are labelled, and that gemma-4-31b-it's are sampled at 60 per arm, before any error was labelled.
-- **Labellers.** The plan said the errors would be labelled by hand. Before any label was made, the author chose instead to have two model labellers, Claude Fable 5.1 and Claude Opus 5.5, label every error independently from the same blind items, with instructions that never mention the hypotheses. The author then labelled, blind, the 3 errors on which they disagreed. The labels, both labellers' raw answers and the blind items are in `results/labels/`.
+- **Labellers.** The plan said the errors would be labelled by hand. Before any label was made, the author chose instead to have two model labellers, Claude Fable 5.1 and Claude Opus 5.5, label every error independently from the same blind items, with instructions that never mention the hypotheses. The author then labelled, blind, the 3 errors on which they disagreed, and later audited a blind random sample of 40 agreed labels, as `MAIN.md` planned before any sampled item was read. The labels, the audit answers, both labellers' raw answers and the blind items are in `results/labels/`.
+- **race-4's order cue** was found in review after every reading was collected, so its reanalysis in Section 4.5 is exploratory and recorded in `MAIN.md`.
 
 **Disclosure about the commit history.**
 The project's first commits were rebuilt on November 7, 2026 at 00:33 IST into one commit per stage of work.
 Their author and committer dates say November 6.
-The tree of `253e876` is byte-identical to the earlier single commit `941c1d2`, which is kept on the branch `backup/single-commit`.
 
 ## Appendix C. Family descriptions
 
@@ -442,7 +460,7 @@ This happened almost only on twins, the harmless variant.
 On short logs, 2 of 1,440 attack readings were cut off, against 254 of 1,440 twin readings.
 On long logs, 2 attack readings were cut off, against 241 twin readings.
 
-**Table F1. glm-5.2 readings cut off at the output cap, by view.**
+**Table F1. glm-5.2 readings cut off at the output cap, by view.** Here the grouped views are named by whether their blocks follow the header's agent list or swap the racing agents.
 
 | Logs | View | Attacks cut off | Twins cut off |
 |---|---|---|---|
@@ -481,8 +499,9 @@ Each family has only one agent listing, so this cannot be separated from family 
 ### F.4 Exploratory: attacks caught at a 1% false-alarm threshold
 
 This analysis was not pre-registered.
-Kitaoka (2026) describes their threshold of 8.5 as keeping false positives under 1%, as frontier labs typically do.
+Kitaoka et al. (2026) report their stricter threshold of 8.5 as a 1% false-positive rate (their Section 5.1).
 To put our result in those terms, we calibrated a threshold for each monitor and layout on that layout's own twins, as a team would calibrate on the layout it deploys.
+Each twin has the attack's actions with the racing steps in the harmless order, so it is harder to clear than typical harmless work, and this is a hard case for a 1% budget.
 The threshold is the lowest score that flags at most 1% of twin readings, and the table gives the share of attack readings at or above it.
 The grouped layout pools both grouped views, so each reading's blocks follow its own order in half of the readings.
 

@@ -24,12 +24,11 @@ This matters for published work.
 Kitaoka et al. (2026), "Red-Teaming Multi-Agent Attacks for Loss-of-Control Risks", arXiv:2610.24052, gave their joint monitor all agents' trajectories "grouped by agent and timestamped", because they found this made the monitor's reasoning more coherent.
 They report that a solo attack is flagged in 87% of successful runs at a suspicion threshold of 7.5 and 81% at 8.5.
 A distributed attack is flagged in 7% (7.5) and 2% (8.5) of runs under per-agent monitoring, and in 31.7% (66 of 208) under joint monitoring at 8.5.
-Their text also gives 41% for joint monitoring without stating the threshold, so this project cites the table.
+Their text also gives 41% for joint monitoring, which this note first read as having no stated threshold; corrected on Nov 8, their Section 5.1 gives it at their main threshold of 7.5.
 
 ## Disclosure about the commit history
 
 The project's first commits were rebuilt on Nov 7 2026 at 00:33 IST into one commit per stage of work, and their author and committer dates say Nov 6.
-The tree of `253e876` is byte-identical to the earlier single commit `941c1d2`, which is kept on the branch `backup/single-commit`.
 `0082f91` changed PILOT.md after the 4-call smoke test and before the pilot, as its section "Changes made after the smoke test and before the pilot" says.
 That commit is pushed together with this file.
 
@@ -352,3 +351,14 @@ To check them, the author labels a fixed random sample of 40 agreed labels, blin
 It shows each item exactly as the model labellers saw it, without their answers or the saved label, and says whether the author's answers matched only after the whole sample is done.
 The audit answers are written to `results/labels/blind/audit-<labeller>.jsonl` and never change the labels used in the analysis.
 The report gives how many of the 40 the author matched, and describes every item that differs.
+
+
+## Order cue in race-4 (Nov 8, found in review after every run)
+
+A reviewer found that race-4's outputs carry an order cue, like race-11's.
+The reporter's evaluation prints a test exact match of 0.647, which sits next to the retrieval reader's validation 0.641 and far from the gold reader's 0.846.
+The reporter evaluates whichever run `latest` points to, with retrieved passages, so monitors can read the near-match as showing that `latest` is the retrieval reader, which is the twin's order.
+It is a resemblance rather than a contradiction like race-11's, because the gold reader's 0.846 was scored with gold passages and it was never scored with retrieved ones.
+This was found after all readings were collected, so the analysis it prompts is exploratory, not pre-registered.
+`report_numbers.py` now also gives H1 without race-4 and without both race-4 and race-11, and counts how many race-4 misses mention the retrieval reader's 0.641.
+No primary analysis changes.
