@@ -1,10 +1,10 @@
 # Monitors Get the Order Wrong When Agent Logs Are Grouped
 
-Apurv Gupta, independent.
+Apurv Gupta, with Apart Research.
 
 Apart Research Swarm Alignment Hackathon, Track 4: Multi-Agent Oversight and Control, November 2026.
 
-Code, scenarios, every raw monitor reading and the pre-registration: https://github.com/apurv-1/swarm-alignment-maoc
+Code, scenarios, every raw monitor reading and the pre-registration: <https://github.com/apurv-1/swarm-alignment-maoc>
 
 ## Abstract
 
@@ -226,7 +226,7 @@ Time order with agent labels did about as well as a single-agent view on finishe
 
 ## Code and provenance
 
-Code, scenarios, every raw monitor reading and the pre-registration (`PILOT.md`, `MAIN.md`) are at https://github.com/apurv-1/swarm-alignment-maoc.
+Code, scenarios, every raw monitor reading and the pre-registration (`PILOT.md`, `MAIN.md`) are at <https://github.com/apurv-1/swarm-alignment-maoc>.
 No pre-existing code was used: everything was written during the hackathon, November 6 to 8, 2026 AoE.
 `report_numbers.py` produces every number in the abstract and results from the raw readings.
 
@@ -238,33 +238,33 @@ The author chose the question, the hypotheses and every analysis decision, and c
 
 ## References
 
-Baker, B., et al. (2025). Monitoring reasoning models for misbehavior and the risks of promoting obfuscation. arXiv:2503.11926.
+Baker, B., et al. (2025). Monitoring reasoning models for misbehavior and the risks of promoting obfuscation. <https://arxiv.org/abs/2503.11926>
 
-Brown, D., et al. (2026). Stateful online monitoring catches distributed agent attacks. arXiv:2605.31593.
+Brown, D., et al. (2026). Stateful online monitoring catches distributed agent attacks. <https://arxiv.org/abs/2605.31593>
 
-Chen, X., Chi, R. A., Wang, X., and Zhou, D. (2024). Premise order matters in reasoning with large language models. arXiv:2402.08939.
+Chen, X., Chi, R. A., Wang, X., and Zhou, D. (2024). Premise order matters in reasoning with large language models. <https://arxiv.org/abs/2402.08939>
 
-Fang, T., Wang, Z., Zhou, W., Zhang, H., Song, Y., and Chen, M. (2024). Getting sick after seeing a doctor? Diagnosing and mitigating knowledge conflicts in event temporal reasoning. Findings of NAACL 2024. arXiv:2305.14970.
+Fang, T., Wang, Z., Zhou, W., Zhang, H., Song, Y., and Chen, M. (2024). Getting sick after seeing a doctor? Diagnosing and mitigating knowledge conflicts in event temporal reasoning. Findings of NAACL 2024. <https://arxiv.org/abs/2305.14970>
 
-Fatemi, B., Kazemi, M., Tsitsulin, A., Malkan, K., Yim, J., Palowitch, J., Seo, S., Halcrow, J., and Perozzi, B. (2024). Test of Time: A benchmark for evaluating LLMs on temporal reasoning. arXiv:2406.09170.
+Fatemi, B., Kazemi, M., Tsitsulin, A., Malkan, K., Yim, J., Palowitch, J., Seo, S., Halcrow, J., and Perozzi, B. (2024). Test of Time: A benchmark for evaluating LLMs on temporal reasoning. <https://arxiv.org/abs/2406.09170>
 
-Greenblatt, R., Shlegeris, B., Sachan, K., and Roger, F. (2024). AI control: Improving safety despite intentional subversion. Proceedings of ICML 2024. arXiv:2312.06942.
+Greenblatt, R., Shlegeris, B., Sachan, K., and Roger, F. (2024). AI control: Improving safety despite intentional subversion. Proceedings of ICML 2024. <https://arxiv.org/abs/2312.06942>
 
-Hills, J., Caspary, I., and Cooper Stickland, A. (2026). Distributed attacks in persistent-state AI control. arXiv:2607.02514.
+Hills, J., Caspary, I., and Cooper Stickland, A. (2026). Distributed attacks in persistent-state AI control. <https://arxiv.org/abs/2607.02514>
 
-Kitaoka, J. (2026). Open problems in securing systems against AI agent swarms. Talk at the Apart Research Swarm Alignment Hackathon, November 5, 2026.
+Kale, N., et al. (2025). Reliable weak-to-strong monitoring of LLM agents. <https://arxiv.org/abs/2508.19461>
 
-Kitaoka, J., Pham, T. A., Giudice, C. R., and Merizian, J. (2026). Red-teaming multi-agent attacks for loss-of-control risks. arXiv:2610.24052.
+Kitaoka, J. (2026). Open problems in securing systems against AI agent swarms. Talk at the Apart Research Swarm Alignment Hackathon, November 5, 2026. <https://apartresearch.com/sprints/swarm-alignment-2026>
 
-Kale, N., et al. (2025). Reliable weak-to-strong monitoring of LLM agents. arXiv:2508.19461.
+Kitaoka, J., Pham, T. A., Giudice, C. R., and Merizian, J. (2026). Red-teaming multi-agent attacks for loss-of-control risks. <https://arxiv.org/abs/2610.24052>
 
-Kutasov, J., et al. (2025). SHADE-Arena: Evaluating sabotage and monitoring in LLM agents. arXiv:2506.15740.
+Kutasov, J., et al. (2025). SHADE-Arena: Evaluating sabotage and monitoring in LLM agents. <https://arxiv.org/abs/2506.15740>
 
-Liu, N. F., et al. (2024). Lost in the middle: How language models use long contexts. Transactions of the ACL. arXiv:2307.03172.
+Liu, N. F., et al. (2024). Lost in the middle: How language models use long contexts. Transactions of the ACL. <https://arxiv.org/abs/2307.03172>
 
-Makins, O., Angelini, O., Shams, Z., and Phuong, M. (2026). Multi-agent AI control: Distributed attacks hamper per-instance monitors. arXiv:2607.07368.
+Makins, O., Angelini, O., Shams, Z., and Phuong, M. (2026). Multi-agent AI control: Distributed attacks hamper per-instance monitors. <https://arxiv.org/abs/2607.07368>
 
-Zheng, L., et al. (2023). Judging LLM-as-a-judge with MT-Bench and Chatbot Arena. NeurIPS 2023 Datasets and Benchmarks. arXiv:2306.05685.
+Zheng, L., et al. (2023). Judging LLM-as-a-judge with MT-Bench and Chatbot Arena. NeurIPS 2023 Datasets and Benchmarks. <https://arxiv.org/abs/2306.05685>
 
 ## Appendix A. Limitations and Dual-Use / Ethical Considerations
 
